@@ -1,0 +1,75 @@
+{
+  "points": 881,
+  "first_date": "2024-02-16",
+  "last_date": "2026-07-15",
+  "first_share_price": 1.0715511221498628,
+  "last_share_price": 1.2142550208512395,
+  "fees": {
+    "performance_fee": 0.2,
+    "exit_fee": 0.0005,
+    "management_fee": 0.0
+  },
+  "exit_fee_applied_in_realized": 0.0005,
+  "offchain_rewards_excluded_from_apy": [],
+  "windows": [
+    {
+      "window": "7d",
+      "start_date": "2026-07-08",
+      "end_date": "2026-07-15",
+      "days": 7.0,
+      "start_share_price": 1.213525397798389,
+      "end_share_price_hold": 1.2142550208512395,
+      "end_share_price_realized": 1.213647893340814,
+      "hold_return_pct": 0.060124,
+      "realized_return_pct": 0.010094,
+      "hold_apy_pct": 3.185953,
+      "realized_apy_pct": 0.528063
+    },
+    {
+      "window": "30d",
+      "start_date": "2026-06-15",
+      "end_date": "2026-07-15",
+      "days": 30.0,
+      "start_share_price": 1.2112406586623705,
+      "end_share_price_hold": 1.2142550208512395,
+      "end_share_price_realized": 1.213647893340814,
+      "hold_return_pct": 0.248866,
+      "realized_return_pct": 0.198741,
+      "hold_apy_pct": 3.07243,
+      "realized_apy_pct": 2.446726
+    },
+    {
+      "window": "90d",
+      "start_date": "2026-04-16",
+      "end_date": "2026-07-15",
+      "days": 90.0,
+      "start_share_price": 1.2065453849586218,
+      "end_share_price_hold": 1.2142550208512395,
+      "end_share_price_realized": 1.213647893340814,
+      "hold_return_pct": 0.638984,
+      "realized_return_pct": 0.588665,
+      "hold_apy_pct": 2.618661,
+      "realized_apy_pct": 2.41059
+    },
+    {
+      "window": "inception",
+      "start_date": "2024-02-16",
+      "end_date": "2026-07-15",
+      "days": 880.0,
+      "start_share_price": 1.0715511221498628,
+      "end_share_price_hold": 1.2142550208512395,
+      "end_share_price_realized": 1.213647893340814,
+      "hold_return_pct": 13.317507,
+      "realized_return_pct": 13.260849,
+      "hold_apy_pct": 5.326183,
+      "realized_apy_pct": 5.304322
+    }
+  ],
+  "notes": [
+    "Share price from ERC-4626 convertToAssets(1e18); underlying is stETH (ETH-correlated).",
+    "20% performance fee is already deducted inside share price (Net).",
+    "Realized APY assumes a final withdraw and applies 0.05% exit fee once at the window end.",
+    "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
+    "Vaults are independent; no comparison metrics are produced against EarnETH."
+  ]
+}
