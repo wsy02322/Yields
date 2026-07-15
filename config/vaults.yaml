@@ -1,0 +1,55 @@
+rpc:
+  # Public archive-capable endpoint used for this one-shot historical pull.
+  # Re-runs / refreshes require an explicit user request.
+  url: "https://eth.drpc.org"
+  timeout_seconds: 45
+
+sampling:
+  # UTC daily snapshots at ~00:00; block is estimated then refined.
+  interval: daily
+  timezone: UTC
+
+vaults:
+  fluid_lite_eth:
+    name: Fluid Lite ETH Vault
+    receipt_token: "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78"
+    receipt_symbol: iETHv2
+    standard: erc4626
+    underlying_asset: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"  # stETH
+    deployment_block: 19240555
+    deployment_date: "2024-02-16"
+    # Fees (source: lite.guides.instadapp.io/information/fees)
+    fees:
+      performance_fee: 0.20          # already reflected in share price / Net APY
+      exit_fee: 0.0005               # charged on withdraw; included in realized APY
+      management_fee: 0.0
+    # Primary APY assumes user eventually withdraws (exit fee applied once at end).
+    assume_final_withdraw: true
+    offchain_rewards: []
+
+  lido_earn_eth:
+    name: Lido EarnETH
+    vault: "0x6a37725ca7f4CE81c004c955f7280d5C704a249e"
+    share_token: "0xBBFC8683C8fE8cF73777feDE7ab9574935fea0A4"
+    share_symbol: earnETH
+    oracle: "0xAda1f4c24603aB2fe5aBd35BCD12370e98A20358"
+    fee_manager: "0xed4Fac879eE86F3aB0101993A3713e7cAA0488E1"
+    base_asset: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"  # ETH
+    deployment_block: 24370480
+    deployment_date: "2026-02-02"
+    # Fees (source: stake.lido.fi + on-chain FeeManager, D6 precision)
+    fees:
+      protocol_fee: 0.01             # 1% platform / management; minted as shares on oracle reports
+      performance_fee: 0.10          # 10%; minted as shares on oracle reports
+      deposit_fee: 0.0               # confirmed on-chain depositFeeD6=0
+      redeem_fee: 0.0                # confirmed on-chain redeemFeeD6=0
+    # Share price already net of protocol + performance fees.
+    assume_final_withdraw: true
+    # Listed separately; NOT included in main APY.
+    offchain_rewards:
+      - name: Mellow Points
+        note: Accrue to depositor; visible on Mellow Dashboard; not in share price.
+      - name: Obol rewards
+        note: Claimable separately; not in share price.
+      - name: SSV rewards
+        note: Claimable separately; not in share price.
