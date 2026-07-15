@@ -20,8 +20,13 @@ sys.path.insert(0, str(ROOT))
 
 from src import load_w3  # noqa: E402
 from src.calculators.apy import summarize_vault  # noqa: E402
+from src.calculators.official_proxy import (  # noqa: E402
+    build_official_apy_comparison,
+    ewma_net_apy_proxy,
+)
 from src.fetchers import earneth as earneth_fetcher  # noqa: E402
 from src.fetchers import fluid_lite as fluid_fetcher  # noqa: E402
+from src.fetchers.instadapp_api import fetch_official_apy  # noqa: E402
 
 
 def write_csv(path: Path, rows: list[dict]) -> None:
@@ -83,9 +88,51 @@ def main() -> int:
             "20% performance fee is already deducted inside share price (Net).",
             "Realized APY assumes a final withdraw and applies 0.05% exit fee once at the window end.",
             "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
+            "ewma_net_apy_proxy compares trailing share-price growth to official forward Net APY.",
             "Vaults are independent; no comparison metrics are produced against EarnETH.",
         ],
     )
+    proxy_cfg = fl.get("official_apy_proxy") or {}
+    halflife = float(proxy_cfg.get("halflife_days", 365))
+    ewma_proxy = ewma_net_apy_proxy(fluid_rows, halflife_days=halflife)
+    official_cfg = fl.get("official_apy") or {}
+    official_snapshot = ROOT / official_cfg.get("snapshot_path", "")
+    try:
+        official_apy = fetch_official_apy(
+            fl["receipt_token"],
+            api_url=official_cfg.get(
+                "api_url",
+                "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults",
+            ),
+            snapshot_path=official_snapshot if official_snapshot.name else None,
+        )
+        write_json(ROOT / "data" / "fluid-lite-eth" / "official_api_snapshot.json", official_apy)
+    except RuntimeError as exc:
+        print(f"Warning: could not fetch official APY: {exc}")
+        official_apy = None
+    if ewma_proxy is not None:
+        inception_window = next(
+            (w for w in fluid_summary["windows"] if w["window"] == "inception"),
+            None,
+        )
+        alternates = []
+        if inception_window:
+            net = None
+            if official_apy and official_apy.get("apy", {}).get("apyWithoutFee") is not None:
+                net = float(official_apy["apy"]["apyWithoutFee"])
+            hold = inception_window.get("hold_apy_pct")
+            alternates.append(
+                {
+                    "metric": "inception_hold_apy",
+                    "apy_pct": hold,
+                    "delta_vs_official_net_pp": None if hold is None or net is None else round(hold - net, 6),
+                }
+            )
+        fluid_summary["official_apy_comparison"] = build_official_apy_comparison(
+            historical_proxy=ewma_proxy,
+            official=official_apy,
+            alternate_proxies=alternates,
+        )
     write_json(ROOT / "data" / "fluid-lite-eth" / "summary.json", fluid_summary)
     write_json(ROOT / "results" / "fluid-lite-eth.json", {"as_of": as_of, **fluid_summary, "series_points": len(fluid_rows)})
     results["vaults"]["fluid_lite_eth"] = fluid_summary
@@ -94,6 +141,15 @@ def main() -> int:
         print(
             f"  {w['window']}: hold_apy={w['hold_apy_pct']}% realized_apy={w['realized_apy_pct']}% "
             f"({w['start_date']} -> {w['end_date']}, {w['days']}d)"
+        )
+    cmp_ = fluid_summary.get("official_apy_comparison")
+    if cmp_:
+        off = cmp_["official"]
+        prox = cmp_["historical_proxy"]
+        print(
+            f"  official_net={off.get('net_apy_pct')}% "
+            f"ewma_proxy={prox.get('apy_pct')}% "
+            f"delta={prox.get('delta_vs_official_net_pp')}pp"
         )
 
     # ---- Lido EarnETH ----

@@ -20,6 +20,16 @@ Vaults are **independent**; no comparison metrics.
 
 \*Short windows: a one-time 0.05% exit haircut is large vs period return, so **annualized realized APY is distorted downward**. Prefer **hold APY** for short mark-to-market windows; use **realized** for full deposit→withdraw scenarios (especially inception).
 
+### vs official UI Net APY (forward-looking)
+
+| Metric | APY | Δ vs official Net (~5.84%) |
+|--------|-----|------------------------------|
+| Official Net (`apyWithoutFee`) | **5.84%** | — |
+| **EWMA Net proxy** (365d half-life on daily share price) | **6.26%** | +0.42pp |
+| Inception hold | 5.33% | −0.51pp |
+
+See `official_apy_comparison` in `data/fluid-lite-eth/summary.json` and [docs/fluid-lite-net-apy.md](../docs/fluid-lite-net-apy.md).
+
 ## Lido EarnETH
 
 - Series: **164** daily points (`2026-02-02` → `2026-07-15`)

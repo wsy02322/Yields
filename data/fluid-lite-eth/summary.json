@@ -70,6 +70,44 @@
     "20% performance fee is already deducted inside share price (Net).",
     "Realized APY assumes a final withdraw and applies 0.05% exit fee once at the window end.",
     "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
+    "ewma_net_apy_proxy compares trailing share-price growth to official forward Net APY.",
     "Vaults are independent; no comparison metrics are produced against EarnETH."
-  ]
+  ],
+  "official_apy_comparison": {
+    "purpose": "Compare trailing historical proxy vs official forward Net APY",
+    "official": {
+      "source": "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults",
+      "fetched_at_utc": "2026-07-15T18:26:58.332997+00:00",
+      "net_apy_pct": 5.840933,
+      "gross_apy_pct": 7.301166,
+      "ui_labels": {
+        "net_apy": "Net APY (apyWithoutFee; after 20% performance fee)",
+        "gross_apy": "Gross APY (apyWithFee; before performance fee)"
+      }
+    },
+    "historical_proxy": {
+      "metric": "ewma_net_apy_proxy",
+      "label": "EWMA Net APY proxy",
+      "halflife_days": 365.0,
+      "apy_pct": 6.258432,
+      "days_used": 880,
+      "last_date": "2026-07-15",
+      "formula": "APY = exp(EWMA(ln(P_t/P_{t-1})) \u00d7 365.25) \u2212 1 on daily share price",
+      "basis": "Share price net of 20% performance fee; excludes 0.05% exit fee",
+      "nature": "Trailing, recent-weighted; approximates forward UI Net APY better than fixed windows",
+      "delta_vs_official_net_pp": 0.417499
+    },
+    "alternate_proxies": [
+      {
+        "metric": "inception_hold_apy",
+        "apy_pct": 5.326183,
+        "delta_vs_official_net_pp": -0.51475
+      }
+    ],
+    "notes": [
+      "Official Net APY is forward-looking (current protocol rates \u00d7 positions), not trailing share-price growth.",
+      "Among fixed hold windows on 2026-07-15, inception hold (~5.33%) was second-closest to official Net (~5.84%).",
+      "EWMA half-life 365d was chosen as an annual default; ~325d minimized error on the reference snapshot."
+    ]
+  }
 }

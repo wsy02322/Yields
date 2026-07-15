@@ -26,6 +26,14 @@ vaults:
     # Primary APY assumes user eventually withdraws (exit fee applied once at end).
     assume_final_withdraw: true
     offchain_rewards: []
+    # Official UI Net APY (forward-looking) vs historical trailing proxy
+    official_apy:
+      api_url: "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults"
+      snapshot_path: "data/fluid-lite-eth/official_api_snapshot.json"
+    official_apy_proxy:
+      # EWMA of daily log returns on net share price; see docs/fluid-lite-net-apy.md
+      method: ewma_net_apy_proxy
+      halflife_days: 365
 
   lido_earn_eth:
     name: Lido EarnETH

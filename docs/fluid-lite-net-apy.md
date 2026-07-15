@@ -105,6 +105,31 @@ Gross_i ≈ (supplyApy − r × borrowApy) / (1 − r)
 - API `apyWithFee` ≈ **7.30%**（残差 ≈ 0.02pp，可能来自 KING/奖励估算或 DEX/闲置资金的细账）
 - `apyWithFee × 0.8` **精确等于** `apyWithoutFee`
 
+Among fixed hold windows on 2026-07-15, inception hold (~5.33%) was second-closest to official Net (~5.84%).
+
+## Historical proxy for official Net APY (trailing)
+
+Official UI **Net APY** is **forward-looking** (spot protocol rates × current positions). From **historical share price alone**, the closest practical proxy is:
+
+```
+daily_log_r_t = ln(P_t / P_{t-1})
+EWMA_t        = α × daily_log_r_t + (1 − α) × EWMA_{t−1},   α = 1 − 2^(−1/halflife)
+ewma_net_apy  = exp(EWMA × 365.25) − 1
+```
+
+- `P_t` = daily `convertToAssets(1e18)` share price (already **net of 20%** performance fee).
+- Default **half-life = 365 days** (annual smoothing; ~325d minimized error on the 2026-07-15 snapshot).
+- **Does not** include the 0.05% exit fee (same as official Net APY).
+
+| Metric (2026-07-15) | APY | Δ vs official Net |
+|---------------------|-----|-------------------|
+| Official Net (`apyWithoutFee`) | ~5.84% | — |
+| **EWMA proxy (365d HL)** | ~6.26% | ~+0.42pp |
+| Inception hold | ~5.33% | ~−0.51pp |
+| 7d / 30d / 90d hold | ~3.2% / ~3.1% / ~2.6% | much lower |
+
+This repo writes `official_apy_comparison` in `data/fluid-lite-eth/summary.json` and fetches live official APY from the Instadapp API when the pipeline runs.
+
 ### 不是什么
 
 - ❌ 不是过去 N 天 `exchangePrice` 涨幅年化  
