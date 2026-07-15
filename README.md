@@ -28,6 +28,8 @@ Vaults are processed **separately** — no comparison / ranking / relative metri
 
 Source: [Fluid Lite fees](https://lite.guides.instadapp.io/information/fees)
 
+See also: [docs/fluid-lite-net-apy.md](docs/fluid-lite-net-apy.md) — official Net APY meaning, API fields, and on-chain authenticity check.
+
 ### Lido EarnETH (Mellow)
 
 | Fee | Rate | How handled |
