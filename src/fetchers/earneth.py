@@ -15,7 +15,15 @@ from typing import Any
 from eth_utils import to_checksum_address
 from web3 import Web3
 
-from src import eth_call, estimate_block_for_timestamp, get_block_header, retry_call, ts_to_iso_date, utc_midnight_ts
+from src import (
+    estimate_block_for_timestamp,
+    eth_call,
+    get_block_header,
+    progress,
+    retry_call,
+    ts_to_iso_date,
+    utc_midnight_ts,
+)
 
 
 ETH_SENTINEL = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
@@ -36,14 +44,7 @@ def get_oracle_report(
     return int(price), int(ts), bool(suspicious)
 
 
-def price_to_eth_per_share(price_d18: int) -> float:
-    if price_d18 <= 0:
-        raise ValueError("invalid oracle price")
-    return (10**36) / price_d18 / 1e18
-
-
 def eth_per_share_wei(price_d18: int) -> int:
-    """Integer wei of ETH backing one share (1e18 share units)."""
     if price_d18 <= 0:
         raise ValueError("invalid oracle price")
     return (10**36) // price_d18
@@ -64,7 +65,7 @@ def fetch_daily_series(
     start_block: int,
     start_date: str,
     end_date: str | None = None,
-    max_workers: int = 6,
+    max_workers: int = 4,
 ) -> list[dict[str, Any]]:
     tip = get_block_header(w3, "latest")
     start_hdr = get_block_header(w3, start_block)
@@ -88,6 +89,8 @@ def fetch_daily_series(
         days.append(cur)
         cur += timedelta(days=1)
 
+    progress(f"EarnETH: scheduling {len(days)} daily snapshots ({days[0].date()} -> {days[-1].date()})")
+
     def one(day: datetime) -> dict[str, Any] | None:
         ts = utc_midnight_ts(day)
         eod_ts = min(ts + 86400 - 1, tip["timestamp"])
@@ -96,22 +99,15 @@ def fetch_daily_series(
 
         def _run():
             block = estimate_block_for_timestamp(
-                w3,
-                eod_ts,
-                tip_number=tip["number"],
-                tip_ts=tip["timestamp"],
+                eod_ts, tip_number=tip["number"], tip_ts=tip["timestamp"]
             )
             block = max(block, start_block)
-            hdr = get_block_header(w3, block)
             price, report_ts, suspicious = get_oracle_report(w3, oracle, base_asset, block)
             wei = eth_per_share_wei(price)
             return {
                 "date": day.strftime("%Y-%m-%d"),
                 "block": block,
-                "block_timestamp": hdr["timestamp"],
-                "block_timestamp_iso": datetime.fromtimestamp(
-                    hdr["timestamp"], tz=timezone.utc
-                ).isoformat(),
+                "block_timestamp_est": eod_ts,
                 "oracle_price_d18": price,
                 "oracle_report_timestamp": report_ts,
                 "oracle_suspicious": suspicious,
@@ -122,17 +118,19 @@ def fetch_daily_series(
         return retry_call(_run)
 
     rows: list[dict[str, Any]] = []
+    done = 0
     with ThreadPoolExecutor(max_workers=max_workers) as ex:
-        futs = {ex.submit(one, d): d for d in days}
+        futs = [ex.submit(one, d) for d in days]
         for fut in as_completed(futs):
             row = fut.result()
+            done += 1
             if row is not None:
                 rows.append(row)
+            if done % 25 == 0 or done == len(days):
+                progress(f"EarnETH: {done}/{len(days)} days")
 
     rows.sort(key=lambda r: r["date"])
-    by_date: dict[str, dict[str, Any]] = {}
-    for r in rows:
-        by_date[r["date"]] = r
+    by_date: dict[str, dict[str, Any]] = {r["date"]: r for r in rows}
     return [by_date[k] for k in sorted(by_date)]
 
 

@@ -70,7 +70,7 @@ def main() -> int:
         fl["receipt_token"],
         start_block=int(fl["deployment_block"]),
         start_date=fl["deployment_date"],
-        max_workers=8,
+        max_workers=6,
     )
     write_csv(ROOT / "data" / "fluid-lite-eth" / "daily_share_price.csv", fluid_rows)
     fluid_summary = summarize_vault(

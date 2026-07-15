@@ -83,7 +83,7 @@ pip install -r requirements.txt
 python scripts/compute_historical_yields.py
 ```
 
-Outputs:
+## Outputs
 
 ```
 data/fluid-lite-eth/daily_share_price.csv
@@ -93,7 +93,12 @@ data/lido-earn-eth/summary.json
 results/fluid-lite-eth.json
 results/lido-earn-eth.json
 results/summary.json
+results/RESULTS.md
 ```
+
+See `results/RESULTS.md` for the latest one-shot numbers.
+
+**Note on Fluid exit fee:** realized APY applies the 0.05% exit fee once at the window end, then annualizes. On short windows (e.g. 7d) this one-time haircut dominates the period return and **understates** annualized realized APY — use hold APY for short mark-to-market views and realized for deposit→withdraw (esp. inception).
 
 Requires an Ethereum **archive** RPC (default in `config/vaults.yaml`: `https://eth.drpc.org`).
 
