@@ -159,8 +159,8 @@ DefiLlama correctly consumes `apyWithoutFee` (Net).
 |--------|------------------------|----------------------|--------|
 | UI **Net APY** | Yes (deducted) | No | Forward estimate |
 | UI **Gross APY** | No | No | Forward estimate |
-| Repo **Hold APY** | Yes (in share price) | No | Trailing `exchangePrice` |
-| Repo **Realized APY** | Yes | Yes (~−0.05 pp; 1y hold default) | Trailing Hold APY − exit-fee drag |
+| Repo **Hold APY** | Yes (in share price) | No | Trailing, **ETH-denominated** (vault × stETH→ETH) |
+| Repo **Realized APY** | Yes | Yes (~−0.05 pp; 1y hold default) | ETH Hold APY − exit-fee drag |
 
 Share price is already **net of** the 20% performance fee because revenue is skimmed into `revenue()` rather than remaining in user share value.
 

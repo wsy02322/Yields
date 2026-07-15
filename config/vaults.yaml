@@ -16,6 +16,9 @@ vaults:
     receipt_symbol: iETHv2
     standard: erc4626
     underlying_asset: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"  # stETH
+    # Primary APY is ETH-denominated: vault stETH/share APY × stETH→ETH intrinsic.
+    denomination: ETH
+    accounting_asset: stETH
     deployment_block: 19240555
     deployment_date: "2024-02-16"
     # Fees (source: lite.guides.instadapp.io/information/fees)
@@ -38,6 +41,9 @@ vaults:
     oracle: "0xAda1f4c24603aB2fe5aBd35BCD12370e98A20358"
     fee_manager: "0xed4Fac879eE86F3aB0101993A3713e7cAA0488E1"
     base_asset: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"  # ETH
+    # Share price is already ETH/share — primary APY is ETH with no extra intrinsic layer.
+    denomination: ETH
+    accounting_asset: ETH
     deployment_block: 24370480
     deployment_date: "2026-02-02"
     # Fees (source: stake.lido.fi + on-chain FeeManager, D6 precision)

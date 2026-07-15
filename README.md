@@ -12,6 +12,7 @@ Vaults are processed **separately** — no comparison / ranking / relative metri
 | Decision | Choice |
 |----------|--------|
 | Relationship between vaults | Independent (no cross-vault comparison) |
+| APY denomination | **ETH** for both vaults |
 | Withdrawal assumption | User eventually withdraws → Fluid **0.05% exit fee** in **realized** APY |
 | Exit-fee APY amortization | Default **1-year hold** (`exit_fee_hold_days: 365.25`) → ~**−0.05 pp** APY |
 | EarnETH off-chain rewards | **Mellow Points / Obol / SSV listed separately**, excluded from main APY |
@@ -56,19 +57,32 @@ Sources: [Lido Earn UI](https://stake.lido.fi/earn/eth/deposit), on-chain `FeeMa
   eth_per_share = 1e18 / (priceD18 / 1e18)
   ```
 
-### Returns & APY
+### Returns & APY (ETH-denominated)
+
+Both vaults report primary APY in **ETH**.
+
+**Fluid Lite** (accounting asset = stETH):
 
 ```
-hold_return     = share_price_T1 / share_price_T0 - 1
-hold_apy        = (1 + hold_return)^(365.25 / window_days) - 1
+vault_return      = stETH_share_price_T1 / stETH_share_price_T0 - 1
+steth_eth_return  = lido_share_rate_T1 / lido_share_rate_T0 - 1
+                  # lido_share_rate = getTotalPooledEther / getTotalShares
+ETH_return        = (1 + vault_return) × (1 + steth_eth_return) - 1
+hold_apy (ETH)    = (1 + ETH_return)^(365.25 / window_days) - 1
+                  # equiv. (1 + vault_apy) × (1 + steth→ETH_apy) - 1
+```
 
-# Exit fee → APY: amortize over default 1-year hold (not the measurement window)
-exit_fee_hold_days = 365.25
-realized_apy    = (1 + hold_apy) * (1 - exit_fee)^(365.25 / exit_fee_hold_days) - 1
-# Fluid: exit_fee=0.05% → drag ≈ 0.05 pp on every window
+**EarnETH** (accounting asset = ETH already):
 
-realized_return = share_price_T1 * (1 - exit_fee) / share_price_T0 - 1
-# period wealth if withdrawing at window end (informational; not used for realized_apy)
+```
+hold_apy (ETH) = (1 + eth_per_share_T1 / eth_per_share_T0 - 1)^(365.25 / days) - 1
+# no extra intrinsic layer
+```
+
+Exit fee (Fluid 0.05%) is applied as APY drag over a default **1-year** hold:
+
+```
+realized_apy = (1 + hold_apy_ETH) × (1 - exit_fee)^(365.25 / 365.25) - 1
 ```
 
 Windows: **7d / 30d / 90d / inception** (when enough history exists).
@@ -96,6 +110,7 @@ python scripts/compute_historical_yields.py
 
 ```
 data/fluid-lite-eth/daily_share_price.csv
+data/fluid-lite-eth/daily_steth_share_rate.csv
 data/fluid-lite-eth/summary.json
 data/lido-earn-eth/daily_share_price.csv
 data/lido-earn-eth/summary.json

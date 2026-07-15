@@ -22,6 +22,7 @@ from src import load_w3  # noqa: E402
 from src.calculators.apy import summarize_vault  # noqa: E402
 from src.fetchers import earneth as earneth_fetcher  # noqa: E402
 from src.fetchers import fluid_lite as fluid_fetcher  # noqa: E402
+from src.fetchers import steth as steth_fetcher  # noqa: E402
 
 
 def write_csv(path: Path, rows: list[dict]) -> None:
@@ -73,21 +74,27 @@ def main() -> int:
         max_workers=6,
     )
     write_csv(ROOT / "data" / "fluid-lite-eth" / "daily_share_price.csv", fluid_rows)
+    print("=== Fetching Lido stETH share-rate (ETH intrinsic) at same blocks ===")
+    steth_rows = steth_fetcher.fetch_share_rate_for_rows(w3, fluid_rows, max_workers=6)
+    write_csv(ROOT / "data" / "fluid-lite-eth" / "daily_steth_share_rate.csv", steth_rows)
     exit_fee_hold_days = float(fl.get("exit_fee_hold_days", 365.25))
     fluid_summary = summarize_vault(
         fluid_rows,
         exit_fee=float(fl["fees"]["exit_fee"]),
         fees=fl["fees"],
         exit_fee_hold_days=exit_fee_hold_days,
+        denomination=fl.get("denomination", "ETH"),
+        accounting_asset=fl.get("accounting_asset", "stETH"),
+        underlying_eth_series=steth_rows,
         offchain_rewards=fl.get("offchain_rewards") or [],
         notes=[
-            "Share price from ERC-4626 convertToAssets(1e18); underlying is stETH (ETH-correlated).",
-            "20% performance fee is already deducted inside share price (Net).",
-            "Realized APY = Hold APY with exit-fee drag amortized over a default 1-year hold "
-            f"({exit_fee_hold_days} days), so 0.05% exit ≈ −0.05 pp APY (not annualized over 7d/30d).",
-            "realized_return_pct still shows period wealth if withdrawing at window end; "
-            "only realized_apy uses the 1-year fee amortization.",
-            "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
+            "Primary APY is ETH-denominated: (1 + vault_stETH_share_apy) × (1 + stETH→ETH_intrinsic_apy) − 1.",
+            "Vault share price from ERC-4626 convertToAssets(1e18) in stETH/share (strategy / Base).",
+            "stETH→ETH intrinsic from Lido getTotalPooledEther/getTotalShares (= wstETH.stEthPerToken growth).",
+            "20% performance fee is already deducted inside vault share price (Net).",
+            "Realized APY = ETH Hold APY with exit-fee drag amortized over a default 1-year hold "
+            f"({exit_fee_hold_days} days), so 0.05% exit ≈ −0.05 pp APY.",
+            "Hold APY ignores exit fee (mark-to-market while still deposited).",
             "Vaults are independent; no comparison metrics are produced against EarnETH.",
         ],
     )
@@ -97,8 +104,9 @@ def main() -> int:
     print(f"Fluid Lite points={len(fluid_rows)} first={fluid_rows[0]['date'] if fluid_rows else None} last={fluid_rows[-1]['date'] if fluid_rows else None}")
     for w in fluid_summary["windows"]:
         print(
-            f"  {w['window']}: hold_apy={w['hold_apy_pct']}% realized_apy={w['realized_apy_pct']}% "
-            f"({w['start_date']} -> {w['end_date']}, {w['days']}d)"
+            f"  {w['window']}: ETH hold_apy={w['hold_apy_pct']}% "
+            f"(vault={w['hold_apy_underlying_pct']}% + stETH→ETH={w['underlying_eth_apy_pct']}%) "
+            f"realized_apy={w['realized_apy_pct']}% ({w['start_date']} -> {w['end_date']}, {w['days']}d)"
         )
 
     # ---- Lido EarnETH ----
@@ -136,9 +144,13 @@ def main() -> int:
         exit_fee=exit_fee,
         fees=fees,
         exit_fee_hold_days=exit_fee_hold_days,
+        denomination=le.get("denomination", "ETH"),
+        accounting_asset=le.get("accounting_asset", "ETH"),
+        underlying_eth_series=None,  # already ETH/share
         offchain_rewards=le.get("offchain_rewards") or [],
         notes=[
-            "Share price derived from Mellow oracle ETH report: eth_per_share = 1e18 / (priceD18/1e18).",
+            "Primary APY is ETH-denominated (share price is already ETH/share; no extra intrinsic layer).",
+            "Share price from Mellow oracle ETH report: eth_per_share = 1e18 / (priceD18/1e18).",
             "1% protocol (platform) fee and 10% performance fee are minted as vault shares on oracle reports; already in net share price.",
             "On-chain depositFeeD6=0 and redeemFeeD6=0 at snapshot time; realized ≈ hold for redeem fee.",
             "Exit-fee APY drag (if any) amortizes over a default 1-year hold, same as Fluid Lite.",
@@ -155,7 +167,7 @@ def main() -> int:
     print(f"EarnETH points={len(earn_rows)} first={earn_rows[0]['date'] if earn_rows else None} last={earn_rows[-1]['date'] if earn_rows else None}")
     for w in earn_summary["windows"]:
         print(
-            f"  {w['window']}: hold_apy={w['hold_apy_pct']}% realized_apy={w['realized_apy_pct']}% "
+            f"  {w['window']}: ETH hold_apy={w['hold_apy_pct']}% realized_apy={w['realized_apy_pct']}% "
             f"({w['start_date']} -> {w['end_date']}, {w['days']}d)"
         )
 
