@@ -28,7 +28,7 @@ Vaults are processed **separately** — no comparison / ranking / relative metri
 
 Source: [Fluid Lite fees](https://lite.guides.instadapp.io/information/fees)
 
-See also: [docs/fluid-lite-net-apy.md](docs/fluid-lite-net-apy.md) — official Net APY meaning, API fields, and on-chain authenticity check.
+See also: [docs/fluid-lite-net-apy.md](docs/fluid-lite-net-apy.md) — official Net APY meaning, API fields, on-chain authenticity check, and the **`inception_hold_simple`** historical proxy used to compare against UI Net APY.
 
 ### Lido EarnETH (Mellow)
 
@@ -66,6 +66,8 @@ APY             = (1 + return)^(365.25 / days) - 1
 
 Windows: **7d / 30d / 90d / inception** (when enough history exists).
 
+**Fluid Lite vs official Net APY (comparison only):** among trailing Hold APYs, **`inception_hold_simple`** (`R × 365.25/days` over inception, no exit fee) is empirically closest to the UI Net figure. See `docs/fluid-lite-net-apy.md` and `results/fluid-lite-official-apy-proxy.json`.
+
 Daily snapshots are UTC end-of-day approximations via archive `eth_call` at estimated blocks.
 
 ## Contracts
@@ -85,14 +87,22 @@ pip install -r requirements.txt
 python scripts/compute_historical_yields.py
 ```
 
+Compare historical proxy vs live official Net APY (reuses existing CSV; no archive re-pull):
+
+```bash
+python scripts/compare_fluid_official_apy.py
+```
+
 ## Outputs
 
 ```
 data/fluid-lite-eth/daily_share_price.csv
 data/fluid-lite-eth/summary.json
+data/fluid-lite-eth/official_apy_proxy_comparison.json
 data/lido-earn-eth/daily_share_price.csv
 data/lido-earn-eth/summary.json
 results/fluid-lite-eth.json
+results/fluid-lite-official-apy-proxy.json
 results/lido-earn-eth.json
 results/summary.json
 results/RESULTS.md
@@ -108,9 +118,11 @@ Requires an Ethereum **archive** RPC (default in `config/vaults.yaml`: `https://
 
 ```
 config/vaults.yaml          # addresses, fees, sampling policy
-src/fetchers/               # on-chain share-price collectors
+src/fetchers/               # on-chain share-price collectors + official API
 src/calculators/apy.py      # returns / rolling APY
+src/calculators/official_apy_proxy.py  # closest trailing proxy vs UI Net
 scripts/compute_historical_yields.py
+scripts/compare_fluid_official_apy.py
 data/                       # raw daily series + per-vault summaries
 results/                    # report-ready JSON
 ```

@@ -148,7 +148,7 @@ DefiLlama correctly consumes `apyWithoutFee` (Net).
 
 ## Authenticity caveats (not forgeries — definition gaps)
 
-1. **Forward vs trailing.** UI/API Net APY ≈ current strategy estimate. Trailing share-price Hold APY in this repo (7d/30d/90d) can be lower/higher; inception Hold APY (~5.3%) is closer to the live Net snapshot but is a different metric.
+1. **Forward vs trailing.** UI/API Net APY ≈ current strategy estimate. Trailing share-price Hold APY in this repo (7d/30d/90d) can be lower/higher; **`inception_hold_simple` (~5.53%)** is the closest trailing proxy to live Net (~5.84%) but remains a different metric.
 2. **Exit fee not in Net APY.** Realized deposit→withdraw return must haircut 0.05% once (this repo’s `realized` APY).
 3. **USD vault.** Official: no performance fee; rate is governance floor / reward rate (`fixedRate` / `rate` in lite-usd API). Some third-party blogs wrongly claim a 20% USD performance fee — **not** supported by official fees docs or on-chain ETH fee getters for USD.
 4. **Aggregator variance.** StakingBoard / AprScope / etc. may lag or mix Gross/Net; prefer official API or on-chain share price.
@@ -161,9 +161,37 @@ DefiLlama correctly consumes `apyWithoutFee` (Net).
 | UI **Gross APY** | No | No | Forward estimate |
 | Repo **Hold APY** | Yes (in share price) | No | Trailing `exchangePrice` |
 | Repo **Realized APY** | Yes | Yes (once at end) | Trailing + exit |
+| Repo **`inception_hold_simple`** (official proxy) | Yes (in share price) | No | Trailing inception, simple annualize |
 
 Share price is already **net of** the 20% performance fee because revenue is skimmed into `revenue()` rather than remaining in user share value.
 
+## Closest historical proxy vs UI Net APY
+
+Official Net is **not** recoverable exactly from share prices alone (it is spot rates × positions). Empirically, among trailing Hold APYs on this series (7d / 30d / 90d / 180d / 365d / inception × compound|simple):
+
+| Rank | Historical algorithm | APY (2026-07-15) | Δ vs Net (~5.84%) |
+|------|----------------------|------------------|-------------------|
+| 1 | **Inception Hold + simple** `R × 365.25/days` | **5.53%** | **−0.31 pp** |
+| 2 | Inception Hold + compound `(1+R)^(365.25/days)−1` | 5.33% | −0.51 pp |
+| … | 365d / 90d / 30d / 7d Hold | ~3.6% → ~3.2% | −2.2 → −2.7 pp |
+
+**Defined proxy (for comparison only):**
+
+```
+R   = share_price_T / share_price_0 − 1     # inception window, no exit fee
+APY = R × (365.25 / days)                  # simple / linear annualization
+```
+
+Name: `inception_hold_simple`. Fee treatment matches UI Net (perf fee in price, exit fee excluded). It is **not** a reconstruction of the forward formula — only the trailing metric that lands nearest Net on this dataset.
+
+Reproduce / refresh comparison (uses existing CSV + live API; no archive re-pull):
+
+```bash
+python scripts/compare_fluid_official_apy.py
+```
+
+Outputs: `data/fluid-lite-eth/official_apy_proxy_comparison.json`, `results/fluid-lite-official-apy-proxy.json`.
+
 ## Bottom line
 
-Official **Net APY** for Fluid Lite ETH is authentic: documented on the Lite fees page, exposed by Instadapp’s own API, and independently confirmed by on-chain `revenueFeePercentage` / `withdrawalFeePercentage`. Treat it as **fee-net, exit-fee-gross, forward-looking**; for historical realized returns use share-price series ± exit fee (as in `results/RESULTS.md`).
+Official **Net APY** for Fluid Lite ETH is authentic: documented on the Lite fees page, exposed by Instadapp’s own API, and independently confirmed by on-chain `revenueFeePercentage` / `withdrawalFeePercentage`. Treat it as **fee-net, exit-fee-gross, forward-looking**; for historical realized returns use share-price series ± exit fee (as in `results/RESULTS.md`); for a **trailing number closest to UI Net**, use **`inception_hold_simple`**.

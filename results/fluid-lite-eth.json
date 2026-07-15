@@ -79,5 +79,24 @@
     "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
     "Vaults are independent; no comparison metrics are produced against EarnETH."
   ],
-  "series_points": 881
+  "series_points": 881,
+  "official_apy_comparison": {
+    "recommended_proxy_name": "inception_hold_simple",
+    "recommended_proxy": {
+      "name": "inception_hold_simple",
+      "method": "simple",
+      "window": "inception",
+      "start_date": "2024-02-16",
+      "end_date": "2026-07-15",
+      "days": 880.0,
+      "hold_return_pct": 13.317507,
+      "apy_pct": 5.527522,
+      "notes": "Inception Hold APY with simple (linear) annualization: R = share_price_T / share_price_0 \u2212 1; APY = R \u00d7 (365.25 / days). No exit fee (matches UI Net fee treatment: performance fee already in share price; exit fee not in Net APY).",
+      "delta_vs_official_net_pp": -0.313413,
+      "abs_delta_vs_official_net_pp": 0.313413
+    },
+    "official_net_apy_pct": 5.840935,
+    "official_gross_apy_pct": 7.301169,
+    "detail_file": "data/fluid-lite-eth/official_apy_proxy_comparison.json"
+  }
 }
