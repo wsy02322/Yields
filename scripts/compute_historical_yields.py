@@ -20,8 +20,13 @@ sys.path.insert(0, str(ROOT))
 
 from src import load_w3  # noqa: E402
 from src.calculators.apy import summarize_vault  # noqa: E402
+from src.calculators.official_apy_proxy import (  # noqa: E402
+    RECOMMENDED_PROXY_NAME,
+    build_official_comparison,
+)
 from src.fetchers import earneth as earneth_fetcher  # noqa: E402
 from src.fetchers import fluid_lite as fluid_fetcher  # noqa: E402
+from src.fetchers.fluid_lite_official import fetch_official_vault_apy  # noqa: E402
 
 
 def write_csv(path: Path, rows: list[dict]) -> None:
@@ -86,6 +91,39 @@ def main() -> int:
             "Vaults are independent; no comparison metrics are produced against EarnETH.",
         ],
     )
+    # Historical proxy closest to official UI Net APY (for comparison only)
+    try:
+        official = fetch_official_vault_apy()
+        apy_cmp = build_official_comparison(
+            fluid_rows,
+            official_net_apy=official["net_apy"],
+            official_gross_apy=official["gross_apy"],
+            official_meta={
+                "source_url": official["source_url"],
+                "fetched_at_utc": official["fetched_at_utc"],
+                "vault": official["vault"],
+                "api_field_net": "apy.apyWithoutFee",
+                "api_field_gross": "apy.apyWithFee",
+            },
+        )
+        write_json(ROOT / "data" / "fluid-lite-eth" / "official_apy_proxy_comparison.json", apy_cmp)
+        write_json(ROOT / "results" / "fluid-lite-official-apy-proxy.json", apy_cmp)
+        fluid_summary["official_apy_comparison"] = {
+            "recommended_proxy_name": RECOMMENDED_PROXY_NAME,
+            "recommended_proxy": apy_cmp["recommended_proxy"],
+            "official_net_apy_pct": apy_cmp["official"]["net_apy_pct"],
+            "official_gross_apy_pct": apy_cmp["official"]["gross_apy_pct"],
+            "detail_file": "data/fluid-lite-eth/official_apy_proxy_comparison.json",
+        }
+        proxy = apy_cmp["recommended_proxy"]
+        print(
+            f"  official Net={apy_cmp['official']['net_apy_pct']}% | "
+            f"proxy {proxy['name']}={proxy['apy_pct']}% "
+            f"(Δ {proxy['delta_vs_official_net_pp']:+.4f} pp)"
+        )
+    except Exception as exc:  # noqa: BLE001 — keep historical pull usable offline
+        print(f"  official APY comparison skipped: {exc}")
+
     write_json(ROOT / "data" / "fluid-lite-eth" / "summary.json", fluid_summary)
     write_json(ROOT / "results" / "fluid-lite-eth.json", {"as_of": as_of, **fluid_summary, "series_points": len(fluid_rows)})
     results["vaults"]["fluid_lite_eth"] = fluid_summary

@@ -20,6 +20,25 @@ Vaults are **independent**; no comparison metrics.
 
 \*Short windows: a one-time 0.05% exit haircut is large vs period return, so **annualized realized APY is distorted downward**. Prefer **hold APY** for short mark-to-market windows; use **realized** for full deposit→withdraw scenarios (especially inception).
 
+### Closest historical proxy vs official Net APY
+
+Official UI Net APY is forward-looking (rates × positions). Among trailing Hold algorithms on this series, the closest fee-aligned proxy is:
+
+```
+inception_hold_simple:  R = share_price_T / share_price_0 − 1
+                        APY = R × (365.25 / days)     # no exit fee
+```
+
+| | APY | Notes |
+|--|-----|-------|
+| Official **Net** (`apyWithoutFee`) | **5.84%** | Live API / UI |
+| Official **Gross** (`apyWithFee`) | 7.30% | Live API / UI |
+| **`inception_hold_simple`** (proxy) | **5.53%** | Δ ≈ **−0.31 pp** vs Net |
+| Inception Hold compound (repo default) | 5.33% | Δ ≈ −0.51 pp vs Net |
+| 7d / 30d / 90d Hold | 3.19% / 3.07% / 2.62% | Far from spot Net |
+
+Detail: `results/fluid-lite-official-apy-proxy.json` · `docs/fluid-lite-net-apy.md`
+
 ## Lido EarnETH
 
 - Series: **164** daily points (`2026-02-02` → `2026-07-15`)
@@ -46,6 +65,8 @@ Vaults are **independent**; no comparison metrics.
 
 - `data/fluid-lite-eth/daily_share_price.csv`
 - `data/fluid-lite-eth/summary.json`
+- `data/fluid-lite-eth/official_apy_proxy_comparison.json`
 - `data/lido-earn-eth/daily_share_price.csv`
 - `data/lido-earn-eth/summary.json`
 - `results/summary.json`
+- `results/fluid-lite-official-apy-proxy.json`
