@@ -21,6 +21,8 @@
     }
   },
   "exit_fee_applied_in_realized": 0.0,
+  "exit_fee_hold_days": 365.25,
+  "exit_fee_apy_drag_pct": 0.0,
   "offchain_rewards_excluded_from_apy": [
     {
       "name": "Mellow Points",
@@ -47,7 +49,9 @@
       "hold_return_pct": 0.073719,
       "realized_return_pct": 0.073719,
       "hold_apy_pct": 3.920034,
-      "realized_apy_pct": 3.920034
+      "realized_apy_pct": 3.920034,
+      "exit_fee_apy_drag_pct": 0.0,
+      "exit_fee_hold_days": 365.25
     },
     {
       "window": "30d",
@@ -60,7 +64,9 @@
       "hold_return_pct": 0.317377,
       "realized_return_pct": 0.317377,
       "hold_apy_pct": 3.933332,
-      "realized_apy_pct": 3.933332
+      "realized_apy_pct": 3.933332,
+      "exit_fee_apy_drag_pct": 0.0,
+      "exit_fee_hold_days": 365.25
     },
     {
       "window": "90d",
@@ -73,7 +79,9 @@
       "hold_return_pct": 0.65493,
       "realized_return_pct": 0.65493,
       "hold_apy_pct": 2.684663,
-      "realized_apy_pct": 2.684663
+      "realized_apy_pct": 2.684663,
+      "exit_fee_apy_drag_pct": 0.0,
+      "exit_fee_hold_days": 365.25
     },
     {
       "window": "inception",
@@ -86,13 +94,16 @@
       "hold_return_pct": 1.191169,
       "realized_return_pct": 1.191169,
       "hold_apy_pct": 2.688912,
-      "realized_apy_pct": 2.688912
+      "realized_apy_pct": 2.688912,
+      "exit_fee_apy_drag_pct": 0.0,
+      "exit_fee_hold_days": 365.25
     }
   ],
   "notes": [
     "Share price derived from Mellow oracle ETH report: eth_per_share = 1e18 / (priceD18/1e18).",
     "1% protocol (platform) fee and 10% performance fee are minted as vault shares on oracle reports; already in net share price.",
     "On-chain depositFeeD6=0 and redeemFeeD6=0 at snapshot time; realized \u2248 hold for redeem fee.",
+    "Exit-fee APY drag (if any) amortizes over a default 1-year hold, same as Fluid Lite.",
     "Mellow Points, Obol, and SSV rewards are listed under offchain_rewards and are NOT included in APY.",
     "Vaults are independent; no comparison metrics are produced against Fluid Lite."
   ]

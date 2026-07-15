@@ -149,7 +149,7 @@ DefiLlama correctly consumes `apyWithoutFee` (Net).
 ## Authenticity caveats (not forgeries — definition gaps)
 
 1. **Forward vs trailing.** UI/API Net APY ≈ current strategy estimate. Trailing share-price Hold APY in this repo (7d/30d/90d) can be lower/higher; inception Hold APY (~5.3%) is closer to the live Net snapshot but is a different metric.
-2. **Exit fee not in Net APY.** Realized deposit→withdraw return must haircut 0.05% once (this repo’s `realized` APY).
+2. **Exit fee not in Net APY.** UI Net excludes the 0.05% exit fee. This repo’s **Realized APY** applies exit-fee drag amortized over a **default 1-year hold** (~−0.05 pp), not by annualizing a one-time haircut over the short measurement window.
 3. **USD vault.** Official: no performance fee; rate is governance floor / reward rate (`fixedRate` / `rate` in lite-usd API). Some third-party blogs wrongly claim a 20% USD performance fee — **not** supported by official fees docs or on-chain ETH fee getters for USD.
 4. **Aggregator variance.** StakingBoard / AprScope / etc. may lag or mix Gross/Net; prefer official API or on-chain share price.
 
@@ -160,7 +160,7 @@ DefiLlama correctly consumes `apyWithoutFee` (Net).
 | UI **Net APY** | Yes (deducted) | No | Forward estimate |
 | UI **Gross APY** | No | No | Forward estimate |
 | Repo **Hold APY** | Yes (in share price) | No | Trailing `exchangePrice` |
-| Repo **Realized APY** | Yes | Yes (once at end) | Trailing + exit |
+| Repo **Realized APY** | Yes | Yes (~−0.05 pp; 1y hold default) | Trailing Hold APY − exit-fee drag |
 
 Share price is already **net of** the 20% performance fee because revenue is skimmed into `revenue()` rather than remaining in user share value.
 

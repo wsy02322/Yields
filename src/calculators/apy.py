@@ -8,6 +8,9 @@ from typing import Any
 
 
 SECONDS_PER_YEAR = 365.25 * 24 * 3600
+# Default assumed holding period when converting a one-time exit fee into an APY drag.
+# Prevents short measurement windows from annualizing a single withdraw fee over 7d/30d.
+DEFAULT_EXIT_FEE_HOLD_DAYS = 365.25
 
 
 def _parse_date(s: str) -> datetime:
@@ -27,6 +30,8 @@ class WindowReturn:
     realized_return: float
     hold_apy: float | None
     realized_apy: float | None
+    exit_fee_apy_drag: float | None
+    exit_fee_hold_days: float
 
 
 def period_return(start_price: float, end_price: float) -> float:
@@ -51,6 +56,36 @@ def apply_exit_fee(share_price: float, exit_fee: float) -> float:
     return share_price * (1.0 - exit_fee)
 
 
+def exit_fee_apy_drag(
+    exit_fee: float,
+    hold_days: float = DEFAULT_EXIT_FEE_HOLD_DAYS,
+) -> float:
+    """APY reduction from a one-time exit fee amortized over ``hold_days``.
+
+    A single withdraw haircut of ``exit_fee`` after holding ``hold_days`` is
+    equivalent to multiplying annual wealth by ``(1 - exit_fee)^(365.25 / hold_days)``.
+
+    With the default 1-year hold, drag ≈ exit_fee (e.g. 0.05% → ~0.05 pp APY).
+    """
+    if exit_fee < 0 or exit_fee >= 1:
+        raise ValueError("exit_fee must be in [0, 1)")
+    if hold_days < 1:
+        raise ValueError("hold_days must be >= 1")
+    return 1.0 - (1.0 - exit_fee) ** (365.25 / hold_days)
+
+
+def apply_exit_fee_to_apy(
+    hold_apy: float | None,
+    exit_fee: float,
+    hold_days: float = DEFAULT_EXIT_FEE_HOLD_DAYS,
+) -> float | None:
+    """Convert Hold APY → Realized APY using exit-fee drag over ``hold_days``."""
+    if hold_apy is None:
+        return None
+    factor = (1.0 - exit_fee) ** (365.25 / hold_days)
+    return (1.0 + hold_apy) * factor - 1.0
+
+
 def pick_row(series: list[dict[str, Any]], date: str) -> dict[str, Any] | None:
     for row in series:
         if row["date"] == date:
@@ -70,6 +105,7 @@ def compute_window(
     start_date: str,
     end_date: str,
     exit_fee: float = 0.0,
+    exit_fee_hold_days: float = DEFAULT_EXIT_FEE_HOLD_DAYS,
 ) -> WindowReturn | None:
     start = nearest_on_or_before(series, start_date)
     end = nearest_on_or_before(series, end_date)
@@ -87,13 +123,16 @@ def compute_window(
     sp1 = float(end["share_price"])
     sp1_realized = apply_exit_fee(sp1, exit_fee)
 
-    # Hold return: share price change only (ongoing fees already in price).
-    # Realized: assume deposit at start (no deposit fee) and withdraw at end (exit/redeem fee).
-    # For a fair realized comparison over a holding window, also haircut the starting
-    # price? No — deposit fees reduce shares received at T0; exit fees reduce assets at T1.
-    # With deposit_fee=0 for both vaults here, realized only applies exit fee on terminal value.
+    # Hold: share price path over the measurement window (ongoing fees already in price).
+    # Realized period return: still shows wealth if user withdrew at window end (one-time fee).
+    # Realized APY: do NOT annualize that one-time fee over the short window. Instead apply
+    # exit-fee drag assuming a default hold of exit_fee_hold_days (1 year) so APY impact
+    # is ~exit_fee itself (e.g. −0.05 pp), independent of 7d/30d window length.
     hold_ret = period_return(sp0, sp1)
     realized_ret = period_return(sp0, sp1_realized)
+    hold_apy = annualize(hold_ret, float(days))
+    drag = exit_fee_apy_drag(exit_fee, exit_fee_hold_days)
+    realized_apy = apply_exit_fee_to_apy(hold_apy, exit_fee, exit_fee_hold_days)
 
     return WindowReturn(
         label=label,
@@ -105,8 +144,10 @@ def compute_window(
         end_share_price_realized=sp1_realized,
         hold_return=hold_ret,
         realized_return=realized_ret,
-        hold_apy=annualize(hold_ret, float(days)),
-        realized_apy=annualize(realized_ret, float(days)),
+        hold_apy=hold_apy,
+        realized_apy=realized_apy,
+        exit_fee_apy_drag=drag,
+        exit_fee_hold_days=float(exit_fee_hold_days),
     )
 
 
@@ -115,6 +156,7 @@ def rolling_windows(
     *,
     exit_fee: float,
     windows_days: list[int] | None = None,
+    exit_fee_hold_days: float = DEFAULT_EXIT_FEE_HOLD_DAYS,
 ) -> list[WindowReturn]:
     if not series:
         return []
@@ -136,6 +178,7 @@ def rolling_windows(
             start_date=start_date,
             end_date=end_date,
             exit_fee=exit_fee,
+            exit_fee_hold_days=exit_fee_hold_days,
         )
         if w is not None:
             out.append(w)
@@ -147,6 +190,7 @@ def rolling_windows(
         start_date=series[0]["date"],
         end_date=end_date,
         exit_fee=exit_fee,
+        exit_fee_hold_days=exit_fee_hold_days,
     )
     if w is not None:
         out.append(w)
@@ -169,6 +213,8 @@ def window_to_dict(w: WindowReturn) -> dict[str, Any]:
         "realized_return_pct": pct(w.realized_return),
         "hold_apy_pct": pct(w.hold_apy),
         "realized_apy_pct": pct(w.realized_apy),
+        "exit_fee_apy_drag_pct": pct(w.exit_fee_apy_drag),
+        "exit_fee_hold_days": w.exit_fee_hold_days,
     }
 
 
@@ -195,8 +241,16 @@ def summarize_vault(
     fees: dict[str, Any],
     offchain_rewards: list[dict[str, Any]] | None = None,
     notes: list[str] | None = None,
+    exit_fee_hold_days: float = DEFAULT_EXIT_FEE_HOLD_DAYS,
 ) -> dict[str, Any]:
-    windows = [window_to_dict(w) for w in rolling_windows(series, exit_fee=exit_fee)]
+    windows = [
+        window_to_dict(w)
+        for w in rolling_windows(
+            series,
+            exit_fee=exit_fee,
+            exit_fee_hold_days=exit_fee_hold_days,
+        )
+    ]
     return {
         "points": len(series),
         "first_date": series[0]["date"] if series else None,
@@ -205,6 +259,10 @@ def summarize_vault(
         "last_share_price": series[-1]["share_price"] if series else None,
         "fees": fees,
         "exit_fee_applied_in_realized": exit_fee,
+        "exit_fee_hold_days": exit_fee_hold_days,
+        "exit_fee_apy_drag_pct": round(
+            exit_fee_apy_drag(exit_fee, exit_fee_hold_days) * 100, 6
+        ),
         "offchain_rewards_excluded_from_apy": offchain_rewards or [],
         "windows": windows,
         "notes": notes or [],

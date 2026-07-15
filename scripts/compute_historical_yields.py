@@ -73,15 +73,20 @@ def main() -> int:
         max_workers=6,
     )
     write_csv(ROOT / "data" / "fluid-lite-eth" / "daily_share_price.csv", fluid_rows)
+    exit_fee_hold_days = float(fl.get("exit_fee_hold_days", 365.25))
     fluid_summary = summarize_vault(
         fluid_rows,
         exit_fee=float(fl["fees"]["exit_fee"]),
         fees=fl["fees"],
+        exit_fee_hold_days=exit_fee_hold_days,
         offchain_rewards=fl.get("offchain_rewards") or [],
         notes=[
             "Share price from ERC-4626 convertToAssets(1e18); underlying is stETH (ETH-correlated).",
             "20% performance fee is already deducted inside share price (Net).",
-            "Realized APY assumes a final withdraw and applies 0.05% exit fee once at the window end.",
+            "Realized APY = Hold APY with exit-fee drag amortized over a default 1-year hold "
+            f"({exit_fee_hold_days} days), so 0.05% exit ≈ −0.05 pp APY (not annualized over 7d/30d).",
+            "realized_return_pct still shows period wealth if withdrawing at window end; "
+            "only realized_apy uses the 1-year fee amortization.",
             "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
             "Vaults are independent; no comparison metrics are produced against EarnETH.",
         ],
@@ -125,15 +130,18 @@ def main() -> int:
         },
     }
     exit_fee = fee_params["redeemFeeD6"] / 1e6  # 0 on-chain today
+    exit_fee_hold_days = float(le.get("exit_fee_hold_days", 365.25))
     earn_summary = summarize_vault(
         earn_rows,
         exit_fee=exit_fee,
         fees=fees,
+        exit_fee_hold_days=exit_fee_hold_days,
         offchain_rewards=le.get("offchain_rewards") or [],
         notes=[
             "Share price derived from Mellow oracle ETH report: eth_per_share = 1e18 / (priceD18/1e18).",
             "1% protocol (platform) fee and 10% performance fee are minted as vault shares on oracle reports; already in net share price.",
             "On-chain depositFeeD6=0 and redeemFeeD6=0 at snapshot time; realized ≈ hold for redeem fee.",
+            "Exit-fee APY drag (if any) amortizes over a default 1-year hold, same as Fluid Lite.",
             "Mellow Points, Obol, and SSV rewards are listed under offchain_rewards and are NOT included in APY.",
             "Vaults are independent; no comparison metrics are produced against Fluid Lite.",
         ],

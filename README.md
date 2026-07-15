@@ -12,7 +12,8 @@ Vaults are processed **separately** — no comparison / ranking / relative metri
 | Decision | Choice |
 |----------|--------|
 | Relationship between vaults | Independent (no cross-vault comparison) |
-| Withdrawal assumption | User eventually withdraws → Fluid **0.05% exit fee** included in **realized** APY |
+| Withdrawal assumption | User eventually withdraws → Fluid **0.05% exit fee** in **realized** APY |
+| Exit-fee APY amortization | Default **1-year hold** (`exit_fee_hold_days: 365.25`) → ~**−0.05 pp** APY |
 | EarnETH off-chain rewards | **Mellow Points / Obol / SSV listed separately**, excluded from main APY |
 | Data freshness | **One-shot historical pull only**; re-run only on explicit request |
 
@@ -23,7 +24,7 @@ Vaults are processed **separately** — no comparison / ranking / relative metri
 | Fee | Rate | How handled |
 |-----|------|-------------|
 | Performance | 20% of net profits | Already inside share price / Net APY |
-| Exit | 0.05% | Applied once at window end in **realized** APY |
+| Exit | 0.05% | Realized APY: drag amortized over default **1-year** hold (~−0.05 pp) |
 | Management | 0% | — |
 
 Source: [Fluid Lite fees](https://lite.guides.instadapp.io/information/fees)
@@ -59,9 +60,15 @@ Sources: [Lido Earn UI](https://stake.lido.fi/earn/eth/deposit), on-chain `FeeMa
 
 ```
 hold_return     = share_price_T1 / share_price_T0 - 1
-realized_price  = share_price_T1 * (1 - exit_fee)   # Fluid exit 0.05%; EarnETH redeem 0
-realized_return = realized_price / share_price_T0 - 1
-APY             = (1 + return)^(365.25 / days) - 1
+hold_apy        = (1 + hold_return)^(365.25 / window_days) - 1
+
+# Exit fee → APY: amortize over default 1-year hold (not the measurement window)
+exit_fee_hold_days = 365.25
+realized_apy    = (1 + hold_apy) * (1 - exit_fee)^(365.25 / exit_fee_hold_days) - 1
+# Fluid: exit_fee=0.05% → drag ≈ 0.05 pp on every window
+
+realized_return = share_price_T1 * (1 - exit_fee) / share_price_T0 - 1
+# period wealth if withdrawing at window end (informational; not used for realized_apy)
 ```
 
 Windows: **7d / 30d / 90d / inception** (when enough history exists).
@@ -100,7 +107,7 @@ results/RESULTS.md
 
 See `results/RESULTS.md` for the latest one-shot numbers.
 
-**Note on Fluid exit fee:** realized APY applies the 0.05% exit fee once at the window end, then annualizes. On short windows (e.g. 7d) this one-time haircut dominates the period return and **understates** annualized realized APY — use hold APY for short mark-to-market views and realized for deposit→withdraw (esp. inception).
+**Exit fee on APY:** a one-time 0.05% withdraw fee is converted to APY drag assuming a **default 1-year hold**, so impact is ~**−0.05 pp** on every window (7d/30d/90d/inception). Period `realized_return` still reflects withdrawing at the window end; only `realized_apy` uses the 1-year amortization.
 
 Requires an Ethereum **archive** RPC (default in `config/vaults.yaml`: `https://eth.drpc.org`).
 

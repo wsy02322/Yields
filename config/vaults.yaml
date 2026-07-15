@@ -23,6 +23,9 @@ vaults:
       performance_fee: 0.20          # already reflected in share price / Net APY
       exit_fee: 0.0005               # charged on withdraw; included in realized APY
       management_fee: 0.0
+    # Exit fee → APY drag assumes a default 1-year hold (not the measurement window).
+    # So 0.05% exit ≈ −0.05 pp APY, independent of 7d/30d/90d window length.
+    exit_fee_hold_days: 365.25
     # Primary APY assumes user eventually withdraws (exit fee applied once at end).
     assume_final_withdraw: true
     offchain_rewards: []
