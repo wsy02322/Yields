@@ -25,9 +25,91 @@ Gross APY  = strategy yield before the 20% performance cut
 Net APY    = Gross APY × (1 − 0.20)   # what the UI labels “Net APY”
 ```
 
-- **Net APY is forward-looking** (current leverage / supply–borrow spread estimate), not a trailing share-price APY.
 - **Net APY does not subtract the 0.05% exit fee** (exit fee applies only on withdraw).
-- Yield accrues via rising `exchangePrice` / ERC-4626 share price (`convertToAssets`).
+- Yield *actually accrues* via rising `exchangePrice` / ERC-4626 share price (`convertToAssets`) — that path is separate from the UI APY number.
+
+## “前瞻估算”是什么意思
+
+UI / API 上的 Net·Gross APY **不是**过去 7/30 天份额价格涨了多少再年化，而是：
+
+> 用**此刻**各借贷市场的供给/借款利率，乘以**此刻**金库存量仓位，假设这些利率与仓位结构保持不变，推算一年能赚多少。
+
+| | UI Net/Gross APY | 本仓库 Hold APY |
+|--|------------------|-----------------|
+| 输入 | 当前各协议 supply/borrow rate + 当前仓位 | 历史每日 `exchangePrice` |
+| 性质 | 瞬时 / 前瞻（spot → annualized） | 事后 / 回顾（realized path） |
+| 会变的原因 | 利率一变、rebalance 一变，数字立刻变 | 只有份额净值真涨了才变 |
+| 本次对照 | Gross ≈ 7.30%、Net ≈ 5.84% | 近 7d Hold ≈ 3.19%（份额路径） |
+
+所以叫「当前策略的前瞻估算」：描述的是**现在这套杠杆策略在现行利率下的预期年化**，不是「你过去已经拿到的年化」。
+
+## 数据源
+
+唯一公开产品源（UI 同源）：
+
+```
+GET https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults
+```
+
+| 字段 | 含义 | 更底层从哪来（推断） |
+|------|------|----------------------|
+| `protocolsInfo.*.stETHSupply` / `eETHSupply` / `wETHBorrow` / … | 各协议当前仓位规模（ETH 计量） | 金库 DSA 在 Aave V3 / Compound III / Spark / Fluid 等的 on-chain 余额 |
+| `protocolsInfo.*.stETHSupplyYield` / `eETHSupplyYield` / `wETHBorrowYield` / … | 各市场**当前**供给/借款 APY（%） | 各借贷协议实时利率（+ weETH 等再质押收益） |
+| `stETH.netStakingApr` / `grossStakingApr` | Lido 质押 APR | Lido / stETH 预言机类数据 |
+| `vaultTVLInAsset` | 金库净资产（equity） | ≈ 总抵押 − 总债务（与 `totalStEthBal − wethDebtAmt` 一致） |
+| `revenueFee` | 绩效费 %（20） | 与链上 `revenueFeePercentage` 一致 |
+| `apy.apyWithFee` | **Gross APY** | 后端按仓位×利率汇总（见下） |
+| `apy.apyWithoutFee` | **Net APY** | `apyWithFee × (1 − revenueFee/100)` |
+
+Instadapp **未开源**这段汇总代码；DefiLlama 只是读取上述 API 的 `apyWithoutFee`，自己不算。
+
+## 算法（逆向复现，与 API 误差约 0.02pp）
+
+对每个协议仓位（用 API 里 **ETH 计量**的供给/借款字段，避免把 wstETH/weETH 与 stETH/eETH 重复计数）：
+
+```
+protocol_pnl = Σ (supplyAmt_i × supplyApy_i)
+             − Σ (borrowAmt_j × borrowApy_j)
+             [+ dexYield × notional   # Fluid DEX 仓可选]
+```
+
+其中 `supplyApy` / `borrowApy` 已是百分比形式的年化利率（如 `2.25` 表示 2.25%）。
+
+未部署进杠杆策略的资金（约 TVL 的 35–40%，含提款缓冲等）：
+
+```
+idle = vaultTVLInAsset − Σ protocol_netAssets
+idle_pnl ≈ idle × stETH.netStakingApr
+```
+
+汇总：
+
+```
+Gross APY ≈ (Σ protocol_pnl + idle_pnl) / vaultTVLInAsset
+Net APY   = Gross APY × (1 − 0.20)
+```
+
+杠杆直觉（单一市场时等价写法）：
+
+```
+r = debt / collateral
+Gross_i ≈ (supplyApy − r × borrowApy) / (1 − r)
+```
+
+多协议时就是按金额加权的同一思想。
+
+### 数值核对（与 `official_api_snapshot.json` 同日逻辑）
+
+- `Σ protocol_pnl / Σ netAssets` ≈ 部署资金的杠杆净利率（约 10% 量级）
+- 加上 idle @ `stETH.netStakingApr` 后 ÷ TVL → Gross ≈ **7.27–7.28%**
+- API `apyWithFee` ≈ **7.30%**（残差 ≈ 0.02pp，可能来自 KING/奖励估算或 DEX/闲置资金的细账）
+- `apyWithFee × 0.8` **精确等于** `apyWithoutFee`
+
+### 不是什么
+
+- ❌ 不是过去 N 天 `exchangePrice` 涨幅年化  
+- ❌ 不是链上某个 `apy()` view（合约无此函数）  
+- ❌ Net 已扣 20% 绩效费，但 **未扣** 0.05% 退出费
 
 ## Source authenticity checklist
 
