@@ -4,8 +4,17 @@
     "tip_block": 25539401,
     "tip_timestamp": 1784134739,
     "tip_date_utc": "2026-07-15",
-    "refresh_policy": "historical one-shot only; no automatic updates"
+    "refresh_policy": "historical one-shot only; no automatic updates",
+    "recomputed_at_utc": "2026-07-15T17:50:14.438109+00:00",
+    "recompute_mode": "from_existing_csv"
   },
+  "shared_windows": [
+    {
+      "label": "since_earneth",
+      "start_date": "2026-02-02",
+      "note": "From Lido EarnETH deployment through latest snapshot; applied to both vaults independently."
+    }
+  ],
   "vaults": {
     "fluid_lite_eth": {
       "points": 881,
@@ -61,6 +70,19 @@
           "realized_apy_pct": 2.41059
         },
         {
+          "window": "since_earneth",
+          "start_date": "2026-02-02",
+          "end_date": "2026-07-15",
+          "days": 163.0,
+          "start_share_price": 1.2010888877689558,
+          "end_share_price_hold": 1.2142550208512395,
+          "end_share_price_realized": 1.213647893340814,
+          "hold_return_pct": 1.096183,
+          "realized_return_pct": 1.045635,
+          "hold_apy_pct": 2.473044,
+          "realized_apy_pct": 2.358269
+        },
+        {
           "window": "inception",
           "start_date": "2024-02-16",
           "end_date": "2026-07-15",
@@ -79,7 +101,7 @@
         "20% performance fee is already deducted inside share price (Net).",
         "Realized APY assumes a final withdraw and applies 0.05% exit fee once at the window end.",
         "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
-        "Vaults are independent; no comparison metrics are produced against EarnETH."
+        "Window since_earneth is the shared calendar window from EarnETH deployment; vaults remain independent."
       ]
     },
     "lido_earn_eth": {
@@ -160,6 +182,19 @@
           "realized_apy_pct": 2.684663
         },
         {
+          "window": "since_earneth",
+          "start_date": "2026-02-02",
+          "end_date": "2026-07-15",
+          "days": 163.0,
+          "start_share_price": 1.0,
+          "end_share_price_hold": 1.0119116880589403,
+          "end_share_price_realized": 1.0119116880589403,
+          "hold_return_pct": 1.191169,
+          "realized_return_pct": 1.191169,
+          "hold_apy_pct": 2.688912,
+          "realized_apy_pct": 2.688912
+        },
+        {
           "window": "inception",
           "start_date": "2026-02-02",
           "end_date": "2026-07-15",
@@ -178,7 +213,7 @@
         "1% protocol (platform) fee and 10% performance fee are minted as vault shares on oracle reports; already in net share price.",
         "On-chain depositFeeD6=0 and redeemFeeD6=0 at snapshot time; realized \u2248 hold for redeem fee.",
         "Mellow Points, Obol, and SSV rewards are listed under offchain_rewards and are NOT included in APY.",
-        "Vaults are independent; no comparison metrics are produced against Fluid Lite."
+        "Window since_earneth matches vault inception for EarnETH; same calendar window is also reported for Fluid Lite."
       ]
     }
   }

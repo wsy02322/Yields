@@ -9,6 +9,13 @@ sampling:
   interval: daily
   timezone: UTC
 
+# Shared calendar windows applied to every vault that has data covering the start.
+# "since_earneth" aligns both vaults to EarnETH's deployment date (not a ranking).
+shared_windows:
+  - label: since_earneth
+    start_date: "2026-02-02"
+    note: "From Lido EarnETH deployment through latest snapshot; applied to both vaults independently."
+
 vaults:
   fluid_lite_eth:
     name: Fluid Lite ETH Vault

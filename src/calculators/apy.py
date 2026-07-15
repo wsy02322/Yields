@@ -115,7 +115,13 @@ def rolling_windows(
     *,
     exit_fee: float,
     windows_days: list[int] | None = None,
+    fixed_windows: list[dict[str, str]] | None = None,
 ) -> list[WindowReturn]:
+    """Build rolling + optional shared fixed windows + vault inception.
+
+    fixed_windows entries: {"label": "...", "start_date": "YYYY-MM-DD"}
+    end date is always the series last date.
+    """
     if not series:
         return []
     windows_days = windows_days or [7, 30, 90]
@@ -140,7 +146,24 @@ def rolling_windows(
         if w is not None:
             out.append(w)
 
-    # Inception
+    # Shared / named fixed windows (e.g. since EarnETH launch for both vaults)
+    for fw in fixed_windows or []:
+        label = fw["label"]
+        start_date = fw["start_date"]
+        if series[0]["date"] > start_date:
+            # Series starts after the fixed window — skip
+            continue
+        w = compute_window(
+            series,
+            label=label,
+            start_date=start_date,
+            end_date=end_date,
+            exit_fee=exit_fee,
+        )
+        if w is not None:
+            out.append(w)
+
+    # Vault-specific inception (full available history for this vault)
     w = compute_window(
         series,
         label="inception",
@@ -149,7 +172,12 @@ def rolling_windows(
         exit_fee=exit_fee,
     )
     if w is not None:
-        out.append(w)
+        # Avoid duplicate when inception coincides with a fixed window
+        if not any(
+            x.label == w.label and x.start_date == w.start_date and x.end_date == w.end_date
+            for x in out
+        ):
+            out.append(w)
     return out
 
 
@@ -195,8 +223,12 @@ def summarize_vault(
     fees: dict[str, Any],
     offchain_rewards: list[dict[str, Any]] | None = None,
     notes: list[str] | None = None,
+    fixed_windows: list[dict[str, str]] | None = None,
 ) -> dict[str, Any]:
-    windows = [window_to_dict(w) for w in rolling_windows(series, exit_fee=exit_fee)]
+    windows = [
+        window_to_dict(w)
+        for w in rolling_windows(series, exit_fee=exit_fee, fixed_windows=fixed_windows)
+    ]
     return {
         "points": len(series),
         "first_date": series[0]["date"] if series else None,

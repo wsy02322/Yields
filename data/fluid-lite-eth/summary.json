@@ -52,6 +52,19 @@
       "realized_apy_pct": 2.41059
     },
     {
+      "window": "since_earneth",
+      "start_date": "2026-02-02",
+      "end_date": "2026-07-15",
+      "days": 163.0,
+      "start_share_price": 1.2010888877689558,
+      "end_share_price_hold": 1.2142550208512395,
+      "end_share_price_realized": 1.213647893340814,
+      "hold_return_pct": 1.096183,
+      "realized_return_pct": 1.045635,
+      "hold_apy_pct": 2.473044,
+      "realized_apy_pct": 2.358269
+    },
+    {
       "window": "inception",
       "start_date": "2024-02-16",
       "end_date": "2026-07-15",
@@ -70,6 +83,6 @@
     "20% performance fee is already deducted inside share price (Net).",
     "Realized APY assumes a final withdraw and applies 0.05% exit fee once at the window end.",
     "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
-    "Vaults are independent; no comparison metrics are produced against EarnETH."
+    "Window since_earneth is the shared calendar window from EarnETH deployment; vaults remain independent."
   ]
 }

@@ -62,7 +62,9 @@ realized_return = realized_price / share_price_T0 - 1
 APY             = (1 + return)^(365.25 / days) - 1
 ```
 
-Windows: **7d / 30d / 90d / inception** (when enough history exists).
+Windows: **7d / 30d / 90d / since_earneth / inception** (when enough history exists).
+
+`since_earneth` is a **shared calendar window** from EarnETH deployment (`2026-02-02`) through the latest snapshot, applied independently to each vault (not a ranking). For EarnETH it coincides with vault inception.
 
 Daily snapshots are UTC end-of-day approximations via archive `eth_call` at estimated blocks.
 
