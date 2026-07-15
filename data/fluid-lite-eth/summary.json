@@ -26,6 +26,19 @@
       "realized_apy_pct": 0.528063
     },
     {
+      "window": "14d",
+      "start_date": "2026-07-01",
+      "end_date": "2026-07-15",
+      "days": 14.0,
+      "start_share_price": 1.2129106687606337,
+      "end_share_price_hold": 1.2142550208512395,
+      "end_share_price_realized": 1.213647893340814,
+      "hold_return_pct": 0.110837,
+      "realized_return_pct": 0.060781,
+      "hold_apy_pct": 2.93222,
+      "realized_apy_pct": 1.597895
+    },
+    {
       "window": "30d",
       "start_date": "2026-06-15",
       "end_date": "2026-07-15",

@@ -8,6 +8,9 @@ sampling:
   # UTC daily snapshots at ~00:00; block is estimated then refined.
   interval: daily
   timezone: UTC
+  # Trailing windows computed for every vault.
+  # Includes 7d (Mellow/EarnETH weekly API) and 14d (Lido EarnETH UI label).
+  rolling_days: [7, 14, 30, 90]
 
 # Shared calendar windows applied to every vault that has data covering the start.
 # "since_earneth" aligns both vaults to EarnETH's deployment date (not a ranking).
@@ -15,6 +18,34 @@ shared_windows:
   - label: since_earneth
     start_date: "2026-02-02"
     note: "From Lido EarnETH deployment through latest snapshot; applied to both vaults independently."
+
+# Official UI / API display metadata used for comparison (not for ranking).
+official_apy:
+  lido_earn_eth:
+    ui_url: "https://stake.lido.fi/earn/eth/deposit"
+    ui_label: "APY* (14d avg.)"
+    ui_window_days: 14
+    api_url: "https://api.mellow.finance/v1/vaults"
+    api_vault_id: "lido-earn-eth"
+    api_window_days: 7
+    api_window_field: "apr_breakdown[0].time_range"  # 604800s = 7d
+    api_value_field: "apy"
+    notes:
+      - "Lido UI text says 14d avg.; product config apy.type=weekly and Mellow API time_range=7d."
+      - "Compare our 7d hold APY to Mellow API; also report 14d for the UI label."
+  fluid_lite_eth:
+    ui_url: "https://fluid.io/lite/1"
+    ui_label: "Net APY"
+    ui_window_days: null
+    methodology: spot_projected
+    api_url: "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults"
+    api_vault: "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78"
+    net_field: "apy.apyWithoutFee"   # Net after 20% perf fee (= Gross * 0.8)
+    gross_field: "apy.apyWithFee"    # Gross before perf fee
+    notes:
+      - "Official Net APY is a point-in-time projection from current lending/leverage rates, not a trailing share-price window."
+      - "apyWithoutFee is Net (user); apyWithFee is Gross; Net ≈ Gross * (1 - 20%)."
+      - "No official trailing window to mirror; compare spot Net vs our trailing hold APYs for context only."
 
 vaults:
   fluid_lite_eth:

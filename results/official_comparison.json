@@ -1,0 +1,82 @@
+{
+  "compared_at_utc": "2026-07-15T17:56:28.932340+00:00",
+  "share_price_as_of": {
+    "generated_at_utc": "2026-07-15T16:59:05.171114+00:00",
+    "tip_block": 25539401,
+    "tip_timestamp": 1784134739,
+    "tip_date_utc": "2026-07-15",
+    "refresh_policy": "historical one-shot only; no automatic updates",
+    "recomputed_at_utc": "2026-07-15T17:56:28.020657+00:00",
+    "recompute_mode": "from_existing_csv"
+  },
+  "vaults": {
+    "lido_earn_eth": {
+      "official": {
+        "source": "mellow_api",
+        "ui_url": "https://stake.lido.fi/earn/eth/deposit",
+        "ui_label": "APY* (14d avg.)",
+        "ui_window_days": 14,
+        "api_apy_pct": 3.86766,
+        "api_window_days": 7.0,
+        "api_updated_at": 1784133863,
+        "notes": [
+          "Lido UI text says 14d avg.; product config apy.type=weekly and Mellow API time_range=7d.",
+          "Compare our 7d hold APY to Mellow API; also report 14d for the UI label."
+        ]
+      },
+      "ours": {
+        "7d_hold_apy_pct": 3.920034,
+        "14d_hold_apy_pct": 3.841907,
+        "7d_realized_apy_pct": 3.920034,
+        "14d_realized_apy_pct": 3.841907
+      },
+      "deltas": {
+        "ours_7d_hold_minus_mellow_api": 0.052374,
+        "ours_14d_hold_minus_mellow_api": -0.025753
+      },
+      "alignment": {
+        "primary_match_window": "7d",
+        "reason": "Mellow API time_range=7d (weekly); Lido UI label is 14d avg \u2014 both windows reported.",
+        "matched_field": "hold_apy (fees already in share price; redeem fee=0)"
+      }
+    },
+    "fluid_lite_eth": {
+      "official": {
+        "source": "instadapp_lite_api",
+        "ui_url": "https://fluid.io/lite/1",
+        "ui_label": "Net APY",
+        "methodology": "spot_projected",
+        "ui_window_days": null,
+        "net_apy_pct": 5.839408505530946,
+        "gross_apy_pct": 7.299260631913682,
+        "implied_perf_fee": 0.19999999999999996,
+        "exchange_price": "1.214422443504576687",
+        "withdrawal_fee_pct": 0.05,
+        "revenue_fee_pct": 20.0,
+        "notes": [
+          "Official Net APY is a point-in-time projection from current lending/leverage rates, not a trailing share-price window.",
+          "apyWithoutFee is Net (user); apyWithFee is Gross; Net \u2248 Gross * (1 - 20%).",
+          "No official trailing window to mirror; compare spot Net vs our trailing hold APYs for context only."
+        ]
+      },
+      "ours": {
+        "7d_hold_apy_pct": 3.185953,
+        "14d_hold_apy_pct": 2.93222,
+        "30d_hold_apy_pct": 3.07243,
+        "90d_hold_apy_pct": 2.618661,
+        "since_earneth_hold_apy_pct": 2.473044,
+        "inception_hold_apy_pct": 5.326183
+      },
+      "deltas_vs_spot_net": {
+        "7d": -2.653456,
+        "14d": -2.907189,
+        "30d": -2.766979
+      },
+      "alignment": {
+        "primary_match_window": null,
+        "reason": "Official Net APY is spot/projected from live protocol rates, not a trailing share-price window \u2014 no identical window to add.",
+        "matched_field": "hold_apy is historical realized path; official Net is forward-looking rate"
+      }
+    }
+  }
+}

@@ -62,9 +62,13 @@ realized_return = realized_price / share_price_T0 - 1
 APY             = (1 + return)^(365.25 / days) - 1
 ```
 
-Windows: **7d / 30d / 90d / since_earneth / inception** (when enough history exists).
+Windows: **7d / 14d / 30d / 90d / since_earneth / inception** (when enough history exists).
 
-`since_earneth` is a **shared calendar window** from EarnETH deployment (`2026-02-02`) through the latest snapshot, applied independently to each vault (not a ranking). For EarnETH it coincides with vault inception.
+- **7d**: aligns with Mellow EarnETH API (`time_range=604800`, weekly)
+- **14d**: aligns with Lido UI label `APY* (14d avg.)`
+- `since_earneth`: shared calendar window from EarnETH deployment (`2026-02-02`)
+
+See `results/OFFICIAL_COMPARISON.md` for live official vs ours deltas.
 
 Daily snapshots are UTC end-of-day approximations via archive `eth_call` at estimated blocks.
 
@@ -82,7 +86,9 @@ Daily snapshots are UTC end-of-day approximations via archive `eth_call` at esti
 
 ```bash
 pip install -r requirements.txt
-python scripts/compute_historical_yields.py
+python scripts/compute_historical_yields.py              # full on-chain pull
+python scripts/compute_historical_yields.py --recompute-only
+python scripts/compare_official_apy.py                   # vs live official APYs
 ```
 
 ## Outputs

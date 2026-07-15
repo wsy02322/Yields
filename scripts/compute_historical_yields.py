@@ -93,6 +93,7 @@ def main() -> int:
 
     cfg = yaml.safe_load((ROOT / "config" / "vaults.yaml").read_text())
     fixed_windows = shared_windows_from_cfg(cfg)
+    rolling_days = list((cfg.get("sampling") or {}).get("rolling_days") or [7, 14, 30, 90])
     prev: dict = {}
 
     if args.recompute_only:
@@ -153,12 +154,14 @@ def main() -> int:
         fees=fl["fees"],
         offchain_rewards=fl.get("offchain_rewards") or [],
         fixed_windows=fixed_windows,
+        windows_days=rolling_days,
         notes=[
             "Share price from ERC-4626 convertToAssets(1e18); underlying is stETH (ETH-correlated).",
             "20% performance fee is already deducted inside share price (Net).",
             "Realized APY assumes a final withdraw and applies 0.05% exit fee once at the window end.",
             "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
             "Window since_earneth is the shared calendar window from EarnETH deployment; vaults remain independent.",
+            "14d window added to align with Lido EarnETH UI label; Fluid official Net APY is spot, not trailing.",
         ],
     )
     write_json(ROOT / "data" / "fluid-lite-eth" / "summary.json", fluid_summary)
@@ -237,12 +240,14 @@ def main() -> int:
         fees=fees,
         offchain_rewards=le.get("offchain_rewards") or [],
         fixed_windows=fixed_windows,
+        windows_days=rolling_days,
         notes=[
             "Share price derived from Mellow oracle ETH report: eth_per_share = 1e18 / (priceD18/1e18).",
             "1% protocol (platform) fee and 10% performance fee are minted as vault shares on oracle reports; already in net share price.",
             "On-chain depositFeeD6=0 and redeemFeeD6=0 at snapshot time; realized ≈ hold for redeem fee.",
             "Mellow Points, Obol, and SSV rewards are listed under offchain_rewards and are NOT included in APY.",
             "Window since_earneth matches vault inception for EarnETH; same calendar window is also reported for Fluid Lite.",
+            "7d aligns with Mellow API weekly time_range; 14d aligns with Lido UI 'APY* (14d avg.)' label.",
         ],
     )
     write_json(ROOT / "data" / "lido-earn-eth" / "summary.json", earn_summary)

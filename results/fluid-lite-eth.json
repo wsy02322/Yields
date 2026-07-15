@@ -5,7 +5,7 @@
     "tip_timestamp": 1784134739,
     "tip_date_utc": "2026-07-15",
     "refresh_policy": "historical one-shot only; no automatic updates",
-    "recomputed_at_utc": "2026-07-15T17:50:14.438109+00:00",
+    "recomputed_at_utc": "2026-07-15T17:56:28.020657+00:00",
     "recompute_mode": "from_existing_csv"
   },
   "points": 881,
@@ -33,6 +33,19 @@
       "realized_return_pct": 0.010094,
       "hold_apy_pct": 3.185953,
       "realized_apy_pct": 0.528063
+    },
+    {
+      "window": "14d",
+      "start_date": "2026-07-01",
+      "end_date": "2026-07-15",
+      "days": 14.0,
+      "start_share_price": 1.2129106687606337,
+      "end_share_price_hold": 1.2142550208512395,
+      "end_share_price_realized": 1.213647893340814,
+      "hold_return_pct": 0.110837,
+      "realized_return_pct": 0.060781,
+      "hold_apy_pct": 2.93222,
+      "realized_apy_pct": 1.597895
     },
     {
       "window": "30d",

@@ -124,7 +124,7 @@ def rolling_windows(
     """
     if not series:
         return []
-    windows_days = windows_days or [7, 30, 90]
+    windows_days = windows_days or [7, 14, 30, 90]
     end = series[-1]
     end_date = end["date"]
     end_dt = _parse_date(end_date)
@@ -224,10 +224,16 @@ def summarize_vault(
     offchain_rewards: list[dict[str, Any]] | None = None,
     notes: list[str] | None = None,
     fixed_windows: list[dict[str, str]] | None = None,
+    windows_days: list[int] | None = None,
 ) -> dict[str, Any]:
     windows = [
         window_to_dict(w)
-        for w in rolling_windows(series, exit_fee=exit_fee, fixed_windows=fixed_windows)
+        for w in rolling_windows(
+            series,
+            exit_fee=exit_fee,
+            fixed_windows=fixed_windows,
+            windows_days=windows_days,
+        )
     ]
     return {
         "points": len(series),
