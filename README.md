@@ -98,6 +98,32 @@ python scripts/compare_fluid_official_apy.py
 
 ## Outputs
 
+每次在 **Cursor Cloud Agent** 或 CI 上运行脚本后，结果会**直接写入仓库**（提交到 GitHub），你本地不需要跑计算。
+
+| 用途 | 路径 |
+|------|------|
+| 人类可读摘要 | `results/RESULTS.md` |
+| 两金库总览 JSON | `results/summary.json` |
+| Fluid 明细 JSON | `results/fluid-lite-eth.json` |
+| Fluid vs 官网 Net 对比 | `results/fluid-lite-official-apy-proxy.json` |
+| EarnETH 明细 JSON | `results/lido-earn-eth.json` |
+| 原始日频份额价 CSV | `data/*/daily_share_price.csv` |
+| 各金库汇总 + 窗口 APY | `data/*/summary.json` |
+| 官网 API 快照 | `data/fluid-lite-eth/official_api_snapshot.json` |
+| 官网对比明细 | `data/fluid-lite-eth/official_apy_proxy_comparison.json` |
+
+**优先看：** `results/RESULTS.md` 或 `results/summary.json` 里的 `as_of.generated_at_utc` 确认刷新时间。
+
+运行命令（仅在 Cloud / 服务器上执行，非用户本机）：
+
+```bash
+# 全量历史拉取（较慢，需 archive RPC）
+python scripts/compute_historical_yields.py
+
+# 仅刷新官网 Net/Gross + 用现有 CSV 重算对比（较快）
+python scripts/compare_fluid_official_apy.py
+```
+
 ```
 data/fluid-lite-eth/daily_share_price.csv
 data/fluid-lite-eth/summary.json

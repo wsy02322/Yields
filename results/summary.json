@@ -1,10 +1,11 @@
 {
   "as_of": {
-    "generated_at_utc": "2026-07-16T06:00:06.798494+00:00",
+    "generated_at_utc": "2026-07-16T06:51:59.466629+00:00",
     "tip_block": 25543295,
     "tip_timestamp": 1784181599,
     "tip_date_utc": "2026-07-16",
-    "refresh_policy": "historical one-shot only; no automatic updates"
+    "refresh_policy": "historical one-shot only; no automatic updates",
+    "refreshed_by": "cursor-cloud-agent"
   },
   "vaults": {
     "fluid_lite_eth": {
@@ -127,11 +128,11 @@
           "annualized_pct": 5.164705,
           "notes": "Latest completed 1-day Hold APY (compound): R = share_price_T / share_price_{T\u22121} \u2212 1; APY = (1+R)^(365.25/1) \u2212 1. Uses the last closed EOD\u2192EOD day (skips an incomplete tip-day snapshot when that tip day has ~0 return). No exit fee (matches UI Net fee treatment: performance fee already in share price; exit fee not in Net APY).",
           "apy_pct": 5.164705,
-          "delta_vs_official_net_pp": -0.65575,
-          "abs_delta_vs_official_net_pp": 0.65575
+          "delta_vs_official_net_pp": -0.657697,
+          "abs_delta_vs_official_net_pp": 0.657697
         },
-        "official_net_apy_pct": 5.820454,
-        "official_gross_apy_pct": 7.275568,
+        "official_net_apy_pct": 5.822402,
+        "official_gross_apy_pct": 7.278002,
         "detail_file": "data/fluid-lite-eth/official_apy_proxy_comparison.json"
       }
     },
@@ -174,6 +175,21 @@
         }
       ],
       "windows": [
+        {
+          "window": "1d",
+          "start_date": "2026-07-14",
+          "end_date": "2026-07-15",
+          "days": 1.0,
+          "start_share_price": 1.0118720273046637,
+          "end_share_price_hold": 1.0119116880589403,
+          "end_share_price_realized": 1.0119116880589403,
+          "hold_return_pct": 0.00392,
+          "realized_return_pct": 0.00392,
+          "hold_apy_pct": 1.441881,
+          "realized_apy_pct": 1.441881,
+          "preferred_metric": "hold_or_realized",
+          "realized_apy_caution": false
+        },
         {
           "window": "7d",
           "start_date": "2026-07-09",
@@ -241,6 +257,8 @@
         "On-chain depositFeeD6=0 and redeemFeeD6=0 at snapshot time; realized \u2248 hold for redeem fee.",
         "Mellow Points, Obol, and SSV rewards are listed under offchain_rewards and are NOT included in APY.",
         "Vaults are independent; no comparison metrics are produced against Fluid Lite.",
+        "Standard APY uses compound annualization: (1+R)^(365.25/days)\u22121.",
+        "Prefer hold_apy_pct for short mark-to-market windows (\u226430d); realized_apy_pct is for deposit\u2192withdraw (especially inception).",
         "Standard APY uses compound annualization: (1+R)^(365.25/days)\u22121.",
         "Prefer hold_apy_pct for short mark-to-market windows (\u226430d); realized_apy_pct is for deposit\u2192withdraw (especially inception)."
       ]

@@ -38,6 +38,21 @@
   ],
   "windows": [
     {
+      "window": "1d",
+      "start_date": "2026-07-14",
+      "end_date": "2026-07-15",
+      "days": 1.0,
+      "start_share_price": 1.0118720273046637,
+      "end_share_price_hold": 1.0119116880589403,
+      "end_share_price_realized": 1.0119116880589403,
+      "hold_return_pct": 0.00392,
+      "realized_return_pct": 0.00392,
+      "hold_apy_pct": 1.441881,
+      "realized_apy_pct": 1.441881,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
+    },
+    {
       "window": "7d",
       "start_date": "2026-07-09",
       "end_date": "2026-07-16",
@@ -104,6 +119,8 @@
     "On-chain depositFeeD6=0 and redeemFeeD6=0 at snapshot time; realized \u2248 hold for redeem fee.",
     "Mellow Points, Obol, and SSV rewards are listed under offchain_rewards and are NOT included in APY.",
     "Vaults are independent; no comparison metrics are produced against Fluid Lite.",
+    "Standard APY uses compound annualization: (1+R)^(365.25/days)\u22121.",
+    "Prefer hold_apy_pct for short mark-to-market windows (\u226430d); realized_apy_pct is for deposit\u2192withdraw (especially inception).",
     "Standard APY uses compound annualization: (1+R)^(365.25/days)\u22121.",
     "Prefer hold_apy_pct for short mark-to-market windows (\u226430d); realized_apy_pct is for deposit\u2192withdraw (especially inception)."
   ]

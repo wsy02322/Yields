@@ -118,11 +118,11 @@
       "annualized_pct": 5.164705,
       "notes": "Latest completed 1-day Hold APY (compound): R = share_price_T / share_price_{T\u22121} \u2212 1; APY = (1+R)^(365.25/1) \u2212 1. Uses the last closed EOD\u2192EOD day (skips an incomplete tip-day snapshot when that tip day has ~0 return). No exit fee (matches UI Net fee treatment: performance fee already in share price; exit fee not in Net APY).",
       "apy_pct": 5.164705,
-      "delta_vs_official_net_pp": -0.65575,
-      "abs_delta_vs_official_net_pp": 0.65575
+      "delta_vs_official_net_pp": -0.657697,
+      "abs_delta_vs_official_net_pp": 0.657697
     },
-    "official_net_apy_pct": 5.820454,
-    "official_gross_apy_pct": 7.275568,
+    "official_net_apy_pct": 5.822402,
+    "official_gross_apy_pct": 7.278002,
     "detail_file": "data/fluid-lite-eth/official_apy_proxy_comparison.json"
   }
 }
