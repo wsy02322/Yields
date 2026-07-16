@@ -106,13 +106,17 @@ def main() -> int:
         write_json(results_fluid, rf)
 
     proxy = comparison["recommended_proxy"]
+    proxy_pct = proxy.get("annualized_pct", proxy.get("apr_pct", proxy.get("apy_pct")))
     print(
-        f"recommended {proxy['name']}: {proxy['apy_pct']:.6f}% "
+        f"recommended {proxy['name']} ({proxy.get('rate_kind', '?')}): "
+        f"{proxy_pct:.6f}% "
         f"(Δ vs Net {proxy['delta_vs_official_net_pp']:+.4f} pp)"
     )
     best = comparison["empirical_best_on_this_series"]
+    best_pct = best.get("annualized_pct", best.get("apr_pct", best.get("apy_pct")))
     print(
-        f"empirical best {best['name']}: {best['apy_pct']:.6f}% "
+        f"empirical best {best['name']} ({best.get('rate_kind', '?')}): "
+        f"{best_pct:.6f}% "
         f"(abs Δ {best['abs_delta_vs_official_net_pp']:.4f} pp, "
         f"matches_recommended={best['matches_recommended']})"
     )

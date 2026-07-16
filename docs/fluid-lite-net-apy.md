@@ -1,6 +1,6 @@
 # Fluid Lite Net APY — official meaning, sources, authenticity
 
-Checked: **2026-07-15 UTC**. Scope: Fluid Lite **ETH vault** (`iETHv2`, `0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78`) unless noted.
+Checked: **2026-07-16 UTC**. Scope: Fluid Lite **ETH vault** (`iETHv2`, `0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78`) unless noted.
 
 ## What the official site says
 
@@ -39,7 +39,7 @@ UI / API 上的 Net·Gross APY **不是**过去 7/30 天份额价格涨了多少
 | 输入 | 当前各协议 supply/borrow rate + 当前仓位 | 历史每日 `exchangePrice` |
 | 性质 | 瞬时 / 前瞻（spot → annualized） | 事后 / 回顾（realized path） |
 | 会变的原因 | 利率一变、rebalance 一变，数字立刻变 | 只有份额净值真涨了才变 |
-| 本次对照 | Gross ≈ 7.30%、Net ≈ 5.84% | 近 7d Hold ≈ 3.19%（份额路径） |
+| 本次对照 | Gross ≈ 7.28%、Net ≈ 5.82% | 近 7d Hold ≈ 3.46%（份额路径） |
 
 所以叫「当前策略的前瞻估算」：描述的是**现在这套杠杆策略在现行利率下的预期年化**，不是「你过去已经拿到的年化」。
 
@@ -128,8 +128,8 @@ See `data/fluid-lite-eth/official_api_snapshot.json`.
 
 | Field | Value |
 |-------|-------|
-| `apyWithFee` (Gross) | ~7.30% |
-| `apyWithoutFee` (Net) | ~5.84% |
+| `apyWithFee` (Gross) | ~7.28% |
+| `apyWithoutFee` (Net) | ~5.82% |
 | `revenueFee` | 20 |
 | `withdrawalFee` | 0.05 |
 | On-chain `revenueFeePercentage` | 200000 / 1e6 = 20% |
@@ -148,7 +148,7 @@ DefiLlama correctly consumes `apyWithoutFee` (Net).
 
 ## Authenticity caveats (not forgeries — definition gaps)
 
-1. **Forward vs trailing.** UI/API Net APY ≈ current strategy estimate. Trailing share-price Hold APY in this repo (7d/30d/90d) can be lower/higher; **`inception_hold_simple` (~5.53%)** is the closest trailing proxy to live Net (~5.84%) but remains a different metric.
+1. **Forward vs trailing.** UI/API Net APY ≈ current strategy estimate. Trailing share-price Hold APY in this repo (7d/30d/90d) can be lower/higher; **`inception_hold_apr` (~5.53%, simple/linear APR — not compound APY)** is the closest trailing proxy to live Net (~5.82%) but remains a different metric.
 2. **Exit fee not in Net APY.** Realized deposit→withdraw return must haircut 0.05% once (this repo’s `realized` APY).
 3. **USD vault.** Official: no performance fee; rate is governance floor / reward rate (`fixedRate` / `rate` in lite-usd API). Some third-party blogs wrongly claim a 20% USD performance fee — **not** supported by official fees docs or on-chain ETH fee getters for USD.
 4. **Aggregator variance.** StakingBoard / AprScope / etc. may lag or mix Gross/Net; prefer official API or on-chain share price.
@@ -161,28 +161,28 @@ DefiLlama correctly consumes `apyWithoutFee` (Net).
 | UI **Gross APY** | No | No | Forward estimate |
 | Repo **Hold APY** | Yes (in share price) | No | Trailing `exchangePrice` |
 | Repo **Realized APY** | Yes | Yes (once at end) | Trailing + exit |
-| Repo **`inception_hold_simple`** (official proxy) | Yes (in share price) | No | Trailing inception, simple annualize |
+| Repo **`inception_hold_apr`** (official proxy) | Yes (in share price) | No | Trailing inception, **APR** `R×365.25/d` (not APY) |
 
 Share price is already **net of** the 20% performance fee because revenue is skimmed into `revenue()` rather than remaining in user share value.
 
 ## Closest historical proxy vs UI Net APY
 
-Official Net is **not** recoverable exactly from share prices alone (it is spot rates × positions). Empirically, among trailing Hold APYs on this series (7d / 30d / 90d / 180d / 365d / inception × compound|simple):
+Official Net is **not** recoverable exactly from share prices alone (it is spot rates × positions). Empirically, among trailing Hold metrics on this series (7d / 30d / 90d / 180d / 365d / inception × compound APY | simple APR):
 
-| Rank | Historical algorithm | APY (2026-07-15) | Δ vs Net (~5.84%) |
+| Rank | Historical algorithm | Rate (2026-07-16) | Δ vs Net (~5.82%) |
 |------|----------------------|------------------|-------------------|
-| 1 | **Inception Hold + simple** `R × 365.25/days` | **5.53%** | **−0.31 pp** |
-| 2 | Inception Hold + compound `(1+R)^(365.25/days)−1` | 5.33% | −0.51 pp |
-| … | 365d / 90d / 30d / 7d Hold | ~3.6% → ~3.2% | −2.2 → −2.7 pp |
+| 1 | **Inception Hold + APR** `R × 365.25/days` | **5.53% APR** | **−0.29 pp** |
+| 2 | Inception Hold + compound APY `(1+R)^(365.25/days)−1` | 5.33% APY | −0.49 pp |
+| … | 365d / 90d / 30d / 7d Hold | ~3.6% → ~3.5% | −2.2 → −2.4 pp |
 
 **Defined proxy (for comparison only):**
 
 ```
 R   = share_price_T / share_price_0 − 1     # inception window, no exit fee
-APY = R × (365.25 / days)                  # simple / linear annualization
+APR = R × (365.25 / days)                  # simple / linear — NOT compound APY
 ```
 
-Name: `inception_hold_simple`. Fee treatment matches UI Net (perf fee in price, exit fee excluded). It is **not** a reconstruction of the forward formula — only the trailing metric that lands nearest Net on this dataset.
+Name: `inception_hold_apr` (legacy alias: `inception_hold_simple`). Fee treatment matches UI Net (perf fee in price, exit fee excluded). It is **not** a reconstruction of the forward formula — only the trailing metric that lands nearest Net on this dataset. Do **not** label this APR as APY.
 
 Reproduce / refresh comparison (uses existing CSV + live API; no archive re-pull):
 
@@ -194,4 +194,4 @@ Outputs: `data/fluid-lite-eth/official_apy_proxy_comparison.json`, `results/flui
 
 ## Bottom line
 
-Official **Net APY** for Fluid Lite ETH is authentic: documented on the Lite fees page, exposed by Instadapp’s own API, and independently confirmed by on-chain `revenueFeePercentage` / `withdrawalFeePercentage`. Treat it as **fee-net, exit-fee-gross, forward-looking**; for historical realized returns use share-price series ± exit fee (as in `results/RESULTS.md`); for a **trailing number closest to UI Net**, use **`inception_hold_simple`**.
+Official **Net APY** for Fluid Lite ETH is authentic: documented on the Lite fees page, exposed by Instadapp’s own API, and independently confirmed by on-chain `revenueFeePercentage` / `withdrawalFeePercentage`. Treat it as **fee-net, exit-fee-gross, forward-looking**; for historical realized returns use share-price series ± exit fee (as in `results/RESULTS.md`); for a **trailing number closest to UI Net**, use **`inception_hold_apr`** (APR, not APY). Standard historical APY remains compound Hold APY.

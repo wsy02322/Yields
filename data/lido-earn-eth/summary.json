@@ -1,7 +1,7 @@
 {
-  "points": 164,
+  "points": 165,
   "first_date": "2026-02-02",
-  "last_date": "2026-07-15",
+  "last_date": "2026-07-16",
   "first_share_price": 1.0,
   "last_share_price": 1.0119116880589403,
   "fees": {
@@ -21,6 +21,7 @@
     }
   },
   "exit_fee_applied_in_realized": 0.0,
+  "short_window_max_days": 30,
   "offchain_rewards_excluded_from_apy": [
     {
       "name": "Mellow Points",
@@ -38,55 +39,63 @@
   "windows": [
     {
       "window": "7d",
-      "start_date": "2026-07-08",
-      "end_date": "2026-07-15",
+      "start_date": "2026-07-09",
+      "end_date": "2026-07-16",
       "days": 7.0,
-      "start_share_price": 1.0111662631365428,
+      "start_share_price": 1.0112478587720992,
       "end_share_price_hold": 1.0119116880589403,
       "end_share_price_realized": 1.0119116880589403,
-      "hold_return_pct": 0.073719,
-      "realized_return_pct": 0.073719,
-      "hold_apy_pct": 3.920034,
-      "realized_apy_pct": 3.920034
+      "hold_return_pct": 0.065645,
+      "realized_return_pct": 0.065645,
+      "hold_apy_pct": 3.483414,
+      "realized_apy_pct": 3.483414,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
     },
     {
       "window": "30d",
-      "start_date": "2026-06-15",
-      "end_date": "2026-07-15",
+      "start_date": "2026-06-16",
+      "end_date": "2026-07-16",
       "days": 30.0,
-      "start_share_price": 1.0087102726691628,
+      "start_share_price": 1.0088104757343426,
       "end_share_price_hold": 1.0119116880589403,
       "end_share_price_realized": 1.0119116880589403,
-      "hold_return_pct": 0.317377,
-      "realized_return_pct": 0.317377,
-      "hold_apy_pct": 3.933332,
-      "realized_apy_pct": 3.933332
+      "hold_return_pct": 0.307413,
+      "realized_return_pct": 0.307413,
+      "hold_apy_pct": 3.807714,
+      "realized_apy_pct": 3.807714,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
     },
     {
       "window": "90d",
-      "start_date": "2026-04-16",
-      "end_date": "2026-07-15",
+      "start_date": "2026-04-17",
+      "end_date": "2026-07-16",
       "days": 90.0,
-      "start_share_price": 1.0053274963079268,
+      "start_share_price": 1.005426670267925,
       "end_share_price_hold": 1.0119116880589403,
       "end_share_price_realized": 1.0119116880589403,
-      "hold_return_pct": 0.65493,
-      "realized_return_pct": 0.65493,
-      "hold_apy_pct": 2.684663,
-      "realized_apy_pct": 2.684663
+      "hold_return_pct": 0.645002,
+      "realized_return_pct": 0.645002,
+      "hold_apy_pct": 2.643564,
+      "realized_apy_pct": 2.643564,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
     },
     {
       "window": "inception",
       "start_date": "2026-02-02",
-      "end_date": "2026-07-15",
-      "days": 163.0,
+      "end_date": "2026-07-16",
+      "days": 164.0,
       "start_share_price": 1.0,
       "end_share_price_hold": 1.0119116880589403,
       "end_share_price_realized": 1.0119116880589403,
       "hold_return_pct": 1.191169,
       "realized_return_pct": 1.191169,
-      "hold_apy_pct": 2.688912,
-      "realized_apy_pct": 2.688912
+      "hold_apy_pct": 2.672299,
+      "realized_apy_pct": 2.672299,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
     }
   ],
   "notes": [
@@ -94,6 +103,8 @@
     "1% protocol (platform) fee and 10% performance fee are minted as vault shares on oracle reports; already in net share price.",
     "On-chain depositFeeD6=0 and redeemFeeD6=0 at snapshot time; realized \u2248 hold for redeem fee.",
     "Mellow Points, Obol, and SSV rewards are listed under offchain_rewards and are NOT included in APY.",
-    "Vaults are independent; no comparison metrics are produced against Fluid Lite."
+    "Vaults are independent; no comparison metrics are produced against Fluid Lite.",
+    "Standard APY uses compound annualization: (1+R)^(365.25/days)\u22121.",
+    "Prefer hold_apy_pct for short mark-to-market windows (\u226430d); realized_apy_pct is for deposit\u2192withdraw (especially inception)."
   ]
 }

@@ -1,4 +1,15 @@
-"""Historical yield / APY calculators (net of on-chain fees)."""
+"""Historical yield / APY calculators (net of on-chain fees).
+
+Standard trailing APY uses compound annualization:
+
+    APY = (1 + R) ** (365.25 / days) - 1
+
+Hold APY is the preferred mark-to-market metric. Realized APY applies a
+one-time exit/redeem fee at the window end and is meaningful for
+deposit→withdraw scenarios (especially long / inception windows). On short
+windows a fixed exit fee can dominate the period return, so realized APY is
+flagged as cautionary.
+"""
 
 from __future__ import annotations
 
@@ -6,8 +17,9 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
 
-
-SECONDS_PER_YEAR = 365.25 * 24 * 3600
+# Days at or below this threshold: prefer Hold APY for display; Realized APY
+# remains computed but marked cautionary when an exit fee is applied.
+SHORT_WINDOW_MAX_DAYS = 30
 
 
 def _parse_date(s: str) -> datetime:
@@ -27,6 +39,7 @@ class WindowReturn:
     realized_return: float
     hold_apy: float | None
     realized_apy: float | None
+    exit_fee: float = 0.0
 
 
 def period_return(start_price: float, end_price: float) -> float:
@@ -36,6 +49,10 @@ def period_return(start_price: float, end_price: float) -> float:
 
 
 def annualize(total_return: float, days: float) -> float | None:
+    """Compound (standard) APY from a total return over ``days``.
+
+    APY = (1 + R) ** (365.25 / days) - 1
+    """
     if days <= 0:
         return None
     # Guard extreme / incomplete windows
@@ -61,6 +78,22 @@ def pick_row(series: list[dict[str, Any]], date: str) -> dict[str, Any] | None:
 def nearest_on_or_before(series: list[dict[str, Any]], date: str) -> dict[str, Any] | None:
     candidates = [r for r in series if r["date"] <= date]
     return candidates[-1] if candidates else None
+
+
+def is_short_window(days: float) -> bool:
+    return days <= SHORT_WINDOW_MAX_DAYS
+
+
+def realized_apy_is_cautionary(days: float, exit_fee: float) -> bool:
+    """True when annualizing a one-time exit fee over a short window is misleading."""
+    return exit_fee > 0 and is_short_window(days)
+
+
+def preferred_metric(days: float, exit_fee: float) -> str:
+    """Which annualized metric to prefer for display in this window."""
+    if realized_apy_is_cautionary(days, exit_fee):
+        return "hold_apy"
+    return "hold_or_realized"
 
 
 def compute_window(
@@ -89,8 +122,6 @@ def compute_window(
 
     # Hold return: share price change only (ongoing fees already in price).
     # Realized: assume deposit at start (no deposit fee) and withdraw at end (exit/redeem fee).
-    # For a fair realized comparison over a holding window, also haircut the starting
-    # price? No — deposit fees reduce shares received at T0; exit fees reduce assets at T1.
     # With deposit_fee=0 for both vaults here, realized only applies exit fee on terminal value.
     hold_ret = period_return(sp0, sp1)
     realized_ret = period_return(sp0, sp1_realized)
@@ -107,6 +138,7 @@ def compute_window(
         realized_return=realized_ret,
         hold_apy=annualize(hold_ret, float(days)),
         realized_apy=annualize(realized_ret, float(days)),
+        exit_fee=exit_fee,
     )
 
 
@@ -157,7 +189,8 @@ def window_to_dict(w: WindowReturn) -> dict[str, Any]:
     def pct(x: float | None) -> float | None:
         return None if x is None else round(x * 100, 6)
 
-    return {
+    caution = realized_apy_is_cautionary(w.days, w.exit_fee)
+    out: dict[str, Any] = {
         "window": w.label,
         "start_date": w.start_date,
         "end_date": w.end_date,
@@ -167,9 +200,20 @@ def window_to_dict(w: WindowReturn) -> dict[str, Any]:
         "end_share_price_realized": w.end_share_price_realized,
         "hold_return_pct": pct(w.hold_return),
         "realized_return_pct": pct(w.realized_return),
+        # Standard compound APY — preferred trailing metric.
         "hold_apy_pct": pct(w.hold_apy),
         "realized_apy_pct": pct(w.realized_apy),
+        "preferred_metric": preferred_metric(w.days, w.exit_fee),
+        "realized_apy_caution": caution,
     }
+    if caution:
+        out["realized_apy_note"] = (
+            f"One-time exit fee ({w.exit_fee * 100:.4g}%) dominates this "
+            f"{w.days:.0f}d window after annualization; prefer hold_apy_pct "
+            "for short mark-to-market views. Use realized_apy_pct for full "
+            "deposit→withdraw (esp. inception)."
+        )
+    return out
 
 
 def daily_returns(series: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -197,6 +241,18 @@ def summarize_vault(
     notes: list[str] | None = None,
 ) -> dict[str, Any]:
     windows = [window_to_dict(w) for w in rolling_windows(series, exit_fee=exit_fee)]
+    default_notes = [
+        "Standard APY uses compound annualization: (1+R)^(365.25/days)−1.",
+        "Prefer hold_apy_pct for short mark-to-market windows "
+        f"(≤{SHORT_WINDOW_MAX_DAYS}d); realized_apy_pct is for deposit→withdraw "
+        "(especially inception).",
+    ]
+    if exit_fee > 0:
+        default_notes.append(
+            f"Realized APY applies exit fee {exit_fee * 100:.4g}% once at the "
+            "window end; short-window realized APY is flagged realized_apy_caution."
+        )
+    merged_notes = list(notes or []) + default_notes
     return {
         "points": len(series),
         "first_date": series[0]["date"] if series else None,
@@ -205,7 +261,8 @@ def summarize_vault(
         "last_share_price": series[-1]["share_price"] if series else None,
         "fees": fees,
         "exit_fee_applied_in_realized": exit_fee,
+        "short_window_max_days": SHORT_WINDOW_MAX_DAYS,
         "offchain_rewards_excluded_from_apy": offchain_rewards or [],
         "windows": windows,
-        "notes": notes or [],
+        "notes": merged_notes,
     }
