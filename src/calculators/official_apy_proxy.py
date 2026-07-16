@@ -46,8 +46,8 @@ class ProxyCandidate:
     notes: str
 
 
-# Recommended proxy after scanning fixed windows + EWMA against live Net APY
-# (2026-07-15 snapshot: Net ≈ 5.84%). Short trailing windows (~3%) are far;
+# Recommended proxy after scanning fixed windows against live Net APY
+# (2026-07-16 snapshot: Net ≈ 5.82%). Short trailing windows (~3.5%) are far;
 # inception + simple annualization (APR) is the closest fee-aligned trailing metric.
 RECOMMENDED_PROXY_NAME = "inception_hold_apr"
 RECOMMENDED_PROXY_DEFINITION = (
@@ -252,7 +252,7 @@ def build_official_comparison(
             "why": (
                 "Among trailing share-price Hold metrics (7d/30d/90d/180d/365d/"
                 "inception × compound APY | simple APR), inception + simple APR "
-                "is empirically closest to the UI Net APY on the 2026-07-15 "
+                "is empirically closest to the UI Net APY on the latest refreshed "
                 "series, and matches Net fee treatment (perf fee in price, "
                 "no exit fee). Official APY remains forward-looking; this APR "
                 "is only a historical proxy for comparison — not a standard APY."
