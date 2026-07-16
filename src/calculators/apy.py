@@ -80,6 +80,32 @@ def nearest_on_or_before(series: list[dict[str, Any]], date: str) -> dict[str, A
     return candidates[-1] if candidates else None
 
 
+def last_complete_1d_pair(
+    series: list[dict[str, Any]],
+) -> tuple[dict[str, Any], dict[str, Any]] | None:
+    """Pick the latest completed 1-calendar-day share-price pair.
+
+    Daily rows are EOD snapshots. If the tip row is still an incomplete day
+    (typically mid-UTC with ~0 return vs prior EOD), skip it and use the
+    previous closed day pair.
+    """
+    if len(series) < 2:
+        return None
+
+    for i in range(len(series) - 1, 0, -1):
+        end = series[i]
+        start = series[i - 1]
+        days = (_parse_date(end["date"]) - _parse_date(start["date"])).days
+        if days != 1:
+            continue
+        ret = period_return(float(start["share_price"]), float(end["share_price"]))
+        is_tip = i == len(series) - 1
+        if is_tip and abs(ret) < 1e-12 and i >= 2:
+            continue
+        return start, end
+    return None
+
+
 def is_short_window(days: float) -> bool:
     return days <= SHORT_WINDOW_MAX_DAYS
 
@@ -150,13 +176,29 @@ def rolling_windows(
 ) -> list[WindowReturn]:
     if not series:
         return []
-    windows_days = windows_days or [7, 30, 90]
+    windows_days = windows_days or [1, 7, 30, 90]
     end = series[-1]
     end_date = end["date"]
     end_dt = _parse_date(end_date)
     out: list[WindowReturn] = []
 
     for n in windows_days:
+        if n == 1:
+            pair = last_complete_1d_pair(series)
+            if pair is None:
+                continue
+            start_row, end_row = pair
+            w = compute_window(
+                series,
+                label="1d",
+                start_date=start_row["date"],
+                end_date=end_row["date"],
+                exit_fee=exit_fee,
+            )
+            if w is not None:
+                out.append(w)
+            continue
+
         start_dt = end_dt - timedelta(days=n)
         start_date = start_dt.strftime("%Y-%m-%d")
         # Only if we have data on/before start
