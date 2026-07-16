@@ -5,37 +5,40 @@ No automatic refresh — re-run only on explicit request.
 
 Vaults are **independent**; no comparison metrics.
 
+**APY definition:** compound `(1+R)^(365.25/days)−1` (standard).  
+**APR (comparison proxy only):** simple `R×(365.25/days)` — not APY.
+
 ## Fluid Lite ETH (`iETHv2`)
 
 - Series: **881** daily points (`2024-02-16` → `2026-07-15`)
 - Share price: `1.07155` → `1.21426` stETH per share
 - Fees in main APY: **20% performance** (in share price) + **0.05% exit** (realized only)
 
-| Window | Hold APY | Realized APY (w/ 0.05% exit) | Hold return | Realized return |
-|--------|----------|------------------------------|-------------|-----------------|
-| 7d | 3.19% | 0.53%* | +0.060% | +0.010% |
-| 30d | 3.07% | 2.45% | +0.249% | +0.199% |
-| 90d | 2.62% | 2.41% | +0.639% | +0.589% |
-| inception (880d) | **5.33%** | **5.30%** | +13.32% | +13.26% |
+| Window | Hold APY | Realized APY (w/ 0.05% exit) | Hold return | Realized return | Preferred |
+|--------|----------|------------------------------|-------------|-----------------|-----------|
+| 7d | **3.19%** | 0.53%* | +0.060% | +0.010% | hold_apy |
+| 30d | **3.07%** | 2.45%* | +0.249% | +0.199% | hold_apy |
+| 90d | 2.62% | 2.41% | +0.639% | +0.589% | hold_or_realized |
+| inception (880d) | **5.33%** | **5.30%** | +13.32% | +13.26% | hold_or_realized |
 
-\*Short windows: a one-time 0.05% exit haircut is large vs period return, so **annualized realized APY is distorted downward**. Prefer **hold APY** for short mark-to-market windows; use **realized** for full deposit→withdraw scenarios (especially inception).
+\*Short windows (≤30d): a one-time 0.05% exit haircut is large vs period return, so **annualized realized APY is distorted downward** (`realized_apy_caution=true`). Prefer **hold APY** for short mark-to-market windows; use **realized** for full deposit→withdraw scenarios (especially inception).
 
 ### Closest historical proxy vs official Net APY
 
-Official UI Net APY is forward-looking (rates × positions). Among trailing Hold algorithms on this series, the closest fee-aligned proxy is:
+Official UI Net APY is forward-looking (rates × positions). Among trailing Hold metrics on this series, the closest fee-aligned proxy is **APR** (not compound APY):
 
 ```
-inception_hold_simple:  R = share_price_T / share_price_0 − 1
-                        APY = R × (365.25 / days)     # no exit fee
+inception_hold_apr:  R = share_price_T / share_price_0 − 1
+                     APR = R × (365.25 / days)     # no exit fee; NOT APY
 ```
 
-| | APY | Notes |
-|--|-----|-------|
-| Official **Net** (`apyWithoutFee`) | **5.84%** | Live API / UI |
-| Official **Gross** (`apyWithFee`) | 7.30% | Live API / UI |
-| **`inception_hold_simple`** (proxy) | **5.53%** | Δ ≈ **−0.31 pp** vs Net |
-| Inception Hold compound (repo default) | 5.33% | Δ ≈ −0.51 pp vs Net |
-| 7d / 30d / 90d Hold | 3.19% / 3.07% / 2.62% | Far from spot Net |
+| | Rate | Notes |
+|--|------|-------|
+| Official **Net** (`apyWithoutFee`) | **5.84% APY** | Live API / UI (forward) |
+| Official **Gross** (`apyWithFee`) | 7.30% APY | Live API / UI |
+| **`inception_hold_apr`** (proxy) | **5.53% APR** | Δ ≈ **−0.31 pp** vs Net |
+| Inception Hold compound (repo default APY) | **5.33% APY** | Δ ≈ −0.51 pp vs Net |
+| 7d / 30d / 90d Hold APY | 3.19% / 3.07% / 2.62% | Far from spot Net |
 
 Detail: `results/fluid-lite-official-apy-proxy.json` · `docs/fluid-lite-net-apy.md`
 

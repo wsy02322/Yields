@@ -17,6 +17,7 @@
     "management_fee": 0.0
   },
   "exit_fee_applied_in_realized": 0.0005,
+  "short_window_max_days": 30,
   "offchain_rewards_excluded_from_apy": [],
   "windows": [
     {
@@ -30,7 +31,10 @@
       "hold_return_pct": 0.060124,
       "realized_return_pct": 0.010094,
       "hold_apy_pct": 3.185953,
-      "realized_apy_pct": 0.528063
+      "realized_apy_pct": 0.528063,
+      "preferred_metric": "hold_apy",
+      "realized_apy_caution": true,
+      "realized_apy_note": "One-time exit fee (0.05%) dominates this 7d window after annualization; prefer hold_apy_pct for short mark-to-market views. Use realized_apy_pct for full deposit\u2192withdraw (esp. inception)."
     },
     {
       "window": "30d",
@@ -43,7 +47,10 @@
       "hold_return_pct": 0.248866,
       "realized_return_pct": 0.198741,
       "hold_apy_pct": 3.07243,
-      "realized_apy_pct": 2.446726
+      "realized_apy_pct": 2.446726,
+      "preferred_metric": "hold_apy",
+      "realized_apy_caution": true,
+      "realized_apy_note": "One-time exit fee (0.05%) dominates this 30d window after annualization; prefer hold_apy_pct for short mark-to-market views. Use realized_apy_pct for full deposit\u2192withdraw (esp. inception)."
     },
     {
       "window": "90d",
@@ -56,7 +63,9 @@
       "hold_return_pct": 0.638984,
       "realized_return_pct": 0.588665,
       "hold_apy_pct": 2.618661,
-      "realized_apy_pct": 2.41059
+      "realized_apy_pct": 2.41059,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
     },
     {
       "window": "inception",
@@ -69,7 +78,9 @@
       "hold_return_pct": 13.317507,
       "realized_return_pct": 13.260849,
       "hold_apy_pct": 5.326183,
-      "realized_apy_pct": 5.304322
+      "realized_apy_pct": 5.304322,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
     }
   ],
   "notes": [
@@ -77,26 +88,32 @@
     "20% performance fee is already deducted inside share price (Net).",
     "Realized APY assumes a final withdraw and applies 0.05% exit fee once at the window end.",
     "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
-    "Vaults are independent; no comparison metrics are produced against EarnETH."
+    "Prefer Hold APY on short windows (\u226430d); Realized is for deposit\u2192withdraw (esp. inception).",
+    "Vaults are independent; no comparison metrics are produced against EarnETH.",
+    "Standard APY uses compound annualization: (1+R)^(365.25/days)\u22121.",
+    "Prefer hold_apy_pct for short mark-to-market windows (\u226430d); realized_apy_pct is for deposit\u2192withdraw (especially inception).",
+    "Realized APY applies exit fee 0.05% once at the window end; short-window realized APY is flagged realized_apy_caution."
   ],
-  "series_points": 881,
   "official_apy_comparison": {
-    "recommended_proxy_name": "inception_hold_simple",
+    "recommended_proxy_name": "inception_hold_apr",
     "recommended_proxy": {
-      "name": "inception_hold_simple",
+      "name": "inception_hold_apr",
       "method": "simple",
+      "rate_kind": "apr",
       "window": "inception",
       "start_date": "2024-02-16",
       "end_date": "2026-07-15",
       "days": 880.0,
       "hold_return_pct": 13.317507,
-      "apy_pct": 5.527522,
-      "notes": "Inception Hold APY with simple (linear) annualization: R = share_price_T / share_price_0 \u2212 1; APY = R \u00d7 (365.25 / days). No exit fee (matches UI Net fee treatment: performance fee already in share price; exit fee not in Net APY).",
+      "annualized_pct": 5.527522,
+      "notes": "Inception Hold APR with simple (linear) annualization: R = share_price_T / share_price_0 \u2212 1; APR = R \u00d7 (365.25 / days). This is APR, not compound APY. No exit fee (matches UI Net fee treatment: performance fee already in share price; exit fee not in Net APY).",
+      "apr_pct": 5.527522,
       "delta_vs_official_net_pp": -0.313413,
       "abs_delta_vs_official_net_pp": 0.313413
     },
     "official_net_apy_pct": 5.840935,
     "official_gross_apy_pct": 7.301169,
     "detail_file": "data/fluid-lite-eth/official_apy_proxy_comparison.json"
-  }
+  },
+  "series_points": 881
 }

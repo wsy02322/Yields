@@ -88,6 +88,7 @@ def main() -> int:
             "20% performance fee is already deducted inside share price (Net).",
             "Realized APY assumes a final withdraw and applies 0.05% exit fee once at the window end.",
             "Hold APY ignores exit fee (useful for mark-to-market while still deposited).",
+            "Prefer Hold APY on short windows (≤30d); Realized is for deposit→withdraw (esp. inception).",
             "Vaults are independent; no comparison metrics are produced against EarnETH.",
         ],
     )
@@ -116,9 +117,10 @@ def main() -> int:
             "detail_file": "data/fluid-lite-eth/official_apy_proxy_comparison.json",
         }
         proxy = apy_cmp["recommended_proxy"]
+        proxy_pct = proxy.get("annualized_pct", proxy.get("apr_pct", proxy.get("apy_pct")))
         print(
             f"  official Net={apy_cmp['official']['net_apy_pct']}% | "
-            f"proxy {proxy['name']}={proxy['apy_pct']}% "
+            f"proxy {proxy['name']} ({proxy.get('rate_kind', '?')})={proxy_pct}% "
             f"(Δ {proxy['delta_vs_official_net_pp']:+.4f} pp)"
         )
     except Exception as exc:  # noqa: BLE001 — keep historical pull usable offline
@@ -129,8 +131,11 @@ def main() -> int:
     results["vaults"]["fluid_lite_eth"] = fluid_summary
     print(f"Fluid Lite points={len(fluid_rows)} first={fluid_rows[0]['date'] if fluid_rows else None} last={fluid_rows[-1]['date'] if fluid_rows else None}")
     for w in fluid_summary["windows"]:
+        caution = " [caution]" if w.get("realized_apy_caution") else ""
         print(
-            f"  {w['window']}: hold_apy={w['hold_apy_pct']}% realized_apy={w['realized_apy_pct']}% "
+            f"  {w['window']}: hold_apy={w['hold_apy_pct']}% "
+            f"realized_apy={w['realized_apy_pct']}%{caution} "
+            f"preferred={w.get('preferred_metric')} "
             f"({w['start_date']} -> {w['end_date']}, {w['days']}d)"
         )
 
@@ -184,8 +189,11 @@ def main() -> int:
     results["vaults"]["lido_earn_eth"] = earn_summary
     print(f"EarnETH points={len(earn_rows)} first={earn_rows[0]['date'] if earn_rows else None} last={earn_rows[-1]['date'] if earn_rows else None}")
     for w in earn_summary["windows"]:
+        caution = " [caution]" if w.get("realized_apy_caution") else ""
         print(
-            f"  {w['window']}: hold_apy={w['hold_apy_pct']}% realized_apy={w['realized_apy_pct']}% "
+            f"  {w['window']}: hold_apy={w['hold_apy_pct']}% "
+            f"realized_apy={w['realized_apy_pct']}%{caution} "
+            f"preferred={w.get('preferred_metric')} "
             f"({w['start_date']} -> {w['end_date']}, {w['days']}d)"
         )
 

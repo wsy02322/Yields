@@ -28,6 +28,7 @@
     }
   },
   "exit_fee_applied_in_realized": 0.0,
+  "short_window_max_days": 30,
   "offchain_rewards_excluded_from_apy": [
     {
       "name": "Mellow Points",
@@ -54,7 +55,9 @@
       "hold_return_pct": 0.073719,
       "realized_return_pct": 0.073719,
       "hold_apy_pct": 3.920034,
-      "realized_apy_pct": 3.920034
+      "realized_apy_pct": 3.920034,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
     },
     {
       "window": "30d",
@@ -67,7 +70,9 @@
       "hold_return_pct": 0.317377,
       "realized_return_pct": 0.317377,
       "hold_apy_pct": 3.933332,
-      "realized_apy_pct": 3.933332
+      "realized_apy_pct": 3.933332,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
     },
     {
       "window": "90d",
@@ -80,7 +85,9 @@
       "hold_return_pct": 0.65493,
       "realized_return_pct": 0.65493,
       "hold_apy_pct": 2.684663,
-      "realized_apy_pct": 2.684663
+      "realized_apy_pct": 2.684663,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
     },
     {
       "window": "inception",
@@ -93,7 +100,9 @@
       "hold_return_pct": 1.191169,
       "realized_return_pct": 1.191169,
       "hold_apy_pct": 2.688912,
-      "realized_apy_pct": 2.688912
+      "realized_apy_pct": 2.688912,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
     }
   ],
   "notes": [
@@ -101,7 +110,9 @@
     "1% protocol (platform) fee and 10% performance fee are minted as vault shares on oracle reports; already in net share price.",
     "On-chain depositFeeD6=0 and redeemFeeD6=0 at snapshot time; realized \u2248 hold for redeem fee.",
     "Mellow Points, Obol, and SSV rewards are listed under offchain_rewards and are NOT included in APY.",
-    "Vaults are independent; no comparison metrics are produced against Fluid Lite."
+    "Vaults are independent; no comparison metrics are produced against Fluid Lite.",
+    "Standard APY uses compound annualization: (1+R)^(365.25/days)\u22121.",
+    "Prefer hold_apy_pct for short mark-to-market windows (\u226430d); realized_apy_pct is for deposit\u2192withdraw (especially inception)."
   ],
   "series_points": 164
 }
