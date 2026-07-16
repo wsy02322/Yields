@@ -28,7 +28,7 @@ Vaults are processed **separately** — no comparison / ranking / relative metri
 
 Source: [Fluid Lite fees](https://lite.guides.instadapp.io/information/fees)
 
-See also: [docs/fluid-lite-net-apy.md](docs/fluid-lite-net-apy.md) — official Net APY meaning, API fields, on-chain authenticity check, and the **`inception_hold_apr`** historical proxy (simple/linear APR, not compound APY) used to compare against UI Net APY.
+See also: [docs/fluid-lite-net-apy.md](docs/fluid-lite-net-apy.md) — official Net APY meaning, API fields, on-chain authenticity check, and the **`1d_hold_apy`** trailing Hold APY used to compare against UI Net APY.
 
 ### Lido EarnETH (Mellow)
 
@@ -65,11 +65,11 @@ APY             = (1 + return)^(365.25 / days) - 1   # compound — repo default
 APR             = return × (365.25 / days)           # simple/linear — not APY
 ```
 
-Windows: **7d / 30d / 90d / inception** (when enough history exists).
+Windows: **1d / 7d / 30d / 90d / inception** (when enough history exists).
 
 **Display guidance:** prefer **Hold APY** for short mark-to-market windows (≤30d). **Realized APY** is for deposit→withdraw (especially inception); short-window realized values are flagged `realized_apy_caution` because a one-time exit fee dominates after annualization.
 
-**Fluid Lite vs official Net APY (comparison only):** among trailing Hold metrics, **`inception_hold_apr`** (`R × 365.25/days` over inception, no exit fee — this is **APR**, not compound APY) is empirically closest to the UI Net figure. See `docs/fluid-lite-net-apy.md` and `results/fluid-lite-official-apy-proxy.json`.
+**Fluid Lite vs official Net APY (comparison):** use latest **completed 1-day Hold APY** (`1d_hold_apy` = `(1+R)^365.25−1`, no exit fee). Incomplete tip-day snapshots with ~0 return are skipped. See `docs/fluid-lite-net-apy.md` and `results/fluid-lite-official-apy-proxy.json`.
 
 Daily snapshots are UTC end-of-day approximations via archive `eth_call` at estimated blocks.
 

@@ -181,6 +181,8 @@ def test_proxy_candidates_label_apr_vs_apy():
     series = _series()
     candidates = enumerate_proxy_candidates(series, window_days=[7, 30])
     names = {c.name for c in candidates}
+    assert "1d_hold_apy" in names
+    assert "1d_hold_apr" in names
     assert "7d_hold_apr" in names
     assert "7d_hold_apy" in names
     assert "inception_hold_apr" in names
@@ -192,7 +194,7 @@ def test_proxy_candidates_label_apr_vs_apy():
     apy = next(c for c in candidates if c.name == "inception_hold_apy")
     assert apr.rate_kind == "apr"
     assert apy.rate_kind == "apy"
-    assert RECOMMENDED_PROXY_NAME == "inception_hold_apr"
+    assert RECOMMENDED_PROXY_NAME == "1d_hold_apy"
 
     d_apr = candidate_to_dict(apr)
     d_apy = candidate_to_dict(apy)
@@ -201,21 +203,46 @@ def test_proxy_candidates_label_apr_vs_apy():
     assert "annualized_pct" in d_apr and "annualized_pct" in d_apy
 
 
-def test_build_official_comparison_recommends_apr_proxy():
+def test_last_complete_1d_skips_flat_tip_and_recommends_1d_apy():
+    from datetime import date, timedelta
+
+    from src.calculators.official_apy_proxy import last_complete_1d_pair
+
     series = _series()
-    # Pick a fake official Net near inception APR so recommended is selected
-    inception_apr = next(
-        c for c in enumerate_proxy_candidates(series) if c.name == "inception_hold_apr"
+    # Closed day already ends at series[-1]. Append flat tip day.
+    tip_date = (date.fromisoformat(series[-1]["date"]) + timedelta(days=1)).isoformat()
+    series_flat_tip = list(series) + [
+        {"date": tip_date, "share_price": series[-1]["share_price"]}
+    ]
+    pair = last_complete_1d_pair(series_flat_tip)
+    assert pair is not None
+    start, end = pair
+    assert end["date"] == series[-1]["date"]
+    assert start["date"] == series[-2]["date"]
+
+    one_d = next(
+        c for c in enumerate_proxy_candidates(series_flat_tip) if c.name == "1d_hold_apy"
     )
+    assert one_d.end_date == series[-1]["date"]
+    assert one_d.days == 1.0
+
     cmp_ = build_official_comparison(
-        series,
-        official_net_apy=inception_apr.annualized,
-        official_gross_apy=inception_apr.annualized / 0.8,
+        series_flat_tip,
+        official_net_apy=one_d.annualized,
+        official_gross_apy=one_d.annualized / 0.8,
     )
-    assert cmp_["definition"]["recommended_proxy_name"] == "inception_hold_apr"
-    assert cmp_["definition"]["legacy_name"] == "inception_hold_simple"
-    assert cmp_["recommended_proxy"]["rate_kind"] == "apr"
-    assert "apr_pct" in cmp_["recommended_proxy"]
+    assert cmp_["definition"]["recommended_proxy_name"] == "1d_hold_apy"
+    assert cmp_["definition"]["legacy_name"] == "inception_hold_apr"
+    assert cmp_["recommended_proxy"]["rate_kind"] == "apy"
+    assert "apy_pct" in cmp_["recommended_proxy"]
     assert math.isclose(
         cmp_["recommended_proxy"]["abs_delta_vs_official_net_pp"], 0.0, abs_tol=1e-9
     )
+
+
+def test_rolling_windows_includes_1d():
+    series = _series()
+    windows = rolling_windows(series, exit_fee=0.0005)
+    labels = [w.label for w in windows]
+    assert "1d" in labels
+    assert "7d" in labels

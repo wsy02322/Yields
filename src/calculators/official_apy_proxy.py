@@ -5,6 +5,10 @@ This module only uses *trailing* share-price history and asks which trailing
 definition lands nearest the live Net figure — for side-by-side comparison,
 not as a replacement for the official number.
 
+Primary comparison (user/product choice):
+- **1d Hold APY** from the latest *completed* calendar day
+  ``APY = (1+R)^(365.25/1) − 1``
+
 Naming:
 - ``compound`` annualization → standard **APY**
   ``(1+R)^(365.25/days)−1``
@@ -18,7 +22,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
 
-from src.calculators.apy import annualize, nearest_on_or_before, period_return
+from src.calculators.apy import annualize, last_complete_1d_pair, nearest_on_or_before, period_return
 
 
 def _parse_date(s: str) -> datetime:
@@ -46,21 +50,20 @@ class ProxyCandidate:
     notes: str
 
 
-# Recommended proxy after scanning fixed windows against live Net APY
-# (2026-07-16 snapshot: Net ≈ 5.82%). Short trailing windows (~3.5%) are far;
-# inception + simple annualization (APR) is the closest fee-aligned trailing metric.
-RECOMMENDED_PROXY_NAME = "inception_hold_apr"
+# Compare official UI Net APY against the latest completed 1-day Hold APY.
+RECOMMENDED_PROXY_NAME = "1d_hold_apy"
 RECOMMENDED_PROXY_DEFINITION = (
-    "Inception Hold APR with simple (linear) annualization: "
-    "R = share_price_T / share_price_0 − 1; "
-    "APR = R × (365.25 / days). "
-    "This is APR, not compound APY. "
+    "Latest completed 1-day Hold APY (compound): "
+    "R = share_price_T / share_price_{T−1} − 1; "
+    "APY = (1+R)^(365.25/1) − 1. "
+    "Uses the last closed EOD→EOD day (skips an incomplete tip-day snapshot "
+    "when that tip day has ~0 return). "
     "No exit fee (matches UI Net fee treatment: performance fee already in "
     "share price; exit fee not in Net APY)."
 )
 
-# Backward-compatible alias used in older docs / outputs.
-LEGACY_RECOMMENDED_PROXY_NAME = "inception_hold_simple"
+# Prior empirical proxy kept as a listed candidate / legacy name.
+LEGACY_RECOMMENDED_PROXY_NAME = "inception_hold_apr"
 
 
 def _rate_kind(method: str) -> str:
@@ -71,6 +74,44 @@ def _candidate_name(window: str, method: str) -> str:
     # Prefer explicit apr/apy suffixes so outputs are not mislabeled.
     suffix = "apr" if method == "simple" else "apy"
     return f"{window}_hold_{suffix}"
+
+
+def _one_day_hold(
+    series: list[dict[str, Any]],
+    *,
+    method: str,
+) -> ProxyCandidate | None:
+    pair = last_complete_1d_pair(series)
+    if pair is None:
+        return None
+    start, end = pair
+    days = float((_parse_date(end["date"]) - _parse_date(start["date"])).days)
+    ret = period_return(float(start["share_price"]), float(end["share_price"]))
+    if method == "simple":
+        annualized = simple_annualize(ret, days)
+        name = _candidate_name("1d", "simple")
+        notes = (
+            "Latest completed 1-day Hold APR (simple/linear): "
+            "APR = R × 365.25. No exit fee."
+        )
+    else:
+        annualized = annualize(ret, days)
+        name = RECOMMENDED_PROXY_NAME
+        notes = RECOMMENDED_PROXY_DEFINITION
+    if annualized is None:
+        return None
+    return ProxyCandidate(
+        name=name,
+        method=method,
+        rate_kind=_rate_kind(method),
+        window="1d",
+        start_date=start["date"],
+        end_date=end["date"],
+        days=days,
+        hold_return=ret,
+        annualized=annualized,
+        notes=notes,
+    )
 
 
 def _inception_hold(
@@ -87,8 +128,13 @@ def _inception_hold(
     ret = period_return(float(start["share_price"]), float(end["share_price"]))
     if method == "simple":
         annualized = simple_annualize(ret, days)
-        name = RECOMMENDED_PROXY_NAME
-        notes = RECOMMENDED_PROXY_DEFINITION
+        name = "inception_hold_apr"
+        notes = (
+            "Inception Hold APR with simple (linear) annualization: "
+            "R = share_price_T / share_price_0 − 1; "
+            "APR = R × (365.25 / days). This is APR, not compound APY. "
+            "No exit fee (matches UI Net fee treatment)."
+        )
     else:
         annualized = annualize(ret, days)
         name = _candidate_name("inception", "compound")
@@ -162,9 +208,16 @@ def enumerate_proxy_candidates(
     window_days: list[int] | None = None,
 ) -> list[ProxyCandidate]:
     """Enumerate trailing Hold candidates (no exit fee): APY + APR."""
+    # 1d is handled via last_complete_1d_pair (not tip→tip-1 when tip incomplete).
     window_days = window_days or [7, 30, 90, 180, 365]
     out: list[ProxyCandidate] = []
+    for method in ("compound", "simple"):
+        c = _one_day_hold(series, method=method)
+        if c is not None:
+            out.append(c)
     for n in window_days:
+        if n == 1:
+            continue  # already covered by _one_day_hold
         for method in ("compound", "simple"):
             c = _fixed_window_hold(series, days_n=n, method=method)
             if c is not None:
@@ -214,7 +267,7 @@ def build_official_comparison(
     official_gross_apy: float | None = None,
     official_meta: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Build comparison payload: recommended proxy + ranked candidates vs Net APY.
+    """Build comparison payload: recommended 1d Hold APY + ranked candidates vs Net APY.
 
     Parameters
     ----------
@@ -250,12 +303,11 @@ def build_official_comparison(
                 "apr": "simple/linear: R×(365.25/days) — not APY",
             },
             "why": (
-                "Among trailing share-price Hold metrics (7d/30d/90d/180d/365d/"
-                "inception × compound APY | simple APR), inception + simple APR "
-                "is empirically closest to the UI Net APY on the latest refreshed "
-                "series, and matches Net fee treatment (perf fee in price, "
-                "no exit fee). Official APY remains forward-looking; this APR "
-                "is only a historical proxy for comparison — not a standard APY."
+                "Official UI Net APY is compared against the latest completed "
+                "1-day Hold APY (compound). Tip-day incomplete snapshots with "
+                "~0 return are skipped so the comparison uses a closed EOD→EOD "
+                "day. Fee treatment matches Net (perf fee in price, no exit fee). "
+                "Official APY remains forward-looking; 1d Hold is trailing."
             ),
             "fee_alignment": {
                 "performance_fee": "included (already in share price)",

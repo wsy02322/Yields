@@ -1,51 +1,51 @@
 {
-  "fetched_at_utc": "2026-07-16T06:00:07.026138+00:00",
+  "fetched_at_utc": "2026-07-16T06:08:53.050080+00:00",
   "source_url": "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults",
   "vault": "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78",
   "exchangePriceiETHV2": "1.214422443504576687",
   "withdrawalFee": "0.05",
   "revenueFee": "20",
   "apy": {
-    "apyWithoutFee": "5.8204445608604367208",
-    "apyWithFee": "7.275555701075545901"
+    "apyWithoutFee": "5.8204543236027115552",
+    "apyWithFee": "7.275567904503389444"
   },
   "vaultTVLInAsset": "74202.52637531123314303",
   "protocolsInfo_yields": {
     "aaveV3": {
-      "ratio": "92.279",
+      "ratio": "92.2791",
       "maxRiskRatio": "94",
       "stETHSupplyYield": "2.2507267021485425643314756",
       "eETHSupplyYield": "2.9816932801156742720770623",
       "wETHBorrowYield": "2.0484995419007485683735326",
-      "netAssets": "23177.303030585396787531"
+      "netAssets": "23177.208979432225787124"
     },
     "compoundV3": {
       "ratio": "44.5712",
       "maxRiskRatio": "88",
       "stETHSupplyYield": "2.2507267021485425643314756",
       "wETHBorrowYield": "1.7930861688305953346175144",
-      "netAssets": "0.00658421475034713"
+      "netAssets": "0.006584213174955208"
     },
     "spark": {
       "ratio": "91.1204",
       "maxRiskRatio": "92",
       "stETHSupplyYield": "2.2507267021485425643314756",
       "wETHBorrowYield": "1.5062310227848444089968046",
-      "netAssets": "14409.60867207649809084"
+      "netAssets": "14409.55878455514238831"
     },
     "fluidNew": {
-      "ratio": "91.5289",
+      "ratio": "91.529",
       "maxRiskRatio": "95",
       "stETHSupplyYield": "2.2836567375783621736817549",
       "wETHBorrowYield": "2.2755034156085040488324508",
-      "netAssets": "7325.443805500257335109"
+      "netAssets": "7325.414575424015077124"
     },
     "aaveV3Lido": {
       "ratio": "4.4817",
       "maxRiskRatio": "93",
       "stETHSupplyYield": "2.2978751539931949640676759",
       "wETHBorrowYield": "1.9771925654469072321096939",
-      "netAssets": "0.005548757987231942"
+      "netAssets": "0.005548757957533753"
     },
     "fluidDex": {
       "ratio": "89.652",
@@ -55,14 +55,14 @@
       "wETHBorrowYield": "2.2755034156085040488324508",
       "stETHBorrowYield": "2.3580305973133273826055568",
       "dexYield": "0.0300045004652556238376583",
-      "netAssets": "1892.980526827857127848"
+      "netAssets": "1892.983990256243998715"
     },
     "fluidWeETHWstETH": {
       "ratio": "15.619",
       "maxRiskRatio": "94",
       "eETHSupplyYield": "2.9816932801156742720770623",
       "stETHBorrowYield": "0.1048549343901972322111703",
-      "netAssets": "0.097402308596434864"
+      "netAssets": "0.097402308204006896"
     }
   }
 }
