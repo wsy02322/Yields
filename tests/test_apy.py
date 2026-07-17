@@ -7,6 +7,8 @@ import math
 import pytest
 
 from src.calculators.apy import (
+    DEFAULT_WINDOWS_DAYS,
+    LIDO_EARN_AUDIT_WINDOWS_DAYS,
     SHORT_WINDOW_MAX_DAYS,
     annualize,
     apply_exit_fee,
@@ -248,3 +250,46 @@ def test_rolling_windows_includes_1d():
     assert "7d" in labels
     assert "14d" in labels
     assert "30d" in labels
+    assert "90d" in labels
+    # 100-day synthetic series: 120/180/360 unavailable
+    assert "120d" not in labels
+    assert "180d" not in labels
+    assert DEFAULT_WINDOWS_DAYS == [1, 7, 14, 30, 90, 120, 180, 360]
+    assert LIDO_EARN_AUDIT_WINDOWS_DAYS == [1, 7, 14, 30, 90, 120, 180]
+
+
+def test_summarize_marks_unavailable_audit_windows():
+    series = _series()  # 100 days
+    summary = summarize_vault(
+        series,
+        exit_fee=0.0,
+        fees={"redeem_fee": 0.0},
+        windows_days=list(LIDO_EARN_AUDIT_WINDOWS_DAYS),
+    )
+    assert summary["windows_days_requested"] == LIDO_EARN_AUDIT_WINDOWS_DAYS
+    labels = {w["window"] for w in summary["windows"]}
+    assert "90d" in labels
+    assert "120d" not in labels
+    unavail = {u["window"]: u for u in summary["unavailable_windows"]}
+    assert unavail["120d"]["reason"] == "insufficient_history"
+    assert unavail["180d"]["reason"] == "insufficient_history"
+    assert unavail["120d"]["history_days"] == 99
+
+
+def test_rolling_windows_includes_120_180_when_history_allows():
+    from datetime import date, timedelta
+
+    rows: list[dict] = []
+    start = date(2025, 1, 1)
+    price = 1.0
+    for i in range(200):
+        d = start + timedelta(days=i)
+        rows.append({"date": d.isoformat(), "share_price": price})
+        price *= 1.00005
+    windows = rolling_windows(
+        rows, exit_fee=0.0, windows_days=list(LIDO_EARN_AUDIT_WINDOWS_DAYS)
+    )
+    labels = [w.label for w in windows]
+    assert labels[:7] == ["1d", "7d", "14d", "30d", "90d", "120d", "180d"]
+    assert "inception" in labels
+

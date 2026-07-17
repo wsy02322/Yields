@@ -1,5 +1,45 @@
 {
-  "points": 166,
+  "as_of": {
+    "generated_at_utc": "2026-07-17T14:01:09.101597+00:00",
+    "tip_block": 25552868,
+    "tip_timestamp": 1784296859,
+    "tip_date_utc": "2026-07-17",
+    "branch_tag": "07171359",
+    "audit_purpose": "independent_lido_earn_apy",
+    "ui_url": "https://stake.lido.fi/earn/eth/deposit",
+    "trust_model": "Do not trust Lido Earn / Mellow published APY. Primary metric = Hold APY from on-chain oracle share price only.",
+    "windows_days": [
+      1,
+      7,
+      14,
+      30,
+      90,
+      120,
+      180
+    ],
+    "refreshed_by": "cursor-cloud-agent"
+  },
+  "vault": {
+    "name": "Lido EarnETH",
+    "vault": "0x6a37725ca7f4CE81c004c955f7280d5C704a249e",
+    "share_token": "0xBBFC8683C8fE8cF73777feDE7ab9574935fea0A4",
+    "oracle": "0xAda1f4c24603aB2fe5aBd35BCD12370e98A20358",
+    "fee_manager": "0xed4Fac879eE86F3aB0101993A3713e7cAA0488E1",
+    "ui_url": "https://stake.lido.fi/earn/eth/deposit"
+  },
+  "method": {
+    "share_price": "Mellow oracle getReport(ETH); eth_per_share = 1e36 / priceD18",
+    "apy": "Hold APY = (1+R)^(365.25/days)-1 from on-chain share price",
+    "fees_in_price": "protocol 1% + performance 10% minted as shares on reports",
+    "excluded": [
+      "Mellow Points",
+      "Obol rewards",
+      "SSV rewards",
+      "published UI APY*"
+    ],
+    "data_source": "ethereum archive eth_call (config/vaults.yaml rpc)"
+  },
+  "series_points": 166,
   "first_date": "2026-02-02",
   "last_date": "2026-07-17",
   "first_share_price": 1.0,
@@ -21,7 +61,6 @@
     }
   },
   "exit_fee_applied_in_realized": 0.0,
-  "short_window_max_days": 30,
   "windows_days_requested": [
     1,
     7,
@@ -30,20 +69,6 @@
     90,
     120,
     180
-  ],
-  "offchain_rewards_excluded_from_apy": [
-    {
-      "name": "Mellow Points",
-      "note": "Accrue to depositor; visible on Mellow Dashboard; not in share price."
-    },
-    {
-      "name": "Obol rewards",
-      "note": "Claimable separately; not in share price."
-    },
-    {
-      "name": "SSV rewards",
-      "note": "Claimable separately; not in share price."
-    }
   ],
   "windows": [
     {
@@ -163,6 +188,32 @@
       "last_date": "2026-07-17"
     }
   ],
+  "published_apy_untrusted_reference": {
+    "trust": "untrusted_reference_only",
+    "label": "APY* (14d avg.)",
+    "apy_pct": 3.52556,
+    "days": 14,
+    "source_url": "https://api.mellow.finance/v1/chain/1/core-vaults/0x6a37725ca7f4CE81c004c955f7280d5C704a249e/timeweighted-apy",
+    "fetched_at_utc": "2026-07-17T14:01:19.537701+00:00",
+    "apy_last_update_utc": "2026-07-17T09:20:23+00:00",
+    "independent_hold_apy_pct_same_window": 3.539569,
+    "delta_independent_minus_published_pp": 0.014009,
+    "note": "Published figure is shown only for contrast. Audit conclusion uses independent Hold APY columns."
+  },
+  "offchain_rewards_excluded_from_apy": [
+    {
+      "name": "Mellow Points",
+      "note": "Accrue to depositor; visible on Mellow Dashboard; not in share price."
+    },
+    {
+      "name": "Obol rewards",
+      "note": "Claimable separately; not in share price."
+    },
+    {
+      "name": "SSV rewards",
+      "note": "Claimable separately; not in share price."
+    }
+  ],
   "notes": [
     "INDEPENDENT AUDIT: APY derived only from on-chain Mellow oracle ETH report.",
     "eth_per_share = 1e36 / priceD18; protocol 1% + performance 10% already in net price.",
@@ -171,5 +222,6 @@
     "UI under audit: https://stake.lido.fi/earn/eth/deposit",
     "Standard APY uses compound annualization: (1+R)^(365.25/days)\u22121.",
     "Prefer hold_apy_pct for short mark-to-market windows (\u226430d); realized_apy_pct is for deposit\u2192withdraw (especially inception)."
-  ]
+  ],
+  "markdown_table": "| Window | Hold APY (independent) | Days | Start \u2192 End | Status |\n|--------|------------------------:|-----:|-------------|--------|\n| 1d | **2.0701%** | 1 | 2026-07-16 \u2192 2026-07-17 | ok |\n| 7d | **3.0759%** | 7 | 2026-07-10 \u2192 2026-07-17 | ok |\n| 14d | **3.5396%** | 14 | 2026-07-03 \u2192 2026-07-17 | ok |\n| 30d | **3.7587%** | 30 | 2026-06-17 \u2192 2026-07-17 | ok |\n| 90d | **2.6334%** | 90 | 2026-04-18 \u2192 2026-07-17 | ok |\n| 120d | **3.0344%** | 120 | 2026-03-19 \u2192 2026-07-17 | ok |\n| 180d | \u2014 | \u2014 | \u2014 | insufficient_history (history=165d) |\n| inception | **2.6704%** | 165 | 2026-02-02 \u2192 2026-07-17 | ok |"
 }

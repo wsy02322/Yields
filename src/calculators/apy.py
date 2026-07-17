@@ -21,6 +21,12 @@ from typing import Any
 # remains computed but marked cautionary when an exit fee is applied.
 SHORT_WINDOW_MAX_DAYS = 30
 
+# Default trailing windows (compound Hold APY from on-chain share price).
+DEFAULT_WINDOWS_DAYS = [1, 7, 14, 30, 90, 120, 180, 360]
+
+# Independent Lido EarnETH audit windows requested for stake.lido.fi/earn.
+LIDO_EARN_AUDIT_WINDOWS_DAYS = [1, 7, 14, 30, 90, 120, 180]
+
 
 def _parse_date(s: str) -> datetime:
     return datetime.fromisoformat(s)
@@ -176,7 +182,7 @@ def rolling_windows(
 ) -> list[WindowReturn]:
     if not series:
         return []
-    windows_days = windows_days or [1, 7, 14, 30, 90, 360]
+    windows_days = windows_days or list(DEFAULT_WINDOWS_DAYS)
     end = series[-1]
     end_date = end["date"]
     end_dt = _parse_date(end_date)
@@ -281,8 +287,13 @@ def summarize_vault(
     fees: dict[str, Any],
     offchain_rewards: list[dict[str, Any]] | None = None,
     notes: list[str] | None = None,
+    windows_days: list[int] | None = None,
 ) -> dict[str, Any]:
-    windows = [window_to_dict(w) for w in rolling_windows(series, exit_fee=exit_fee)]
+    used_windows = list(windows_days) if windows_days is not None else list(DEFAULT_WINDOWS_DAYS)
+    windows = [
+        window_to_dict(w)
+        for w in rolling_windows(series, exit_fee=exit_fee, windows_days=used_windows)
+    ]
     default_notes = [
         "Standard APY uses compound annualization: (1+R)^(365.25/days)−1.",
         "Prefer hold_apy_pct for short mark-to-market windows "
@@ -295,16 +306,45 @@ def summarize_vault(
             "window end; short-window realized APY is flagged realized_apy_caution."
         )
     merged_notes = list(notes or []) + default_notes
+    # Explicit unavailable labels (requested window longer than available history).
+    available = {w["window"] for w in windows}
+    unavailable: list[dict[str, Any]] = []
+    end_date = series[-1]["date"] if series else None
+    first_date = series[0]["date"] if series else None
+    history_days = None
+    if first_date and end_date:
+        history_days = (_parse_date(end_date) - _parse_date(first_date)).days
+    for n in used_windows:
+        label = f"{n}d"
+        if label in available:
+            continue
+        unavailable.append(
+            {
+                "window": label,
+                "requested_days": n,
+                "available": False,
+                "reason": (
+                    "insufficient_history"
+                    if history_days is not None and history_days < n
+                    else "no_complete_window"
+                ),
+                "history_days": history_days,
+                "first_date": first_date,
+                "last_date": end_date,
+            }
+        )
     return {
         "points": len(series),
-        "first_date": series[0]["date"] if series else None,
-        "last_date": series[-1]["date"] if series else None,
+        "first_date": first_date,
+        "last_date": end_date,
         "first_share_price": series[0]["share_price"] if series else None,
         "last_share_price": series[-1]["share_price"] if series else None,
         "fees": fees,
         "exit_fee_applied_in_realized": exit_fee,
         "short_window_max_days": SHORT_WINDOW_MAX_DAYS,
+        "windows_days_requested": used_windows,
         "offchain_rewards_excluded_from_apy": offchain_rewards or [],
         "windows": windows,
+        "unavailable_windows": unavailable,
         "notes": merged_notes,
     }

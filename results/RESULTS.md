@@ -7,6 +7,30 @@ Generated: **2026-07-17 UTC** by Cursor Cloud Agent (committed to GitHub `main`)
 **Fluid Official UI:** Instadapp API Net APY.  
 **Lido Official UI:** Mellow APY\* (14d avg.).
 
+## Lido EarnETH independent audit (do not trust UI)
+
+Primary truth = on-chain Mellow oracle share price Hold APY.  
+Published UI APY\* is **untrusted reference only**.
+
+See full report: [`results/LIDO_EARN_AUDIT.md`](LIDO_EARN_AUDIT.md) · [`results/lido-earn-eth-independent-audit.json`](lido-earn-eth-independent-audit.json)
+
+| Window | Hold APY (independent) | Days | Start → End | Status |
+|--------|------------------------:|-----:|-------------|--------|
+| 1d | **2.0701%** | 1 | 2026-07-16 → 2026-07-17 | ok |
+| 7d | **3.0759%** | 7 | 2026-07-10 → 2026-07-17 | ok |
+| 14d | **3.5396%** | 14 | 2026-07-03 → 2026-07-17 | ok |
+| 30d | **3.7587%** | 30 | 2026-06-17 → 2026-07-17 | ok |
+| 90d | **2.6334%** | 90 | 2026-04-18 → 2026-07-17 | ok |
+| 120d | **3.0344%** | 120 | 2026-03-19 → 2026-07-17 | ok |
+| 180d | — | — | — | insufficient_history (history=165d) |
+| inception | **2.6704%** | 165 | 2026-02-02 → 2026-07-17 | ok |
+
+Published APY\* (14d avg., untrusted): **3.5256%** · our 14d Hold **3.5396%** · Δ **+0.0140 pp**.
+
+```bash
+python scripts/audit_lido_earn_apy.py --pull
+```
+
 ## Comparison table
 
 | Window | Fluid Hold (our) | Fluid Official-algo (our) | Fluid Official UI | Lido Hold (our) | Lido Official UI |
@@ -97,6 +121,8 @@ Files: `data/fluid-lite-eth/official_ui_apy_history.csv` · `results/fluid-lite-
 | File | Contents |
 |------|----------|
 | `results/RESULTS.md` | This table |
+| `results/LIDO_EARN_AUDIT.md` | Lido Earn independent multi-window audit |
+| `results/lido-earn-eth-independent-audit.json` | Full audit JSON |
 | `results/comparison_matrix.json` | Full matrix |
 | `results/fluid-lite-official-algo-apy.json` | Official-algo breakdown |
 | `results/fluid-lite-official-ui-history-compare.json` | UI history vs Hold stats |
@@ -107,4 +133,5 @@ Files: `data/fluid-lite-eth/official_ui_apy_history.csv` · `results/fluid-lite-
 python scripts/build_comparison_matrix.py        # CSV + live official APIs
 python scripts/build_comparison_matrix.py --pull # also refresh share prices
 python scripts/fetch_fluid_official_ui_history.py  # DefiLlama UI history + Hold compare
+python scripts/audit_lido_earn_apy.py --pull     # independent Lido Earn audit
 ```

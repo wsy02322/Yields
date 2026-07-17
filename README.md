@@ -65,7 +65,9 @@ APY             = (1 + return)^(365.25 / days) - 1   # compound — repo default
 APR             = return × (365.25 / days)           # simple/linear — not APY
 ```
 
-Windows: **1d / 7d / 14d / 30d / 90d / 360d / inception** (when enough history exists).
+Windows: **1d / 7d / 14d / 30d / 90d / 120d / 180d / 360d / inception** (when enough history exists).
+
+**Lido Earn independent audit** (do not trust UI / Mellow published APY*): windows **1 / 7 / 14 / 30 / 90 / 120 / 180** from on-chain oracle share price only — see `results/LIDO_EARN_AUDIT.md`.
 
 **Display guidance:** prefer **Hold APY** for short mark-to-market windows (≤30d). **Realized APY** is for deposit→withdraw (especially inception); short-window realized values are flagged `realized_apy_caution` because a one-time exit fee dominates after annualization.
 
@@ -110,6 +112,7 @@ python scripts/compare_fluid_official_apy.py
 | Fluid 明细 JSON | `results/fluid-lite-eth.json` |
 | Fluid vs 官网 Net 代理 | `results/fluid-lite-official-apy-proxy.json` |
 | EarnETH 明细 JSON | `results/lido-earn-eth.json` |
+| **EarnETH 独立审计** | `results/LIDO_EARN_AUDIT.md` · `results/lido-earn-eth-independent-audit.json` |
 | 原始日频份额价 CSV | `data/*/daily_share_price.csv` |
 | 官网 API 快照 | `data/fluid-lite-eth/official_api_snapshot.json` · `data/lido-earn-eth/official_api_snapshot.json` |
 
@@ -141,6 +144,9 @@ python scripts/build_comparison_matrix.py
 
 # 拉取 DefiLlama Official UI 历史并与 Hold / Official-algo 对照
 python scripts/fetch_fluid_official_ui_history.py
+
+# Lido Earn 独立审计（不信任 UI 发布 APY；链上份额价 → 1/7/14/30/90/120/180d）
+python scripts/audit_lido_earn_apy.py --pull
 ```
 
 ```
