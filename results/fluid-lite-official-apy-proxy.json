@@ -14,10 +14,10 @@
     }
   },
   "official": {
-    "net_apy_pct": 5.671141,
-    "gross_apy_pct": 7.088926,
+    "net_apy_pct": 5.93306,
+    "gross_apy_pct": 7.416325,
     "source_url": "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults",
-    "fetched_at_utc": "2026-07-17T05:39:30.184621+00:00",
+    "fetched_at_utc": "2026-07-17T08:56:12.913456+00:00",
     "vault": "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78",
     "api_field_net": "apy.apyWithoutFee",
     "api_field_gross": "apy.apyWithFee"
@@ -34,8 +34,8 @@
     "annualized_pct": 3.336135,
     "notes": "Latest completed 1-day Hold APY (compound): R = share_price_T / share_price_{T\u22121} \u2212 1; APY = (1+R)^(365.25/1) \u2212 1. Uses the last closed EOD\u2192EOD day (skips an incomplete tip-day snapshot when that tip day has ~0 return). No exit fee (matches UI Net fee treatment: performance fee already in share price; exit fee not in Net APY).",
     "apy_pct": 3.336135,
-    "delta_vs_official_net_pp": -2.335005,
-    "abs_delta_vs_official_net_pp": 2.335005
+    "delta_vs_official_net_pp": -2.596925,
+    "abs_delta_vs_official_net_pp": 2.596925
   },
   "empirical_best_on_this_series": {
     "name": "inception_hold_apr",
@@ -49,8 +49,8 @@
     "annualized_pct": 5.525675,
     "notes": "Inception Hold APR with simple (linear) annualization: R = share_price_T / share_price_0 \u2212 1; APR = R \u00d7 (365.25 / days). This is APR, not compound APY. No exit fee (matches UI Net fee treatment).",
     "apr_pct": 5.525675,
-    "delta_vs_official_net_pp": -0.145465,
-    "abs_delta_vs_official_net_pp": 0.145465,
+    "delta_vs_official_net_pp": -0.407384,
+    "abs_delta_vs_official_net_pp": 0.407384,
     "matches_recommended": false
   },
   "candidates_ranked_by_abs_delta_vs_net": [
@@ -66,8 +66,8 @@
       "annualized_pct": 5.525675,
       "notes": "Inception Hold APR with simple (linear) annualization: R = share_price_T / share_price_0 \u2212 1; APR = R \u00d7 (365.25 / days). This is APR, not compound APY. No exit fee (matches UI Net fee treatment).",
       "apr_pct": 5.525675,
-      "abs_delta_vs_official_net_pp": 0.145465,
-      "delta_vs_official_net_pp": -0.145465
+      "abs_delta_vs_official_net_pp": 0.407384,
+      "delta_vs_official_net_pp": -0.407384
     },
     {
       "name": "inception_hold_apy",
@@ -81,8 +81,8 @@
       "annualized_pct": 5.323722,
       "notes": "Inception Hold APY with compound annualization: APY = (1+R)^(365.25/days) \u2212 1. Same fee treatment as UI Net (no exit fee); repo default trailing method.",
       "apy_pct": 5.323722,
-      "abs_delta_vs_official_net_pp": 0.347419,
-      "delta_vs_official_net_pp": -0.347419
+      "abs_delta_vs_official_net_pp": 0.609338,
+      "delta_vs_official_net_pp": -0.609338
     },
     {
       "name": "360d_hold_apy",
@@ -96,8 +96,8 @@
       "annualized_pct": 3.784336,
       "notes": "360d trailing Hold APY (compound annualization), no exit fee.",
       "apy_pct": 3.784336,
-      "abs_delta_vs_official_net_pp": 1.886805,
-      "delta_vs_official_net_pp": -1.886805
+      "abs_delta_vs_official_net_pp": 2.148724,
+      "delta_vs_official_net_pp": -2.148724
     },
     {
       "name": "360d_hold_apr",
@@ -111,8 +111,8 @@
       "annualized_pct": 3.783319,
       "notes": "360d trailing Hold APR (simple annualization), no exit fee.",
       "apr_pct": 3.783319,
-      "abs_delta_vs_official_net_pp": 1.887821,
-      "delta_vs_official_net_pp": -1.887821
+      "abs_delta_vs_official_net_pp": 2.14974,
+      "delta_vs_official_net_pp": -2.14974
     },
     {
       "name": "7d_hold_apy",
@@ -126,8 +126,8 @@
       "annualized_pct": 3.576884,
       "notes": "7d trailing Hold APY (compound annualization), no exit fee.",
       "apy_pct": 3.576884,
-      "abs_delta_vs_official_net_pp": 2.094256,
-      "delta_vs_official_net_pp": -2.094256
+      "abs_delta_vs_official_net_pp": 2.356176,
+      "delta_vs_official_net_pp": -2.356176
     },
     {
       "name": "7d_hold_apr",
@@ -141,8 +141,8 @@
       "annualized_pct": 3.515583,
       "notes": "7d trailing Hold APR (simple annualization), no exit fee.",
       "apr_pct": 3.515583,
-      "abs_delta_vs_official_net_pp": 2.155557,
-      "delta_vs_official_net_pp": -2.155557
+      "abs_delta_vs_official_net_pp": 2.417477,
+      "delta_vs_official_net_pp": -2.417477
     },
     {
       "name": "1d_hold_apy",
@@ -156,8 +156,8 @@
       "annualized_pct": 3.336135,
       "notes": "Latest completed 1-day Hold APY (compound): R = share_price_T / share_price_{T\u22121} \u2212 1; APY = (1+R)^(365.25/1) \u2212 1. Uses the last closed EOD\u2192EOD day (skips an incomplete tip-day snapshot when that tip day has ~0 return). No exit fee (matches UI Net fee treatment: performance fee already in share price; exit fee not in Net APY).",
       "apy_pct": 3.336135,
-      "abs_delta_vs_official_net_pp": 2.335005,
-      "delta_vs_official_net_pp": -2.335005
+      "abs_delta_vs_official_net_pp": 2.596925,
+      "delta_vs_official_net_pp": -2.596925
     },
     {
       "name": "1d_hold_apr",
@@ -171,8 +171,8 @@
       "annualized_pct": 3.281841,
       "notes": "Latest completed 1-day Hold APR (simple/linear): APR = R \u00d7 365.25. No exit fee.",
       "apr_pct": 3.281841,
-      "abs_delta_vs_official_net_pp": 2.389299,
-      "delta_vs_official_net_pp": -2.389299
+      "abs_delta_vs_official_net_pp": 2.651219,
+      "delta_vs_official_net_pp": -2.651219
     },
     {
       "name": "30d_hold_apy",
@@ -186,8 +186,8 @@
       "annualized_pct": 3.173843,
       "notes": "30d trailing Hold APY (compound annualization), no exit fee.",
       "apy_pct": 3.173843,
-      "abs_delta_vs_official_net_pp": 2.497297,
-      "delta_vs_official_net_pp": -2.497297
+      "abs_delta_vs_official_net_pp": 2.759217,
+      "delta_vs_official_net_pp": -2.759217
     },
     {
       "name": "14d_hold_apy",
@@ -201,8 +201,8 @@
       "annualized_pct": 3.147742,
       "notes": "14d trailing Hold APY (compound annualization), no exit fee.",
       "apy_pct": 3.147742,
-      "abs_delta_vs_official_net_pp": 2.523398,
-      "delta_vs_official_net_pp": -2.523398
+      "abs_delta_vs_official_net_pp": 2.785318,
+      "delta_vs_official_net_pp": -2.785318
     },
     {
       "name": "30d_hold_apr",
@@ -216,8 +216,8 @@
       "annualized_pct": 3.128531,
       "notes": "30d trailing Hold APR (simple annualization), no exit fee.",
       "apr_pct": 3.128531,
-      "abs_delta_vs_official_net_pp": 2.54261,
-      "delta_vs_official_net_pp": -2.54261
+      "abs_delta_vs_official_net_pp": 2.804529,
+      "delta_vs_official_net_pp": -2.804529
     },
     {
       "name": "14d_hold_apr",
@@ -231,8 +231,8 @@
       "annualized_pct": 3.101058,
       "notes": "14d trailing Hold APR (simple annualization), no exit fee.",
       "apr_pct": 3.101058,
-      "abs_delta_vs_official_net_pp": 2.570083,
-      "delta_vs_official_net_pp": -2.570083
+      "abs_delta_vs_official_net_pp": 2.832002,
+      "delta_vs_official_net_pp": -2.832002
     },
     {
       "name": "180d_hold_apy",
@@ -246,8 +246,8 @@
       "annualized_pct": 2.659498,
       "notes": "180d trailing Hold APY (compound annualization), no exit fee.",
       "apy_pct": 2.659498,
-      "abs_delta_vs_official_net_pp": 3.011643,
-      "delta_vs_official_net_pp": -3.011643
+      "abs_delta_vs_official_net_pp": 3.273562,
+      "delta_vs_official_net_pp": -3.273562
     },
     {
       "name": "180d_hold_apr",
@@ -261,8 +261,8 @@
       "annualized_pct": 2.641797,
       "notes": "180d trailing Hold APR (simple annualization), no exit fee.",
       "apr_pct": 2.641797,
-      "abs_delta_vs_official_net_pp": 3.029343,
-      "delta_vs_official_net_pp": -3.029343
+      "abs_delta_vs_official_net_pp": 3.291263,
+      "delta_vs_official_net_pp": -3.291263
     },
     {
       "name": "90d_hold_apy",
@@ -276,8 +276,8 @@
       "annualized_pct": 2.582252,
       "notes": "90d trailing Hold APY (compound annualization), no exit fee.",
       "apy_pct": 2.582252,
-      "abs_delta_vs_official_net_pp": 3.088888,
-      "delta_vs_official_net_pp": -3.088888
+      "abs_delta_vs_official_net_pp": 3.350808,
+      "delta_vs_official_net_pp": -3.350808
     },
     {
       "name": "90d_hold_apr",
@@ -291,12 +291,12 @@
       "annualized_pct": 2.5575,
       "notes": "90d trailing Hold APR (simple annualization), no exit fee.",
       "apr_pct": 2.5575,
-      "abs_delta_vs_official_net_pp": 3.113641,
-      "delta_vs_official_net_pp": -3.113641
+      "abs_delta_vs_official_net_pp": 3.37556,
+      "delta_vs_official_net_pp": -3.37556
     }
   ],
   "as_of": {
-    "generated_at_utc": "2026-07-17T05:39:28.992119+00:00",
+    "generated_at_utc": "2026-07-17T08:56:12.676969+00:00",
     "series_points": 883,
     "series_first_date": "2024-02-16",
     "series_last_date": "2026-07-17"

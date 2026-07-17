@@ -3,13 +3,15 @@
     "columns": [
       "window",
       "fluid_lite_hold_apy_pct",
+      "fluid_official_algo_net_apy_pct",
       "fluid_official_ui_apy_pct",
       "lido_hold_apy_pct",
       "lido_official_ui_apy_pct"
     ],
-    "our_apy": "compound Hold APY = (1+R)^(365.25/days)\u22121; no exit fee in Hold",
-    "fluid_official_ui": "Instadapp Lite Net APY (forward; shown on 1d row only)",
-    "lido_official_ui": "Mellow timeweighted-apy (UI APY* 14d avg.; shown on 14d row only)",
+    "our_hold_apy": "compound Hold APY = (1+R)^(365.25/days)\u22121; no exit fee in Hold",
+    "fluid_official_algo": "Reconstructed Instadapp forward Net: (\u03a3 protocol supply\u00d7apy \u2212 borrow\u00d7apy + idle\u00d7stETH APR)/TVL \u00d7 (1\u221220%)",
+    "fluid_official_ui": "Instadapp Lite Net APY from API (forward; 1d row only)",
+    "lido_official_ui": "Mellow timeweighted-apy (UI APY* 14d avg.; 14d row only)",
     "windows_days": [
       1,
       7,
@@ -21,16 +23,24 @@
   },
   "official": {
     "fluid": {
-      "net_apy_pct": 5.671140548660926,
-      "gross_apy_pct": 7.088925685826157,
-      "fetched_at_utc": "2026-07-17T05:39:30.184621+00:00",
+      "net_apy_pct": 5.933059871677775,
+      "gross_apy_pct": 7.416324839597219,
+      "fetched_at_utc": "2026-07-17T08:56:12.913456+00:00",
       "source_url": "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults"
+    },
+    "fluid_official_algo": {
+      "net_apy_pct": 5.920141,
+      "gross_apy_pct": 7.400176,
+      "delta_net_pp_vs_api": -0.012919,
+      "delta_gross_pp_vs_api": -0.016149,
+      "formula": "Gross=(\u03a3 protocol_pnl + idle\u00d7stETH.netStakingApr)/TVL; Net=Gross\u00d7(1\u2212revenueFee/100); protocol_pnl=\u03a3 supply\u00d7supplyApy \u2212 \u03a3 borrow\u00d7borrowApy [+ dexYield\u00d7ETH-supply notional]",
+      "detail_file": "results/fluid-lite-official-algo-apy.json"
     },
     "lido": {
       "apy_pct": 3.5633,
       "days": 14,
       "label": "APY* (14d avg.)",
-      "fetched_at_utc": "2026-07-17T05:39:30.264070+00:00",
+      "fetched_at_utc": "2026-07-17T08:56:13.256918+00:00",
       "source_url": "https://api.mellow.finance/v1/chain/1/core-vaults/0x6a37725ca7f4CE81c004c955f7280d5C704a249e/timeweighted-apy",
       "apy_last_update_utc": "2026-07-16T13:11:59+00:00",
       "ui_url": "https://stake.lido.fi/earn/eth/deposit"
@@ -40,7 +50,8 @@
     {
       "window": "1d",
       "fluid_lite_hold_apy_pct": 3.336135,
-      "fluid_official_ui_apy_pct": 5.671140548660926,
+      "fluid_official_algo_net_apy_pct": 5.920141,
+      "fluid_official_ui_apy_pct": 5.933059871677775,
       "lido_hold_apy_pct": null,
       "lido_official_ui_apy_pct": null,
       "fluid_meta": {
@@ -50,11 +61,12 @@
         "hold_return_pct": 0.008985
       },
       "lido_meta": null,
-      "notes": "Fluid Official UI = live Instadapp Net APY (forward). Fluid our = completed 1d Hold APY (trailing)."
+      "notes": "Fluid Hold = completed 1d trailing share-price APY. Fluid Official-algo = our reconstruction of Instadapp forward Net from rates\u00d7positions. Fluid Official UI = live API Net APY."
     },
     {
       "window": "7d",
       "fluid_lite_hold_apy_pct": 3.576884,
+      "fluid_official_algo_net_apy_pct": null,
       "fluid_official_ui_apy_pct": null,
       "lido_hold_apy_pct": 2.77463,
       "lido_official_ui_apy_pct": null,
@@ -75,6 +87,7 @@
     {
       "window": "14d",
       "fluid_lite_hold_apy_pct": 3.147742,
+      "fluid_official_algo_net_apy_pct": null,
       "fluid_official_ui_apy_pct": null,
       "lido_hold_apy_pct": 3.388142,
       "lido_official_ui_apy_pct": 3.5633,
@@ -95,6 +108,7 @@
     {
       "window": "30d",
       "fluid_lite_hold_apy_pct": 3.173843,
+      "fluid_official_algo_net_apy_pct": null,
       "fluid_official_ui_apy_pct": null,
       "lido_hold_apy_pct": 3.687809,
       "lido_official_ui_apy_pct": null,
@@ -115,6 +129,7 @@
     {
       "window": "90d",
       "fluid_lite_hold_apy_pct": 2.582252,
+      "fluid_official_algo_net_apy_pct": null,
       "fluid_official_ui_apy_pct": null,
       "lido_hold_apy_pct": 2.610066,
       "lido_official_ui_apy_pct": null,
@@ -135,6 +150,7 @@
     {
       "window": "lido_earn_inception",
       "fluid_lite_hold_apy_pct": 2.494357,
+      "fluid_official_algo_net_apy_pct": null,
       "fluid_official_ui_apy_pct": null,
       "lido_hold_apy_pct": 2.657657,
       "lido_official_ui_apy_pct": null,
@@ -155,6 +171,7 @@
     {
       "window": "360d",
       "fluid_lite_hold_apy_pct": 3.784336,
+      "fluid_official_algo_net_apy_pct": null,
       "fluid_official_ui_apy_pct": null,
       "lido_hold_apy_pct": null,
       "lido_official_ui_apy_pct": null,
@@ -170,6 +187,7 @@
     {
       "window": "fluid_lite_inception",
       "fluid_lite_hold_apy_pct": 5.323722,
+      "fluid_official_algo_net_apy_pct": null,
       "fluid_official_ui_apy_pct": null,
       "lido_hold_apy_pct": null,
       "lido_official_ui_apy_pct": null,
@@ -183,9 +201,9 @@
       "notes": null
     }
   ],
-  "markdown_table": "| Window | Fluid Lite (our Hold APY) | Fluid Official UI | Lido EarnETH (our Hold APY) | Lido Official UI |\n|--------|---------------------------|-------------------|-----------------------------|------------------|\n| 1d | 3.34% | 5.67% | \u2014 | \u2014 |\n| 7d | 3.58% | \u2014 | 2.77% | \u2014 |\n| 14d | 3.15% | \u2014 | 3.39% | 3.56% |\n| 30d | 3.17% | \u2014 | 3.69% | \u2014 |\n| 90d | 2.58% | \u2014 | 2.61% | \u2014 |\n| Lido Earn inception | 2.49% | \u2014 | 2.66% | \u2014 |\n| 360d | 3.78% | \u2014 | \u2014 | \u2014 |\n| Fluid Lite inception | 5.32% | \u2014 | \u2014 | \u2014 |\n",
+  "markdown_table": "| Window | Fluid Hold (our) | Fluid Official-algo (our) | Fluid Official UI | Lido Hold (our) | Lido Official UI |\n|--------|------------------|---------------------------|-------------------|-----------------|------------------|\n| 1d | 3.34% | 5.92% | 5.93% | \u2014 | \u2014 |\n| 7d | 3.58% | \u2014 | \u2014 | 2.77% | \u2014 |\n| 14d | 3.15% | \u2014 | \u2014 | 3.39% | 3.56% |\n| 30d | 3.17% | \u2014 | \u2014 | 3.69% | \u2014 |\n| 90d | 2.58% | \u2014 | \u2014 | 2.61% | \u2014 |\n| Lido Earn inception | 2.49% | \u2014 | \u2014 | 2.66% | \u2014 |\n| 360d | 3.78% | \u2014 | \u2014 | \u2014 | \u2014 |\n| Fluid Lite inception | 5.32% | \u2014 | \u2014 | \u2014 | \u2014 |\n",
   "as_of": {
-    "generated_at_utc": "2026-07-17T05:39:28.992119+00:00",
+    "generated_at_utc": "2026-07-17T08:56:12.676969+00:00",
     "refresh_policy": "historical one-shot only; no automatic updates",
     "refreshed_by": "cursor-cloud-agent",
     "windows_days": [

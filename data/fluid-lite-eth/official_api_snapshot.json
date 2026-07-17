@@ -1,13 +1,13 @@
 {
-  "fetched_at_utc": "2026-07-17T05:39:30.184621+00:00",
+  "fetched_at_utc": "2026-07-17T08:56:12.913456+00:00",
   "source_url": "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults",
   "vault": "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78",
   "exchangePriceiETHV2": "1.214531561690703133",
   "withdrawalFee": "0.05",
   "revenueFee": "20",
   "apy": {
-    "apyWithoutFee": "5.6711405486609255184",
-    "apyWithFee": "7.088925685826156898"
+    "apyWithoutFee": "5.9330598716777753448",
+    "apyWithFee": "7.416324839597219181"
   },
-  "vaultTVLInAsset": "74233.876623090113741755"
+  "vaultTVLInAsset": "74251.782591314957196769"
 }

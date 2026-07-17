@@ -29,6 +29,9 @@ from src.calculators.comparison_matrix import (  # noqa: E402
     COMPARISON_WINDOWS_DAYS,
     build_comparison_matrix,
 )
+from src.calculators.fluid_lite_official_algo import (  # noqa: E402
+    fetch_and_compute_official_algo_apy,
+)
 from src.calculators.official_apy_proxy import (  # noqa: E402
     RECOMMENDED_PROXY_NAME,
     build_official_comparison,
@@ -180,10 +183,16 @@ def main() -> int:
 
     # ---- Official APIs ----
     fluid_official = fetch_official_vault_apy()
+    fluid_algo = fetch_and_compute_official_algo_apy()
     lido_official = fetch_official_earneth_apy()
     print(
         f"Fluid Official Net={fluid_official['net_apy_pct']:.6f}% "
         f"Gross={fluid_official['gross_apy_pct']:.6f}%"
+    )
+    print(
+        f"Fluid Official-algo Net={fluid_algo['net_apy_pct']:.6f}% "
+        f"Gross={fluid_algo['gross_apy_pct']:.6f}% "
+        f"(Δ Net {fluid_algo['api_comparison']['delta_net_pp']:+.4f} pp vs API)"
     )
     print(
         f"Lido Official {lido_official['label']}={lido_official['apy_pct']:.6f}% "
@@ -212,6 +221,14 @@ def main() -> int:
             "apy": vault_item.get("apy"),
             "vaultTVLInAsset": vault_item.get("vaultTVLInAsset"),
         },
+    )
+    write_json(
+        ROOT / "data" / "fluid-lite-eth" / "official_algo_apy.json",
+        fluid_algo,
+    )
+    write_json(
+        ROOT / "results" / "fluid-lite-official-algo-apy.json",
+        fluid_algo,
     )
     write_json(
         ROOT / "data" / "lido-earn-eth" / "official_api_snapshot.json",
@@ -256,7 +273,11 @@ def main() -> int:
         "recommended_proxy": apy_cmp["recommended_proxy"],
         "official_net_apy_pct": apy_cmp["official"]["net_apy_pct"],
         "official_gross_apy_pct": apy_cmp["official"]["gross_apy_pct"],
+        "official_algo_net_apy_pct": fluid_algo["net_apy_pct"],
+        "official_algo_gross_apy_pct": fluid_algo["gross_apy_pct"],
+        "official_algo_delta_net_pp": fluid_algo["api_comparison"]["delta_net_pp"],
         "detail_file": "data/fluid-lite-eth/official_apy_proxy_comparison.json",
+        "algo_detail_file": "data/fluid-lite-eth/official_algo_apy.json",
     }
     write_json(ROOT / "data/fluid-lite-eth/summary.json", fluid_summary)
     write_json(
@@ -313,10 +334,18 @@ def main() -> int:
         fluid_exit_fee=float(fl["fees"]["exit_fee"]),
         fluid_official_net_apy_pct=fluid_official["net_apy_pct"],
         lido_official_apy_pct=lido_official["apy_pct"],
+        fluid_official_algo_net_apy_pct=fluid_algo["net_apy_pct"],
         fluid_official_meta={
             "gross_apy_pct": fluid_official["gross_apy_pct"],
             "fetched_at_utc": fluid_official["fetched_at_utc"],
             "source_url": fluid_official["source_url"],
+        },
+        fluid_official_algo_meta={
+            "gross_apy_pct": fluid_algo["gross_apy_pct"],
+            "delta_net_pp_vs_api": fluid_algo["api_comparison"]["delta_net_pp"],
+            "delta_gross_pp_vs_api": fluid_algo["api_comparison"]["delta_gross_pp"],
+            "formula": fluid_algo["formula"],
+            "detail_file": "results/fluid-lite-official-algo-apy.json",
         },
         lido_official_meta={
             "days": lido_official["days"],

@@ -103,6 +103,7 @@ python scripts/compare_fluid_official_apy.py
 | 用途 | 路径 |
 |------|------|
 | **对比矩阵（优先看）** | `results/RESULTS.md` · `results/comparison_matrix.json` |
+| Fluid 官网算法复现 | `results/fluid-lite-official-algo-apy.json` |
 | 两金库总览 JSON | `results/summary.json` |
 | Fluid 明细 JSON | `results/fluid-lite-eth.json` |
 | Fluid vs 官网 Net 代理 | `results/fluid-lite-official-apy-proxy.json` |
@@ -114,16 +115,18 @@ python scripts/compare_fluid_official_apy.py
 
 ### Window matrix
 
-| Window | Fluid our | Fluid Official UI | Lido our | Lido Official UI |
-|--------|-----------|-------------------|----------|------------------|
-| 1d | ✓ | ✓ Net APY | — | — |
-| 7d | ✓ | — | ✓ | — |
-| 14d | ✓ | — | ✓ | ✓ APY\* 14d avg |
-| 30d | ✓ | — | ✓ | — |
-| 90d | ✓ | — | ✓ | — |
-| Lido Earn inception | ✓ (same span) | — | ✓ | — |
-| 360d | ✓ | — | — | — |
-| Fluid Lite inception | ✓ | — | — | — |
+| Window | Fluid Hold | Fluid Official-algo | Fluid Official UI | Lido Hold | Lido Official UI |
+|--------|------------|---------------------|-------------------|-----------|------------------|
+| 1d | ✓ | ✓ reconstructed Net | ✓ API Net | — | — |
+| 7d | ✓ | — | — | ✓ | — |
+| 14d | ✓ | — | — | ✓ | ✓ APY\* 14d avg |
+| 30d | ✓ | — | — | ✓ | — |
+| 90d | ✓ | — | — | ✓ | — |
+| Lido Earn inception | ✓ (same span) | — | — | ✓ | — |
+| 360d | ✓ | — | — | — | — |
+| Fluid Lite inception | ✓ | — | — | — | — |
+
+**Fluid Official-algo** reconstructs Instadapp’s forward Net from live rates×positions (`src/calculators/fluid_lite_official_algo.py`); typical residual vs UI Net ≈ 0.01–0.02 pp.
 
 运行命令（仅 Cloud / 服务器）：
 
