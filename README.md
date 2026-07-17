@@ -104,6 +104,8 @@ python scripts/compare_fluid_official_apy.py
 |------|------|
 | **对比矩阵（优先看）** | `results/RESULTS.md` · `results/comparison_matrix.json` |
 | Fluid 官网算法复现 | `results/fluid-lite-official-algo-apy.json` |
+| Fluid Official UI 历史 (DefiLlama) | `data/fluid-lite-eth/official_ui_apy_history.csv` |
+| UI 历史 vs Hold 对照 | `results/fluid-lite-official-ui-history-compare.json` |
 | 两金库总览 JSON | `results/summary.json` |
 | Fluid 明细 JSON | `results/fluid-lite-eth.json` |
 | Fluid vs 官网 Net 代理 | `results/fluid-lite-official-apy-proxy.json` |
@@ -136,6 +138,9 @@ python scripts/build_comparison_matrix.py --pull
 
 # 仅用现有 CSV + 刷新官网数字（较快）
 python scripts/build_comparison_matrix.py
+
+# 拉取 DefiLlama Official UI 历史并与 Hold / Official-algo 对照
+python scripts/fetch_fluid_official_ui_history.py
 ```
 
 ```
