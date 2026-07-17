@@ -90,6 +90,25 @@ pip install -r requirements.txt
 python scripts/compute_historical_yields.py
 ```
 
+### Fluid Lite ETH independent audit
+
+To calculate trailing **1 / 7 / 14 / 30 / 90 / 120 / 180 day APY** without
+using any Fluid, Instadapp, or DefiLlama published APY:
+
+```bash
+python scripts/audit_fluid_eth_apy.py
+```
+
+This audit uses an Ethereum archive RPC to binary-search the last block at or
+before each UTC day-end boundary, then calls the vault's
+`convertToAssets(1e18)`. It applies **no exit fee** and writes:
+
+- `results/FLUID_LITE_ETH_INDEPENDENT_AUDIT.md`
+- `results/fluid-lite-eth-independent-audit.json`
+
+The JSON includes exact boundary blocks, block timestamps, and integer
+asset-per-share values for independent verification.
+
 Compare historical proxy vs live official Net APY (reuses existing CSV; no archive re-pull):
 
 ```bash
