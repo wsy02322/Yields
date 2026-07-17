@@ -209,7 +209,7 @@ def enumerate_proxy_candidates(
 ) -> list[ProxyCandidate]:
     """Enumerate trailing Hold candidates (no exit fee): APY + APR."""
     # 1d is handled via last_complete_1d_pair (not tip→tip-1 when tip incomplete).
-    window_days = window_days or [7, 30, 90, 180, 365]
+    window_days = window_days or [7, 14, 30, 90, 180, 360]
     out: list[ProxyCandidate] = []
     for method in ("compound", "simple"):
         c = _one_day_hold(series, method=method)

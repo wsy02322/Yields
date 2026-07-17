@@ -176,7 +176,7 @@ def rolling_windows(
 ) -> list[WindowReturn]:
     if not series:
         return []
-    windows_days = windows_days or [1, 7, 30, 90]
+    windows_days = windows_days or [1, 7, 14, 30, 90, 360]
     end = series[-1]
     end_date = end["date"]
     end_dt = _parse_date(end_date)

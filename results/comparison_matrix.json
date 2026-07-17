@@ -1,0 +1,203 @@
+{
+  "definition": {
+    "columns": [
+      "window",
+      "fluid_lite_hold_apy_pct",
+      "fluid_official_ui_apy_pct",
+      "lido_hold_apy_pct",
+      "lido_official_ui_apy_pct"
+    ],
+    "our_apy": "compound Hold APY = (1+R)^(365.25/days)\u22121; no exit fee in Hold",
+    "fluid_official_ui": "Instadapp Lite Net APY (forward; shown on 1d row only)",
+    "lido_official_ui": "Mellow timeweighted-apy (UI APY* 14d avg.; shown on 14d row only)",
+    "windows_days": [
+      1,
+      7,
+      14,
+      30,
+      90,
+      360
+    ]
+  },
+  "official": {
+    "fluid": {
+      "net_apy_pct": 5.671140548660926,
+      "gross_apy_pct": 7.088925685826157,
+      "fetched_at_utc": "2026-07-17T05:39:30.184621+00:00",
+      "source_url": "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults"
+    },
+    "lido": {
+      "apy_pct": 3.5633,
+      "days": 14,
+      "label": "APY* (14d avg.)",
+      "fetched_at_utc": "2026-07-17T05:39:30.264070+00:00",
+      "source_url": "https://api.mellow.finance/v1/chain/1/core-vaults/0x6a37725ca7f4CE81c004c955f7280d5C704a249e/timeweighted-apy",
+      "apy_last_update_utc": "2026-07-16T13:11:59+00:00",
+      "ui_url": "https://stake.lido.fi/earn/eth/deposit"
+    }
+  },
+  "rows": [
+    {
+      "window": "1d",
+      "fluid_lite_hold_apy_pct": 3.336135,
+      "fluid_official_ui_apy_pct": 5.671140548660926,
+      "lido_hold_apy_pct": null,
+      "lido_official_ui_apy_pct": null,
+      "fluid_meta": {
+        "start_date": "2026-07-15",
+        "end_date": "2026-07-16",
+        "days": 1.0,
+        "hold_return_pct": 0.008985
+      },
+      "lido_meta": null,
+      "notes": "Fluid Official UI = live Instadapp Net APY (forward). Fluid our = completed 1d Hold APY (trailing)."
+    },
+    {
+      "window": "7d",
+      "fluid_lite_hold_apy_pct": 3.576884,
+      "fluid_official_ui_apy_pct": null,
+      "lido_hold_apy_pct": 2.77463,
+      "lido_official_ui_apy_pct": null,
+      "fluid_meta": {
+        "start_date": "2026-07-10",
+        "end_date": "2026-07-17",
+        "days": 7.0,
+        "hold_return_pct": 0.067376
+      },
+      "lido_meta": {
+        "start_date": "2026-07-10",
+        "end_date": "2026-07-17",
+        "days": 7.0,
+        "hold_return_pct": 0.052465
+      },
+      "notes": null
+    },
+    {
+      "window": "14d",
+      "fluid_lite_hold_apy_pct": 3.147742,
+      "fluid_official_ui_apy_pct": null,
+      "lido_hold_apy_pct": 3.388142,
+      "lido_official_ui_apy_pct": 3.5633,
+      "fluid_meta": {
+        "start_date": "2026-07-03",
+        "end_date": "2026-07-17",
+        "days": 14.0,
+        "hold_return_pct": 0.118863
+      },
+      "lido_meta": {
+        "start_date": "2026-07-03",
+        "end_date": "2026-07-17",
+        "days": 14.0,
+        "hold_return_pct": 0.127797
+      },
+      "notes": "Lido Official UI = Mellow time-weighted APY* (14d avg.). Lido our = trailing 14d Hold APY from share price."
+    },
+    {
+      "window": "30d",
+      "fluid_lite_hold_apy_pct": 3.173843,
+      "fluid_official_ui_apy_pct": null,
+      "lido_hold_apy_pct": 3.687809,
+      "lido_official_ui_apy_pct": null,
+      "fluid_meta": {
+        "start_date": "2026-06-17",
+        "end_date": "2026-07-17",
+        "days": 30.0,
+        "hold_return_pct": 0.256963
+      },
+      "lido_meta": {
+        "start_date": "2026-06-17",
+        "end_date": "2026-07-17",
+        "days": 30.0,
+        "hold_return_pct": 0.297891
+      },
+      "notes": null
+    },
+    {
+      "window": "90d",
+      "fluid_lite_hold_apy_pct": 2.582252,
+      "fluid_official_ui_apy_pct": null,
+      "lido_hold_apy_pct": 2.610066,
+      "lido_official_ui_apy_pct": null,
+      "fluid_meta": {
+        "start_date": "2026-04-18",
+        "end_date": "2026-07-17",
+        "days": 90.0,
+        "hold_return_pct": 0.630185
+      },
+      "lido_meta": {
+        "start_date": "2026-04-18",
+        "end_date": "2026-07-17",
+        "days": 90.0,
+        "hold_return_pct": 0.636907
+      },
+      "notes": null
+    },
+    {
+      "window": "lido_earn_inception",
+      "fluid_lite_hold_apy_pct": 2.494357,
+      "fluid_official_ui_apy_pct": null,
+      "lido_hold_apy_pct": 2.657657,
+      "lido_official_ui_apy_pct": null,
+      "fluid_meta": {
+        "start_date": "2026-02-02",
+        "end_date": "2026-07-17",
+        "days": 165.0,
+        "hold_return_pct": 1.119207
+      },
+      "lido_meta": {
+        "start_date": "2026-02-02",
+        "end_date": "2026-07-17",
+        "days": 165.0,
+        "hold_return_pct": 1.191956
+      },
+      "notes": "Fluid Hold APY over EarnETH inception calendar span."
+    },
+    {
+      "window": "360d",
+      "fluid_lite_hold_apy_pct": 3.784336,
+      "fluid_official_ui_apy_pct": null,
+      "lido_hold_apy_pct": null,
+      "lido_official_ui_apy_pct": null,
+      "fluid_meta": {
+        "start_date": "2025-07-22",
+        "end_date": "2026-07-17",
+        "days": 360.0,
+        "hold_return_pct": 3.728939
+      },
+      "lido_meta": null,
+      "notes": null
+    },
+    {
+      "window": "fluid_lite_inception",
+      "fluid_lite_hold_apy_pct": 5.323722,
+      "fluid_official_ui_apy_pct": null,
+      "lido_hold_apy_pct": null,
+      "lido_official_ui_apy_pct": null,
+      "fluid_meta": {
+        "start_date": "2024-02-16",
+        "end_date": "2026-07-17",
+        "days": 882.0,
+        "hold_return_pct": 13.343315
+      },
+      "lido_meta": null,
+      "notes": null
+    }
+  ],
+  "markdown_table": "| Window | Fluid Lite (our Hold APY) | Fluid Official UI | Lido EarnETH (our Hold APY) | Lido Official UI |\n|--------|---------------------------|-------------------|-----------------------------|------------------|\n| 1d | 3.34% | 5.67% | \u2014 | \u2014 |\n| 7d | 3.58% | \u2014 | 2.77% | \u2014 |\n| 14d | 3.15% | \u2014 | 3.39% | 3.56% |\n| 30d | 3.17% | \u2014 | 3.69% | \u2014 |\n| 90d | 2.58% | \u2014 | 2.61% | \u2014 |\n| Lido Earn inception | 2.49% | \u2014 | 2.66% | \u2014 |\n| 360d | 3.78% | \u2014 | \u2014 | \u2014 |\n| Fluid Lite inception | 5.32% | \u2014 | \u2014 | \u2014 |\n",
+  "as_of": {
+    "generated_at_utc": "2026-07-17T05:39:28.992119+00:00",
+    "refresh_policy": "historical one-shot only; no automatic updates",
+    "refreshed_by": "cursor-cloud-agent",
+    "windows_days": [
+      1,
+      7,
+      14,
+      30,
+      90,
+      360
+    ],
+    "tip_block": 25550354,
+    "tip_timestamp": 1784266607,
+    "tip_date_utc": "2026-07-17"
+  }
+}
