@@ -65,11 +65,11 @@ APY             = (1 + return)^(365.25 / days) - 1   # compound — repo default
 APR             = return × (365.25 / days)           # simple/linear — not APY
 ```
 
-Windows: **1d / 7d / 30d / 90d / inception** (when enough history exists).
+Windows: **1d / 7d / 14d / 30d / 90d / 360d / inception** (when enough history exists).
 
 **Display guidance:** prefer **Hold APY** for short mark-to-market windows (≤30d). **Realized APY** is for deposit→withdraw (especially inception); short-window realized values are flagged `realized_apy_caution` because a one-time exit fee dominates after annualization.
 
-**Fluid Lite vs official Net APY (comparison):** use latest **completed 1-day Hold APY** (`1d_hold_apy` = `(1+R)^365.25−1`, no exit fee). Incomplete tip-day snapshots with ~0 return are skipped. See `docs/fluid-lite-net-apy.md` and `results/fluid-lite-official-apy-proxy.json`.
+**Comparison matrix:** `results/comparison_matrix.json` / `results/RESULTS.md` place Fluid Hold, Fluid Official Net (1d), Lido Hold, and Lido Official 14d avg side by side.
 
 Daily snapshots are UTC end-of-day approximations via archive `eth_call` at estimated blocks.
 
@@ -98,46 +98,56 @@ python scripts/compare_fluid_official_apy.py
 
 ## Outputs
 
-每次在 **Cursor Cloud Agent** 或 CI 上运行脚本后，结果会**直接写入仓库**（提交到 GitHub），你本地不需要跑计算。
+每次在 **Cursor Cloud Agent** 上运行后，结果会**直接写入仓库并推到 GitHub**，你本地不需要跑计算。
 
 | 用途 | 路径 |
 |------|------|
-| 人类可读摘要 | `results/RESULTS.md` |
+| **对比矩阵（优先看）** | `results/RESULTS.md` · `results/comparison_matrix.json` |
 | 两金库总览 JSON | `results/summary.json` |
 | Fluid 明细 JSON | `results/fluid-lite-eth.json` |
-| Fluid vs 官网 Net 对比 | `results/fluid-lite-official-apy-proxy.json` |
+| Fluid vs 官网 Net 代理 | `results/fluid-lite-official-apy-proxy.json` |
 | EarnETH 明细 JSON | `results/lido-earn-eth.json` |
 | 原始日频份额价 CSV | `data/*/daily_share_price.csv` |
-| 各金库汇总 + 窗口 APY | `data/*/summary.json` |
-| 官网 API 快照 | `data/fluid-lite-eth/official_api_snapshot.json` |
-| 官网对比明细 | `data/fluid-lite-eth/official_apy_proxy_comparison.json` |
+| 官网 API 快照 | `data/fluid-lite-eth/official_api_snapshot.json` · `data/lido-earn-eth/official_api_snapshot.json` |
 
-**优先看：** `results/RESULTS.md` 或 `results/summary.json` 里的 `as_of.generated_at_utc` 确认刷新时间。
+**怎么确认最新：** 看 `results/summary.json` → `as_of.generated_at_utc`。
 
-运行命令（仅在 Cloud / 服务器上执行，非用户本机）：
+### Window matrix
+
+| Window | Fluid our | Fluid Official UI | Lido our | Lido Official UI |
+|--------|-----------|-------------------|----------|------------------|
+| 1d | ✓ | ✓ Net APY | — | — |
+| 7d | ✓ | — | ✓ | — |
+| 14d | ✓ | — | ✓ | ✓ APY\* 14d avg |
+| 30d | ✓ | — | ✓ | — |
+| 90d | ✓ | — | ✓ | — |
+| Lido Earn inception | ✓ (same span) | — | ✓ | — |
+| 360d | ✓ | — | — | — |
+| Fluid Lite inception | ✓ | — | — | — |
+
+运行命令（仅 Cloud / 服务器）：
 
 ```bash
-# 全量历史拉取（较慢，需 archive RPC）
-python scripts/compute_historical_yields.py
+# 增量拉份额价到 tip + 刷新两边官网 APY + 写对比矩阵
+python scripts/build_comparison_matrix.py --pull
 
-# 仅刷新官网 Net/Gross + 用现有 CSV 重算对比（较快）
-python scripts/compare_fluid_official_apy.py
+# 仅用现有 CSV + 刷新官网数字（较快）
+python scripts/build_comparison_matrix.py
 ```
 
 ```
 data/fluid-lite-eth/daily_share_price.csv
 data/fluid-lite-eth/summary.json
-data/fluid-lite-eth/official_apy_proxy_comparison.json
 data/lido-earn-eth/daily_share_price.csv
 data/lido-earn-eth/summary.json
+results/comparison_matrix.json
 results/fluid-lite-eth.json
-results/fluid-lite-official-apy-proxy.json
 results/lido-earn-eth.json
 results/summary.json
 results/RESULTS.md
 ```
 
-See `results/RESULTS.md` for the latest one-shot numbers.
+See `results/RESULTS.md` for the latest matrix.
 
 **Note on Fluid exit fee:** realized APY applies the 0.05% exit fee once at the window end, then annualizes. On short windows (e.g. 7d) this one-time haircut dominates the period return and **understates** annualized realized APY — use hold APY for short mark-to-market views and realized for deposit→withdraw (esp. inception). Outputs set `realized_apy_caution=true` and `preferred_metric=hold_apy` when days ≤ 30 and exit fee > 0.
 

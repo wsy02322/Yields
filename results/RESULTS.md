@@ -1,81 +1,60 @@
-# Historical yield results (one-shot)
+# Yield comparison matrix
 
-Generated: **2026-07-16 UTC** (tip block `25543295`).  
-No automatic refresh — re-run only on explicit request.
+Generated: **2026-07-17 UTC** (tip block `25550354`) by Cursor Cloud Agent.  
+You do **not** need to run this on your own machine — results are committed to GitHub.
 
-Vaults are **independent**; no comparison metrics.
+**Our APY:** compound Hold `(1+R)^(365.25/days)−1` (no exit fee).  
+**Fluid Official UI:** Instadapp Lite **Net APY** (forward-looking; 1d row only).  
+**Lido Official UI:** Mellow **APY\* (14d avg.)** time-weighted (14d row only).
 
-**APY definition:** compound `(1+R)^(365.25/days)−1` (standard).  
-**APR (comparison only):** simple `R×(365.25/days)` — not APY.
+## Comparison table
 
-## Fluid Lite ETH (`iETHv2`) vs official UI Net
+| Window | Fluid Lite (our Hold APY) | Fluid Official UI | Lido EarnETH (our Hold APY) | Lido Official UI |
+|--------|---------------------------|-------------------|-----------------------------|------------------|
+| 1d | 3.34% | 5.67% | — | — |
+| 7d | 3.58% | — | 2.77% | — |
+| 14d | 3.15% | — | 3.39% | 3.56% |
+| 30d | 3.17% | — | 3.69% | — |
+| 90d | 2.58% | — | 2.61% | — |
+| Lido Earn inception | 2.49% | — | 2.66% | — |
+| 360d | 3.78% | — | — | — |
+| Fluid Lite inception | 5.32% | — | — | — |
 
-- Series: **882** daily points (`2024-02-16` → `2026-07-16`)
-- Share price: `1.07155` → `1.21442` (matches live API `exchangePriceiETHV2`)
+### Notes
 
-### Official UI (live Instadapp API)
+- **1d Fluid our** uses the latest *completed* EOD→EOD day (`2026-07-15 → 2026-07-16`); incomplete tip-day snapshots with ~0 move are skipped.
+- **1d Fluid Official UI** is live Net APY (`5.67%`), not a trailing 1d figure — different definition.
+- **14d Lido Official UI** = `3.56%` from Mellow `timeweighted-apy` (`days=14`), same source as [stake.lido.fi/earn/eth](https://stake.lido.fi/earn/eth/deposit).
+- **Lido Earn inception** Fluid column = Fluid Hold APY over EarnETH’s inception span (`2026-02-02 → 2026-07-17`).
+- **360d / Fluid Lite inception** have no Lido columns (history / product matrix).
 
-| 指标 | 数值 |
-|------|------|
-| **Net APY** (`apyWithoutFee`) | **5.8205%** |
-| **Gross APY** (`apyWithFee`) | **7.2756%** |
-| 绩效费 / 退出费 | 20% / 0.05% |
+### Official snapshots (this run)
 
-### 1-day Hold APY（用于对比官网）
+| Source | Value |
+|--------|-------|
+| Fluid Net / Gross | 5.6711% / 7.0889% |
+| Lido APY\* (14d avg.) | 3.5633% (last update 2026-07-16 13:11 UTC) |
 
-Latest **completed** calendar day (skips incomplete tip-day Jul 16 which had 0% move):
+## Series coverage
 
+| Vault | Points | Range |
+|-------|--------|-------|
+| Fluid Lite ETH | 883 | 2024-02-16 → 2026-07-17 |
+| Lido EarnETH | 166 | 2026-02-02 → 2026-07-17 |
+
+## Where to look on GitHub
+
+| File | Contents |
+|------|----------|
+| `results/RESULTS.md` | This human-readable table |
+| `results/comparison_matrix.json` | Full matrix JSON |
+| `results/summary.json` | Per-vault windows + `as_of` |
+| `data/*/daily_share_price.csv` | Raw daily share prices |
+| `data/fluid-lite-eth/official_api_snapshot.json` | Fluid UI API snapshot |
+| `data/lido-earn-eth/official_api_snapshot.json` | Lido/Mellow official APY |
+
+Refresh on Cloud Agent:
+
+```bash
+python scripts/build_comparison_matrix.py --pull
 ```
-R   = share_price(2026-07-15) / share_price(2026-07-14) − 1 = +0.013788%
-APY = (1+R)^365.25 − 1
-```
-
-| | Rate | Δ vs Official Net |
-|--|------|-------------------|
-| Official **Net** | **5.8205%** | — |
-| **1d Hold APY** (`2026-07-14 → 2026-07-15`) | **5.1647%** | **−0.656 pp** |
-| 1d Hold APR (same day, simple) | 5.036% | −0.784 pp |
-
-### Other trailing windows
-
-| Window | Hold APY | Realized APY | Preferred |
-|--------|----------|--------------|-----------|
-| 1d | **5.16%** | caution* | hold_apy |
-| 7d | 3.46% | 0.79%* | hold_apy |
-| 30d | 3.18% | 2.56%* | hold_apy |
-| 90d | 2.58% | 2.38% | hold_or_realized |
-| inception (881d) | 5.33% | 5.30% | hold_or_realized |
-
-\*Short windows with exit fee: prefer Hold APY.
-
-| Reference proxies | Rate | Δ vs Net |
-|-------------------|------|----------|
-| inception_hold_apr | 5.53% APR | −0.29 pp |
-| inception_hold_apy | 5.33% APY | −0.49 pp |
-| **1d_hold_apy (recommended vs UI)** | **5.16% APY** | **−0.66 pp** |
-
-Detail: `results/fluid-lite-official-apy-proxy.json` · `data/fluid-lite-eth/official_api_snapshot.json`
-
-## Lido EarnETH
-
-- Series: **165** daily points (`2026-02-02` → `2026-07-16`)
-- On-chain redeem fee = 0 → Hold = Realized
-- No official Fluid-style Net APY source for side-by-side UI compare
-
-| Window | Hold / Realized APY | Return |
-|--------|---------------------|--------|
-| 7d | 3.48% | +0.066% |
-| 30d | 3.81% | +0.307% |
-| 90d | 2.64% | +0.645% |
-| inception (164d) | **2.67%** | +1.19% |
-
-## Files
-
-- `data/fluid-lite-eth/daily_share_price.csv`
-- `data/fluid-lite-eth/summary.json`
-- `data/fluid-lite-eth/official_api_snapshot.json`
-- `data/fluid-lite-eth/official_apy_proxy_comparison.json`
-- `data/lido-earn-eth/daily_share_price.csv`
-- `data/lido-earn-eth/summary.json`
-- `results/summary.json`
-- `results/fluid-lite-official-apy-proxy.json`

@@ -246,3 +246,5 @@ def test_rolling_windows_includes_1d():
     labels = [w.label for w in windows]
     assert "1d" in labels
     assert "7d" in labels
+    assert "14d" in labels
+    assert "30d" in labels

@@ -1,0 +1,12 @@
+{
+  "fetched_at_utc": "2026-07-17T05:39:30.264070+00:00",
+  "source_url": "https://api.mellow.finance/v1/chain/1/core-vaults/0x6a37725ca7f4CE81c004c955f7280d5C704a249e/timeweighted-apy",
+  "vault": "0x6a37725ca7f4CE81c004c955f7280d5C704a249e",
+  "apy": 0.035633,
+  "apy_pct": 3.5633,
+  "days": 14,
+  "apy_last_update": 1784207519,
+  "apy_last_update_utc": "2026-07-16T13:11:59+00:00",
+  "label": "APY* (14d avg.)",
+  "ui_url": "https://stake.lido.fi/earn/eth/deposit"
+}
