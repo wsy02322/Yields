@@ -44,6 +44,31 @@ Net APY      = Gross × (1 − 0.20)
 
 Detail: `results/fluid-lite-official-algo-apy.json`
 
+### Official UI history (DefiLlama) vs Hold / Official-algo
+
+Instadapp has **no** public historical Net API. We pull DefiLlama’s daily series
+(same field as UI Net: `apy.apyWithoutFee`) into the repo and join it with our
+trailing Hold APYs.
+
+| | Value |
+|--|------|
+| Source | DefiLlama pool `e72916f7-…` |
+| Coverage | **2023-02-20 → 2026-07-17** (**1243** days) |
+| Overlap with our share series | 882 days (`2024-02-16` onward) |
+| Latest UI Net | **5.93%** |
+| Latest Official-algo | **5.92%** (Δ vs UI **−0.012 pp**) |
+| Latest Hold 1d / 7d / 30d | 3.34% / 3.58% / 3.17% |
+
+Recent 30d Hold − UI gap (mean):
+
+| Window | mean Δ | median Δ |
+|--------|--------|----------|
+| 1d Hold − UI | **−1.83 pp** | −1.58 pp |
+| 7d Hold − UI | **−1.90 pp** | −1.89 pp |
+| 30d Hold − UI | **−1.28 pp** | −1.04 pp |
+
+Files: `data/fluid-lite-eth/official_ui_apy_history.csv` · `results/fluid-lite-official-ui-history-compare.json`
+
 ### Official snapshots (this run)
 
 | Source | Value |
@@ -59,9 +84,12 @@ Detail: `results/fluid-lite-official-algo-apy.json`
 | `results/RESULTS.md` | This table |
 | `results/comparison_matrix.json` | Full matrix |
 | `results/fluid-lite-official-algo-apy.json` | Official-algo breakdown |
+| `results/fluid-lite-official-ui-history-compare.json` | UI history vs Hold stats |
+| `data/fluid-lite-eth/official_ui_apy_history.csv` | Daily Official UI + Hold join |
 | `results/summary.json` | Per-vault windows |
 
 ```bash
 python scripts/build_comparison_matrix.py        # CSV + live official APIs
 python scripts/build_comparison_matrix.py --pull # also refresh share prices
+python scripts/fetch_fluid_official_ui_history.py  # DefiLlama UI history + Hold compare
 ```

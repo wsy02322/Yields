@@ -1,0 +1,437 @@
+{
+  "definition": {
+    "official_ui": "DefiLlama daily series of Instadapp apy.apyWithoutFee (UI Net APY)",
+    "hold": "Our trailing compound Hold APY from share-price CSV, as-of each date",
+    "official_algo": "Live reconstruction of Instadapp forward Net (rates\u00d7positions); only attached on the latest row \u2014 not historically available",
+    "hold_windows": [
+      1,
+      7,
+      30
+    ]
+  },
+  "source": {
+    "defillama_pool_id": "e72916f7-a2d1-47ad-a4b9-2b054337cfd6",
+    "defillama_url": "https://yields.llama.fi/chart/e72916f7-a2d1-47ad-a4b9-2b054337cfd6",
+    "defillama_page": "https://defillama.com/yields/pool/e72916f7-a2d1-47ad-a4b9-2b054337cfd6",
+    "fetched_at_utc": "2026-07-17T09:00:02.114820+00:00",
+    "ui_points": 1243,
+    "ui_first_date": "2023-02-20",
+    "ui_last_date": "2026-07-17",
+    "share_first_date": "2024-02-16",
+    "share_last_date": "2026-07-17",
+    "overlap_points": 882
+  },
+  "summary": {
+    "ui_all": {
+      "n": 1243,
+      "min": 0.0,
+      "median": 6.21372,
+      "max": 77.50025,
+      "mean": 6.617872
+    },
+    "ui_overlap": {
+      "n": 882,
+      "min": 0.0,
+      "median": 6.113225,
+      "max": 77.50025,
+      "mean": 6.340543
+    },
+    "recent_days": 30,
+    "hold_1d_vs_ui_delta_pp_all": {
+      "n": 882,
+      "min": -34.725159,
+      "median": -1.156885,
+      "max": 52.524992,
+      "mean": -0.833092
+    },
+    "hold_1d_vs_ui_delta_pp_recent": {
+      "n": 30,
+      "min": -3.280683,
+      "median": -1.577238,
+      "max": 1.883054,
+      "mean": -1.828337
+    },
+    "hold_7d_vs_ui_delta_pp_all": {
+      "n": 876,
+      "min": -61.741792,
+      "median": -0.892466,
+      "max": 11.973933,
+      "mean": -0.977716
+    },
+    "hold_7d_vs_ui_delta_pp_recent": {
+      "n": 30,
+      "min": -2.9234,
+      "median": -1.893799,
+      "max": -1.358484,
+      "mean": -1.897719
+    },
+    "hold_30d_vs_ui_delta_pp_all": {
+      "n": 853,
+      "min": -68.714973,
+      "median": -0.69456,
+      "max": 7.272756,
+      "mean": -0.948318
+    },
+    "hold_30d_vs_ui_delta_pp_recent": {
+      "n": 30,
+      "min": -2.758347,
+      "median": -1.043154,
+      "max": -0.603772,
+      "mean": -1.283247
+    }
+  },
+  "latest": {
+    "date": "2026-07-17",
+    "official_ui_apy_pct": 5.93219,
+    "tvl_usd": 135659550.0,
+    "hold_1d_apy_pct": 3.336135,
+    "delta_hold_1d_vs_ui_pp": -2.596055,
+    "hold_7d_apy_pct": 3.576884,
+    "delta_hold_7d_vs_ui_pp": -2.355306,
+    "hold_30d_apy_pct": 3.173843,
+    "delta_hold_30d_vs_ui_pp": -2.758347,
+    "official_algo_net_apy_pct": 5.920141,
+    "official_algo_gross_apy_pct": 7.400177,
+    "official_algo_delta_vs_ui_pp": -0.012049
+  },
+  "recent_rows": [
+    {
+      "date": "2026-06-18",
+      "official_ui_apy_pct": 5.2976,
+      "tvl_usd": 125138306.0,
+      "hold_1d_apy_pct": 4.302922,
+      "delta_hold_1d_vs_ui_pp": -0.994678,
+      "hold_7d_apy_pct": 3.89437,
+      "delta_hold_7d_vs_ui_pp": -1.40323,
+      "hold_30d_apy_pct": 4.443613,
+      "delta_hold_30d_vs_ui_pp": -0.853987
+    },
+    {
+      "date": "2026-06-19",
+      "official_ui_apy_pct": 5.52258,
+      "tvl_usd": 124818878.0,
+      "hold_1d_apy_pct": 2.241897,
+      "delta_hold_1d_vs_ui_pp": -3.280683,
+      "hold_7d_apy_pct": 3.563891,
+      "delta_hold_7d_vs_ui_pp": -1.958689,
+      "hold_30d_apy_pct": 4.441368,
+      "delta_hold_30d_vs_ui_pp": -1.081212
+    },
+    {
+      "date": "2026-06-20",
+      "official_ui_apy_pct": 5.10576,
+      "tvl_usd": 127356024.0,
+      "hold_1d_apy_pct": 3.614813,
+      "delta_hold_1d_vs_ui_pp": -1.490947,
+      "hold_7d_apy_pct": 3.668778,
+      "delta_hold_7d_vs_ui_pp": -1.436982,
+      "hold_30d_apy_pct": 4.422407,
+      "delta_hold_30d_vs_ui_pp": -0.683353
+    },
+    {
+      "date": "2026-06-21",
+      "official_ui_apy_pct": 5.22115,
+      "tvl_usd": 125984501.0,
+      "hold_1d_apy_pct": 2.073344,
+      "delta_hold_1d_vs_ui_pp": -3.147806,
+      "hold_7d_apy_pct": 3.390281,
+      "delta_hold_7d_vs_ui_pp": -1.830869,
+      "hold_30d_apy_pct": 4.348749,
+      "delta_hold_30d_vs_ui_pp": -0.872401
+    },
+    {
+      "date": "2026-06-22",
+      "official_ui_apy_pct": 5.2042,
+      "tvl_usd": 126469497.0,
+      "hold_1d_apy_pct": 3.388067,
+      "delta_hold_1d_vs_ui_pp": -1.816133,
+      "hold_7d_apy_pct": 3.006057,
+      "delta_hold_7d_vs_ui_pp": -2.198143,
+      "hold_30d_apy_pct": 4.388878,
+      "delta_hold_30d_vs_ui_pp": -0.815322
+    },
+    {
+      "date": "2026-06-23",
+      "official_ui_apy_pct": 5.0662,
+      "tvl_usd": 122093010.0,
+      "hold_1d_apy_pct": 3.747705,
+      "delta_hold_1d_vs_ui_pp": -1.318495,
+      "hold_7d_apy_pct": 3.276462,
+      "delta_hold_7d_vs_ui_pp": -1.789738,
+      "hold_30d_apy_pct": 4.37164,
+      "delta_hold_30d_vs_ui_pp": -0.69456
+    },
+    {
+      "date": "2026-06-24",
+      "official_ui_apy_pct": 4.93691,
+      "tvl_usd": 118543677.0,
+      "hold_1d_apy_pct": 2.071766,
+      "delta_hold_1d_vs_ui_pp": -2.865144,
+      "hold_7d_apy_pct": 3.059429,
+      "delta_hold_7d_vs_ui_pp": -1.877481,
+      "hold_30d_apy_pct": 4.333138,
+      "delta_hold_30d_vs_ui_pp": -0.603772
+    },
+    {
+      "date": "2026-06-25",
+      "official_ui_apy_pct": 5.26704,
+      "tvl_usd": 115079734.0,
+      "hold_1d_apy_pct": 3.702215,
+      "delta_hold_1d_vs_ui_pp": -1.564825,
+      "hold_7d_apy_pct": 2.974426,
+      "delta_hold_7d_vs_ui_pp": -2.292614,
+      "hold_30d_apy_pct": 4.288621,
+      "delta_hold_30d_vs_ui_pp": -0.978419
+    },
+    {
+      "date": "2026-06-26",
+      "official_ui_apy_pct": 6.13546,
+      "tvl_usd": 112676663.0,
+      "hold_1d_apy_pct": 3.904974,
+      "delta_hold_1d_vs_ui_pp": -2.230486,
+      "hold_7d_apy_pct": 3.21206,
+      "delta_hold_7d_vs_ui_pp": -2.9234,
+      "hold_30d_apy_pct": 4.232493,
+      "delta_hold_30d_vs_ui_pp": -1.902967
+    },
+    {
+      "date": "2026-06-27",
+      "official_ui_apy_pct": 5.06693,
+      "tvl_usd": 113247537.0,
+      "hold_1d_apy_pct": 3.803841,
+      "delta_hold_1d_vs_ui_pp": -1.263089,
+      "hold_7d_apy_pct": 3.238938,
+      "delta_hold_7d_vs_ui_pp": -1.827992,
+      "hold_30d_apy_pct": 4.213915,
+      "delta_hold_30d_vs_ui_pp": -0.853015
+    },
+    {
+      "date": "2026-06-28",
+      "official_ui_apy_pct": 4.99755,
+      "tvl_usd": 111617369.0,
+      "hold_1d_apy_pct": 4.061411,
+      "delta_hold_1d_vs_ui_pp": -0.936139,
+      "hold_7d_apy_pct": 3.523821,
+      "delta_hold_7d_vs_ui_pp": -1.473729,
+      "hold_30d_apy_pct": 4.202492,
+      "delta_hold_30d_vs_ui_pp": -0.795058
+    },
+    {
+      "date": "2026-06-29",
+      "official_ui_apy_pct": 5.13181,
+      "tvl_usd": 114331837.0,
+      "hold_1d_apy_pct": 2.007304,
+      "delta_hold_1d_vs_ui_pp": -3.124506,
+      "hold_7d_apy_pct": 3.32517,
+      "delta_hold_7d_vs_ui_pp": -1.80664,
+      "hold_30d_apy_pct": 4.126714,
+      "delta_hold_30d_vs_ui_pp": -1.005096
+    },
+    {
+      "date": "2026-06-30",
+      "official_ui_apy_pct": 5.2463,
+      "tvl_usd": 111093698.0,
+      "hold_1d_apy_pct": 3.391376,
+      "delta_hold_1d_vs_ui_pp": -1.854924,
+      "hold_7d_apy_pct": 3.274399,
+      "delta_hold_7d_vs_ui_pp": -1.971901,
+      "hold_30d_apy_pct": 4.144445,
+      "delta_hold_30d_vs_ui_pp": -1.101855
+    },
+    {
+      "date": "2026-07-01",
+      "official_ui_apy_pct": 4.82617,
+      "tvl_usd": 114744279.0,
+      "hold_1d_apy_pct": 3.416552,
+      "delta_hold_1d_vs_ui_pp": -1.409618,
+      "hold_7d_apy_pct": 3.467686,
+      "delta_hold_7d_vs_ui_pp": -1.358484,
+      "hold_30d_apy_pct": 4.109761,
+      "delta_hold_30d_vs_ui_pp": -0.716409
+    },
+    {
+      "date": "2026-07-02",
+      "official_ui_apy_pct": 5.17824,
+      "tvl_usd": 120186038.0,
+      "hold_1d_apy_pct": 2.114984,
+      "delta_hold_1d_vs_ui_pp": -3.063256,
+      "hold_7d_apy_pct": 3.239953,
+      "delta_hold_7d_vs_ui_pp": -1.938287,
+      "hold_30d_apy_pct": 4.071591,
+      "delta_hold_30d_vs_ui_pp": -1.106649
+    },
+    {
+      "date": "2026-07-03",
+      "official_ui_apy_pct": 4.74245,
+      "tvl_usd": 124536623.0,
+      "hold_1d_apy_pct": 3.351162,
+      "delta_hold_1d_vs_ui_pp": -1.391288,
+      "hold_7d_apy_pct": 3.161163,
+      "delta_hold_7d_vs_ui_pp": -1.581287,
+      "hold_30d_apy_pct": 3.985564,
+      "delta_hold_30d_vs_ui_pp": -0.756886
+    },
+    {
+      "date": "2026-07-04",
+      "official_ui_apy_pct": 4.80555,
+      "tvl_usd": 126452870.0,
+      "hold_1d_apy_pct": 3.215899,
+      "delta_hold_1d_vs_ui_pp": -1.589651,
+      "hold_7d_apy_pct": 3.077488,
+      "delta_hold_7d_vs_ui_pp": -1.728062,
+      "hold_30d_apy_pct": 3.895821,
+      "delta_hold_30d_vs_ui_pp": -0.909729
+    },
+    {
+      "date": "2026-07-05",
+      "official_ui_apy_pct": 4.72008,
+      "tvl_usd": 126882670.0,
+      "hold_1d_apy_pct": 1.732849,
+      "delta_hold_1d_vs_ui_pp": -2.987231,
+      "hold_7d_apy_pct": 2.744777,
+      "delta_hold_7d_vs_ui_pp": -1.975303,
+      "hold_30d_apy_pct": 3.732368,
+      "delta_hold_30d_vs_ui_pp": -0.987712
+    },
+    {
+      "date": "2026-07-06",
+      "official_ui_apy_pct": 4.42124,
+      "tvl_usd": 130492172.0,
+      "hold_1d_apy_pct": 3.082472,
+      "delta_hold_1d_vs_ui_pp": -1.338768,
+      "hold_7d_apy_pct": 2.898789,
+      "delta_hold_7d_vs_ui_pp": -1.522451,
+      "hold_30d_apy_pct": 3.57833,
+      "delta_hold_30d_vs_ui_pp": -0.84291
+    },
+    {
+      "date": "2026-07-07",
+      "official_ui_apy_pct": 4.81635,
+      "tvl_usd": 128201745.0,
+      "hold_1d_apy_pct": 1.791078,
+      "delta_hold_1d_vs_ui_pp": -3.025272,
+      "hold_7d_apy_pct": 2.66974,
+      "delta_hold_7d_vs_ui_pp": -2.14661,
+      "hold_30d_apy_pct": 3.375701,
+      "delta_hold_30d_vs_ui_pp": -1.440649
+    },
+    {
+      "date": "2026-07-08",
+      "official_ui_apy_pct": 4.62622,
+      "tvl_usd": 126171228.0,
+      "hold_1d_apy_pct": 3.482646,
+      "delta_hold_1d_vs_ui_pp": -1.143574,
+      "hold_7d_apy_pct": 2.679111,
+      "delta_hold_7d_vs_ui_pp": -1.947109,
+      "hold_30d_apy_pct": 3.37498,
+      "delta_hold_30d_vs_ui_pp": -1.25124
+    },
+    {
+      "date": "2026-07-09",
+      "official_ui_apy_pct": 4.65504,
+      "tvl_usd": 127804339.0,
+      "hold_1d_apy_pct": 3.25931,
+      "delta_hold_1d_vs_ui_pp": -1.39573,
+      "hold_7d_apy_pct": 2.842705,
+      "delta_hold_7d_vs_ui_pp": -1.812335,
+      "hold_30d_apy_pct": 3.294474,
+      "delta_hold_30d_vs_ui_pp": -1.360566
+    },
+    {
+      "date": "2026-07-10",
+      "official_ui_apy_pct": 4.92641,
+      "tvl_usd": 130830074.0,
+      "hold_1d_apy_pct": 2.493702,
+      "delta_hold_1d_vs_ui_pp": -2.432708,
+      "hold_7d_apy_pct": 2.720378,
+      "delta_hold_7d_vs_ui_pp": -2.206032,
+      "hold_30d_apy_pct": 3.201111,
+      "delta_hold_30d_vs_ui_pp": -1.725299
+    },
+    {
+      "date": "2026-07-11",
+      "official_ui_apy_pct": 4.7348,
+      "tvl_usd": 133104562.0,
+      "hold_1d_apy_pct": 3.53949,
+      "delta_hold_1d_vs_ui_pp": -1.19531,
+      "hold_7d_apy_pct": 2.766322,
+      "delta_hold_7d_vs_ui_pp": -1.968478,
+      "hold_30d_apy_pct": 3.222269,
+      "delta_hold_30d_vs_ui_pp": -1.512531
+    },
+    {
+      "date": "2026-07-12",
+      "official_ui_apy_pct": 4.74896,
+      "tvl_usd": 132785291.0,
+      "hold_1d_apy_pct": 3.390797,
+      "delta_hold_1d_vs_ui_pp": -1.358163,
+      "hold_7d_apy_pct": 3.003923,
+      "delta_hold_7d_vs_ui_pp": -1.745037,
+      "hold_30d_apy_pct": 3.183989,
+      "delta_hold_30d_vs_ui_pp": -1.564971
+    },
+    {
+      "date": "2026-07-13",
+      "official_ui_apy_pct": 5.17674,
+      "tvl_usd": 129666219.0,
+      "hold_1d_apy_pct": 2.229567,
+      "delta_hold_1d_vs_ui_pp": -2.947173,
+      "hold_7d_apy_pct": 2.881739,
+      "delta_hold_7d_vs_ui_pp": -2.295001,
+      "hold_30d_apy_pct": 3.16207,
+      "delta_hold_30d_vs_ui_pp": -2.01467
+    },
+    {
+      "date": "2026-07-14",
+      "official_ui_apy_pct": 5.65279,
+      "tvl_usd": 139728240.0,
+      "hold_1d_apy_pct": 7.535844,
+      "delta_hold_1d_vs_ui_pp": 1.883054,
+      "hold_7d_apy_pct": 3.691824,
+      "delta_hold_7d_vs_ui_pp": -1.960966,
+      "hold_30d_apy_pct": 3.276652,
+      "delta_hold_30d_vs_ui_pp": -2.376138
+    },
+    {
+      "date": "2026-07-15",
+      "official_ui_apy_pct": 5.84106,
+      "tvl_usd": 142512711.0,
+      "hold_1d_apy_pct": 5.164705,
+      "delta_hold_1d_vs_ui_pp": -0.676355,
+      "hold_7d_apy_pct": 3.930943,
+      "delta_hold_7d_vs_ui_pp": -1.910117,
+      "hold_30d_apy_pct": 3.245591,
+      "delta_hold_30d_vs_ui_pp": -2.595469
+    },
+    {
+      "date": "2026-07-16",
+      "official_ui_apy_pct": 5.63129,
+      "tvl_usd": 138640486.0,
+      "hold_1d_apy_pct": 3.336135,
+      "delta_hold_1d_vs_ui_pp": -2.295155,
+      "hold_7d_apy_pct": 3.941986,
+      "delta_hold_7d_vs_ui_pp": -1.689304,
+      "hold_30d_apy_pct": 3.295081,
+      "delta_hold_30d_vs_ui_pp": -2.336209
+    },
+    {
+      "date": "2026-07-17",
+      "official_ui_apy_pct": 5.93219,
+      "tvl_usd": 135659550.0,
+      "hold_1d_apy_pct": 3.336135,
+      "delta_hold_1d_vs_ui_pp": -2.596055,
+      "hold_7d_apy_pct": 3.576884,
+      "delta_hold_7d_vs_ui_pp": -2.355306,
+      "hold_30d_apy_pct": 3.173843,
+      "delta_hold_30d_vs_ui_pp": -2.758347
+    }
+  ],
+  "markdown_recent_table": "| date | official_ui | hold_1d | \u03941d | hold_7d | \u03947d | hold_30d | \u039430d |\n|------|------|------|------|------|------|------|------|\n| 2026-06-18 | 5.30% | 4.30% | -0.99pp | 3.89% | -1.40pp | 4.44% | -0.85pp |\n| 2026-06-19 | 5.52% | 2.24% | -3.28pp | 3.56% | -1.96pp | 4.44% | -1.08pp |\n| 2026-06-20 | 5.11% | 3.61% | -1.49pp | 3.67% | -1.44pp | 4.42% | -0.68pp |\n| 2026-06-21 | 5.22% | 2.07% | -3.15pp | 3.39% | -1.83pp | 4.35% | -0.87pp |\n| 2026-06-22 | 5.20% | 3.39% | -1.82pp | 3.01% | -2.20pp | 4.39% | -0.82pp |\n| 2026-06-23 | 5.07% | 3.75% | -1.32pp | 3.28% | -1.79pp | 4.37% | -0.69pp |\n| 2026-06-24 | 4.94% | 2.07% | -2.87pp | 3.06% | -1.88pp | 4.33% | -0.60pp |\n| 2026-06-25 | 5.27% | 3.70% | -1.56pp | 2.97% | -2.29pp | 4.29% | -0.98pp |\n| 2026-06-26 | 6.14% | 3.90% | -2.23pp | 3.21% | -2.92pp | 4.23% | -1.90pp |\n| 2026-06-27 | 5.07% | 3.80% | -1.26pp | 3.24% | -1.83pp | 4.21% | -0.85pp |\n| 2026-06-28 | 5.00% | 4.06% | -0.94pp | 3.52% | -1.47pp | 4.20% | -0.80pp |\n| 2026-06-29 | 5.13% | 2.01% | -3.12pp | 3.33% | -1.81pp | 4.13% | -1.01pp |\n| 2026-06-30 | 5.25% | 3.39% | -1.85pp | 3.27% | -1.97pp | 4.14% | -1.10pp |\n| 2026-07-01 | 4.83% | 3.42% | -1.41pp | 3.47% | -1.36pp | 4.11% | -0.72pp |\n| 2026-07-02 | 5.18% | 2.11% | -3.06pp | 3.24% | -1.94pp | 4.07% | -1.11pp |\n| 2026-07-03 | 4.74% | 3.35% | -1.39pp | 3.16% | -1.58pp | 3.99% | -0.76pp |\n| 2026-07-04 | 4.81% | 3.22% | -1.59pp | 3.08% | -1.73pp | 3.90% | -0.91pp |\n| 2026-07-05 | 4.72% | 1.73% | -2.99pp | 2.74% | -1.98pp | 3.73% | -0.99pp |\n| 2026-07-06 | 4.42% | 3.08% | -1.34pp | 2.90% | -1.52pp | 3.58% | -0.84pp |\n| 2026-07-07 | 4.82% | 1.79% | -3.03pp | 2.67% | -2.15pp | 3.38% | -1.44pp |\n| 2026-07-08 | 4.63% | 3.48% | -1.14pp | 2.68% | -1.95pp | 3.37% | -1.25pp |\n| 2026-07-09 | 4.66% | 3.26% | -1.40pp | 2.84% | -1.81pp | 3.29% | -1.36pp |\n| 2026-07-10 | 4.93% | 2.49% | -2.43pp | 2.72% | -2.21pp | 3.20% | -1.73pp |\n| 2026-07-11 | 4.73% | 3.54% | -1.20pp | 2.77% | -1.97pp | 3.22% | -1.51pp |\n| 2026-07-12 | 4.75% | 3.39% | -1.36pp | 3.00% | -1.75pp | 3.18% | -1.56pp |\n| 2026-07-13 | 5.18% | 2.23% | -2.95pp | 2.88% | -2.30pp | 3.16% | -2.01pp |\n| 2026-07-14 | 5.65% | 7.54% | +1.88pp | 3.69% | -1.96pp | 3.28% | -2.38pp |\n| 2026-07-15 | 5.84% | 5.16% | -0.68pp | 3.93% | -1.91pp | 3.25% | -2.60pp |\n| 2026-07-16 | 5.63% | 3.34% | -2.30pp | 3.94% | -1.69pp | 3.30% | -2.34pp |\n| 2026-07-17 | 5.93% | 3.34% | -2.60pp | 3.58% | -2.36pp | 3.17% | -2.76pp |\n",
+  "history_csv": "data/fluid-lite-eth/official_ui_apy_history.csv",
+  "official_algo_live": {
+    "net_apy_pct": 5.920141,
+    "gross_apy_pct": 7.400177,
+    "delta_net_pp_vs_api": -0.012923,
+    "fetched_at_utc": "2026-07-17T09:00:02.357567+00:00"
+  }
+}
