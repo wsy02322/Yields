@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import sys
+from decimal import Decimal, localcontext
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
@@ -64,16 +64,25 @@ def block_at_or_before(
     return lo, block_timestamp
 
 
-def compound_apy(start_assets: int, end_assets: int, elapsed_seconds: int) -> tuple[float, float]:
+def compound_apy(
+    start_assets: int, end_assets: int, elapsed_seconds: int
+) -> tuple[float, float]:
     """Return total return and compound APY from exact integer share values."""
     if start_assets <= 0 or end_assets <= 0:
         raise ValueError("share values must be positive")
     if elapsed_seconds <= 0:
         raise ValueError("elapsed_seconds must be positive")
-    total_return = end_assets / start_assets - 1.0
-    elapsed_days = elapsed_seconds / SECONDS_PER_DAY
-    apy = math.expm1(math.log1p(total_return) * DAYS_PER_YEAR / elapsed_days)
-    return total_return, apy
+    with localcontext() as context:
+        context.prec = 50
+        ratio = Decimal(end_assets) / Decimal(start_assets)
+        total_return = ratio - Decimal(1)
+        exponent = (
+            Decimal(str(DAYS_PER_YEAR))
+            * Decimal(SECONDS_PER_DAY)
+            / Decimal(elapsed_seconds)
+        )
+        apy = (ratio.ln() * exponent).exp() - Decimal(1)
+    return float(total_return), float(apy)
 
 
 def _iso(timestamp: int) -> str:
@@ -95,6 +104,12 @@ def _observation(
         low_block=low_block,
         high_block=high_block,
     )
+    if block >= high_block:
+        raise ValueError("target boundary is not finalized below the search tip")
+    next_block = block + 1
+    next_timestamp = int(get_block(next_block)["timestamp"])
+    if next_timestamp <= target_timestamp:
+        raise RuntimeError("block boundary search did not find the highest valid block")
     value = assets_per_share(w3, contract, block)
     return {
         "target_timestamp": target_timestamp,
@@ -103,6 +118,10 @@ def _observation(
         "block_timestamp": timestamp,
         "block_time_utc": _iso(timestamp),
         "seconds_before_target": target_timestamp - timestamp,
+        "next_block": next_block,
+        "next_block_timestamp": next_timestamp,
+        "next_block_time_utc": _iso(next_timestamp),
+        "next_block_seconds_after_target": next_timestamp - target_timestamp,
         "assets_per_1e18_shares_wei": str(value),
         "assets_per_share": value / 1e18,
     }
@@ -169,6 +188,7 @@ def audit(
             "chain": "ethereum",
             "chain_id": int(w3.eth.chain_id),
             "contract": contract,
+            "measurement": "trailing on-chain receipt-token exchange-rate return",
             "share_amount": "1000000000000000000",
             "windows_days": list(windows_days),
             "exit_fee_applied": 0,
@@ -200,6 +220,11 @@ def audit(
                 "No exit fee. Ongoing vault accounting effects already reflected "
                 "in convertToAssets."
             ),
+            "limitation": (
+                "This independently recomputes return from the on-chain receipt-token "
+                "exchange rate; it is not a position-by-position valuation or solvency "
+                "audit of the vault's underlying assets and liabilities."
+            ),
         },
         "windows": windows,
     }
@@ -215,6 +240,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"- 截至：`{as_of['latest_complete_day_utc']} 23:59:59 UTC`",
         "- 数据：以太坊归档 RPC 的区块头与 `convertToAssets(1e18)` 链上读取",
         "- 排除：Fluid / Instadapp / DefiLlama 发布的 APY；退出费用按 0 处理",
+        "- 边界：审计链上份额兑换率收益，不是底层仓位逐项估值或偿付能力审计",
         "",
         "| 窗口 | 起始日 | 结束日 | 区间收益率 | APY |",
         "|---:|---|---|---:|---:|",
