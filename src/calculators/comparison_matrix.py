@@ -2,18 +2,21 @@
 
 Rows (windows) and which columns are filled follow the product matrix:
 
-| window              | Fluid our | Fluid Official UI | Lido our | Lido Official UI |
-|---------------------|-----------|-------------------|----------|------------------|
-| 1d                  | yes       | yes (Net APY)     | —        | —                |
-| 7d                  | yes       | —                 | yes      | —                |
-| 14d                 | yes       | —                 | yes      | yes (14d avg)    |
-| 30d                 | yes       | —                 | yes      | —                |
-| 90d                 | yes       | —                 | yes      | —                |
-| Lido earn inception | yes*      | —                 | yes      | —                |
-| 360d                | yes       | —                 | —        | —                |
-| Fluid lite inception| yes       | —                 | —        | —                |
+| window              | Fluid Hold | Fluid Official-algo | Fluid Official UI | Lido Hold | Lido Official UI |
+|---------------------|------------|---------------------|-------------------|-----------|------------------|
+| 1d                  | yes        | yes (reconstructed) | yes (Net APY)     | —         | —                |
+| 7d                  | yes        | —                   | —                 | yes       | —                |
+| 14d                 | yes        | —                   | —                 | yes       | yes (14d avg)    |
+| 30d                 | yes        | —                   | —                 | yes       | —                |
+| 90d                 | yes        | —                   | —                 | yes       | —                |
+| Lido earn inception | yes*       | —                   | —                 | yes       | —                |
+| 360d                | yes        | —                   | —                 | —         | —                |
+| Fluid lite inception| yes        | —                   | —                 | —         | —                |
 
 * Fluid Hold APY over the same calendar span as EarnETH inception.
+
+``Fluid Official-algo`` = our reconstruction of Instadapp's forward Net APY
+from live rates × positions (see ``fluid_lite_official_algo.py``).
 """
 
 from __future__ import annotations
@@ -53,8 +56,10 @@ def build_comparison_matrix(
     fluid_exit_fee: float,
     fluid_official_net_apy_pct: float | None,
     lido_official_apy_pct: float | None,
+    fluid_official_algo_net_apy_pct: float | None = None,
     fluid_official_meta: dict[str, Any] | None = None,
     lido_official_meta: dict[str, Any] | None = None,
+    fluid_official_algo_meta: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build the fixed comparison matrix payload + markdown-friendly rows."""
 
@@ -79,6 +84,7 @@ def build_comparison_matrix(
         window: str,
         *,
         fluid: float | None = None,
+        fluid_official_algo: float | None = None,
         fluid_official: float | None = None,
         lido: float | None = None,
         lido_official: float | None = None,
@@ -89,6 +95,7 @@ def build_comparison_matrix(
         return {
             "window": window,
             "fluid_lite_hold_apy_pct": fluid,
+            "fluid_official_algo_net_apy_pct": fluid_official_algo,
             "fluid_official_ui_apy_pct": fluid_official,
             "lido_hold_apy_pct": lido,
             "lido_official_ui_apy_pct": lido_official,
@@ -101,11 +108,14 @@ def build_comparison_matrix(
         row(
             "1d",
             fluid=_hold_apy_pct(fluid_summary, "1d"),
+            fluid_official_algo=fluid_official_algo_net_apy_pct,
             fluid_official=fluid_official_net_apy_pct,
             fluid_meta=_window_meta(fluid_summary, "1d"),
             notes=(
-                "Fluid Official UI = live Instadapp Net APY (forward). "
-                "Fluid our = completed 1d Hold APY (trailing)."
+                "Fluid Hold = completed 1d trailing share-price APY. "
+                "Fluid Official-algo = our reconstruction of Instadapp forward "
+                "Net from rates×positions. "
+                "Fluid Official UI = live API Net APY."
             ),
         ),
         row(
@@ -178,8 +188,8 @@ def build_comparison_matrix(
         return "—" if x is None else f"{x:.2f}%"
 
     markdown_lines = [
-        "| Window | Fluid Lite (our Hold APY) | Fluid Official UI | Lido EarnETH (our Hold APY) | Lido Official UI |",
-        "|--------|---------------------------|-------------------|-----------------------------|------------------|",
+        "| Window | Fluid Hold (our) | Fluid Official-algo (our) | Fluid Official UI | Lido Hold (our) | Lido Official UI |",
+        "|--------|------------------|---------------------------|-------------------|-----------------|------------------|",
     ]
     label = {
         "1d": "1d",
@@ -194,6 +204,7 @@ def build_comparison_matrix(
     for r in rows:
         markdown_lines.append(
             f"| {label[r['window']]} | {fmt(r['fluid_lite_hold_apy_pct'])} | "
+            f"{fmt(r['fluid_official_algo_net_apy_pct'])} | "
             f"{fmt(r['fluid_official_ui_apy_pct'])} | {fmt(r['lido_hold_apy_pct'])} | "
             f"{fmt(r['lido_official_ui_apy_pct'])} |"
         )
@@ -203,19 +214,28 @@ def build_comparison_matrix(
             "columns": [
                 "window",
                 "fluid_lite_hold_apy_pct",
+                "fluid_official_algo_net_apy_pct",
                 "fluid_official_ui_apy_pct",
                 "lido_hold_apy_pct",
                 "lido_official_ui_apy_pct",
             ],
-            "our_apy": "compound Hold APY = (1+R)^(365.25/days)−1; no exit fee in Hold",
-            "fluid_official_ui": "Instadapp Lite Net APY (forward; shown on 1d row only)",
-            "lido_official_ui": "Mellow timeweighted-apy (UI APY* 14d avg.; shown on 14d row only)",
+            "our_hold_apy": "compound Hold APY = (1+R)^(365.25/days)−1; no exit fee in Hold",
+            "fluid_official_algo": (
+                "Reconstructed Instadapp forward Net: "
+                "(Σ protocol supply×apy − borrow×apy + idle×stETH APR)/TVL × (1−20%)"
+            ),
+            "fluid_official_ui": "Instadapp Lite Net APY from API (forward; 1d row only)",
+            "lido_official_ui": "Mellow timeweighted-apy (UI APY* 14d avg.; 14d row only)",
             "windows_days": COMPARISON_WINDOWS_DAYS,
         },
         "official": {
             "fluid": {
                 "net_apy_pct": fluid_official_net_apy_pct,
                 **(fluid_official_meta or {}),
+            },
+            "fluid_official_algo": {
+                "net_apy_pct": fluid_official_algo_net_apy_pct,
+                **(fluid_official_algo_meta or {}),
             },
             "lido": {
                 "apy_pct": lido_official_apy_pct,

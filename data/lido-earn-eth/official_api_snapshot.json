@@ -1,5 +1,5 @@
 {
-  "fetched_at_utc": "2026-07-17T05:39:30.264070+00:00",
+  "fetched_at_utc": "2026-07-17T08:56:13.256918+00:00",
   "source_url": "https://api.mellow.finance/v1/chain/1/core-vaults/0x6a37725ca7f4CE81c004c955f7280d5C704a249e/timeweighted-apy",
   "vault": "0x6a37725ca7f4CE81c004c955f7280d5C704a249e",
   "apy": 0.035633,

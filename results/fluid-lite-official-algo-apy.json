@@ -1,0 +1,97 @@
+{
+  "fetched_at_utc": "2026-07-17T08:56:13.137418+00:00",
+  "source_url": "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults",
+  "vault": "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78",
+  "exchange_price": "1.214531561690703133",
+  "withdrawal_fee": "0.05",
+  "revenue_fee": "20",
+  "vault_tvl_in_asset": 74251.78259131496,
+  "api_apy": {
+    "apyWithoutFee": "5.9330598716777753448",
+    "apyWithFee": "7.416324839597219181"
+  },
+  "method": "fluid_lite_official_algo_reconstructed",
+  "formula": "Gross=(\u03a3 protocol_pnl + idle\u00d7stETH.netStakingApr)/TVL; Net=Gross\u00d7(1\u2212revenueFee/100); protocol_pnl=\u03a3 supply\u00d7supplyApy \u2212 \u03a3 borrow\u00d7borrowApy [+ dexYield\u00d7ETH-supply notional]",
+  "gross_apy": 0.07400176275796612,
+  "net_apy": 0.0592014102063729,
+  "gross_apy_pct": 7.400176,
+  "net_apy_pct": 5.920141,
+  "revenue_fee_pct": 20.0,
+  "protocol_net_assets": 46810.540929658906,
+  "idle_assets": 27441.24166165605,
+  "idle_share_of_tvl_pct": 36.957014,
+  "steth_net_staking_apr_pct": 2.2264192244670244,
+  "protocol_pnl": 4883.805719891004,
+  "idle_pnl": 610.9570797875647,
+  "protocols": [
+    {
+      "name": "aaveV3",
+      "pnl": 3334.931086089223,
+      "supply_pnl": 8978.487314934382,
+      "borrow_pnl": 5643.556228845159,
+      "dex_pnl": 0.0,
+      "net_assets": 23181.979539100634,
+      "levered_net_apy_pct": 14.385877
+    },
+    {
+      "name": "compoundV3",
+      "pnl": 0.00017252815491987004,
+      "supply_pnl": 0.0002674518096492487,
+      "borrow_pnl": 9.49236547293787e-05,
+      "dex_pnl": 0.0,
+      "net_assets": 0.006584642085590064,
+      "levered_net_apy_pct": 2.62016
+    },
+    {
+      "name": "spark",
+      "pnl": 1466.5806964042135,
+      "supply_pnl": 3653.7441994750684,
+      "borrow_pnl": 2187.163503070855,
+      "dex_pnl": 0.0,
+      "net_assets": 14410.313876822765,
+      "levered_net_apy_pct": 10.177299
+    },
+    {
+      "name": "fluidNew",
+      "pnl": 150.02029972093555,
+      "supply_pnl": 1975.5231348835857,
+      "borrow_pnl": 1825.5028351626502,
+      "dex_pnl": 0.0,
+      "net_assets": 7325.292397291934,
+      "levered_net_apy_pct": 2.047977
+    },
+    {
+      "name": "aaveV3Lido",
+      "pnl": 0.00012838595422447725,
+      "supply_pnl": 0.00013353284270953592,
+      "borrow_pnl": 5.146888485058682e-06,
+      "dex_pnl": 0.0,
+      "net_assets": 0.005549102757474313,
+      "levered_net_apy_pct": 2.313634
+    },
+    {
+      "name": "fluidDex",
+      "pnl": -67.73010777093509,
+      "supply_pnl": 314.5698566139971,
+      "borrow_pnl": 385.959189817799,
+      "dex_pnl": 3.6592254328667697,
+      "net_assets": 1892.845573106188,
+      "levered_net_apy_pct": -3.578216
+    },
+    {
+      "name": "fluidWeETHWstETH",
+      "pnl": 0.00344453345744927,
+      "supply_pnl": 0.0034634392936644686,
+      "borrow_pnl": 1.8905836215198484e-05,
+      "dex_pnl": 0.0,
+      "net_assets": 0.0974095925410978,
+      "levered_net_apy_pct": 3.536134
+    }
+  ],
+  "api_comparison": {
+    "api_gross_apy_pct": 7.416324839597219,
+    "api_net_apy_pct": 5.933059871677775,
+    "delta_gross_pp": -0.016149,
+    "delta_net_pp": -0.012919
+  }
+}

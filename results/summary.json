@@ -1,6 +1,6 @@
 {
   "as_of": {
-    "generated_at_utc": "2026-07-17T05:39:28.992119+00:00",
+    "generated_at_utc": "2026-07-17T08:56:12.676969+00:00",
     "refresh_policy": "historical one-shot only; no automatic updates",
     "refreshed_by": "cursor-cloud-agent",
     "windows_days": [
@@ -164,12 +164,16 @@
           "annualized_pct": 3.336135,
           "notes": "Latest completed 1-day Hold APY (compound): R = share_price_T / share_price_{T\u22121} \u2212 1; APY = (1+R)^(365.25/1) \u2212 1. Uses the last closed EOD\u2192EOD day (skips an incomplete tip-day snapshot when that tip day has ~0 return). No exit fee (matches UI Net fee treatment: performance fee already in share price; exit fee not in Net APY).",
           "apy_pct": 3.336135,
-          "delta_vs_official_net_pp": -2.335005,
-          "abs_delta_vs_official_net_pp": 2.335005
+          "delta_vs_official_net_pp": -2.596925,
+          "abs_delta_vs_official_net_pp": 2.596925
         },
-        "official_net_apy_pct": 5.671141,
-        "official_gross_apy_pct": 7.088926,
-        "detail_file": "data/fluid-lite-eth/official_apy_proxy_comparison.json"
+        "official_net_apy_pct": 5.93306,
+        "official_gross_apy_pct": 7.416325,
+        "official_algo_net_apy_pct": 5.920141,
+        "official_algo_gross_apy_pct": 7.400176,
+        "official_algo_delta_net_pp": -0.012919,
+        "detail_file": "data/fluid-lite-eth/official_apy_proxy_comparison.json",
+        "algo_detail_file": "data/fluid-lite-eth/official_algo_apy.json"
       }
     },
     "lido_earn_eth": {
@@ -314,7 +318,7 @@
         "days": 14,
         "label": "APY* (14d avg.)",
         "source_url": "https://api.mellow.finance/v1/chain/1/core-vaults/0x6a37725ca7f4CE81c004c955f7280d5C704a249e/timeweighted-apy",
-        "fetched_at_utc": "2026-07-17T05:39:30.264070+00:00",
+        "fetched_at_utc": "2026-07-17T08:56:13.256918+00:00",
         "apy_last_update_utc": "2026-07-16T13:11:59+00:00"
       }
     }

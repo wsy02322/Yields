@@ -40,6 +40,7 @@ def test_build_comparison_matrix_shape():
         fluid_exit_fee=0.0005,
         fluid_official_net_apy_pct=5.82,
         lido_official_apy_pct=3.56,
+        fluid_official_algo_net_apy_pct=5.80,
     )
 
     windows = [r["window"] for r in matrix["rows"]]
@@ -56,8 +57,9 @@ def test_build_comparison_matrix_shape():
 
     by = {r["window"]: r for r in matrix["rows"]}
 
-    # 1d: fluid + fluid official only
+    # 1d: fluid hold + official-algo + fluid official
     assert by["1d"]["fluid_lite_hold_apy_pct"] is not None
+    assert by["1d"]["fluid_official_algo_net_apy_pct"] == 5.80
     assert by["1d"]["fluid_official_ui_apy_pct"] == 5.82
     assert by["1d"]["lido_hold_apy_pct"] is None
     assert by["1d"]["lido_official_ui_apy_pct"] is None
@@ -67,6 +69,7 @@ def test_build_comparison_matrix_shape():
     assert by["14d"]["lido_hold_apy_pct"] is not None
     assert by["14d"]["lido_official_ui_apy_pct"] == 3.56
     assert by["14d"]["fluid_official_ui_apy_pct"] is None
+    assert by["14d"]["fluid_official_algo_net_apy_pct"] is None
 
     # 360d: fluid only
     assert by["360d"]["fluid_lite_hold_apy_pct"] is not None
@@ -84,4 +87,4 @@ def test_build_comparison_matrix_shape():
         == by["lido_earn_inception"]["lido_meta"]["start_date"]
     )
 
-    assert "Fluid Lite" in matrix["markdown_table"]
+    assert "Official-algo" in matrix["markdown_table"]
