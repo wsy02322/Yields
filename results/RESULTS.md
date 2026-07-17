@@ -50,22 +50,37 @@ Instadapp has **no** public historical Net API. We pull DefiLlama’s daily seri
 (same field as UI Net: `apy.apyWithoutFee`) into the repo and join it with our
 trailing Hold APYs.
 
+**Important:** DefiLlama publishes **one** daily Net series — it does **not** ship
+native 7d/30d/… window APYs. Multi-window compare below is **our Hold** (1d / 7d / 30d)
+against that **same** daily UI point each date. Official-algo is live-only (latest row).
+
 | | Value |
 |--|------|
 | Source | DefiLlama pool `e72916f7-…` |
 | Coverage | **2023-02-20 → 2026-07-17** (**1243** days) |
 | Overlap with our share series | 882 days (`2024-02-16` onward) |
-| Latest UI Net | **5.93%** |
-| Latest Official-algo | **5.92%** (Δ vs UI **−0.012 pp**) |
-| Latest Hold 1d / 7d / 30d | 3.34% / 3.58% / 3.17% |
 
-Recent 30d Hold − UI gap (mean):
+#### Latest day (2026-07-17)
 
-| Window | mean Δ | median Δ |
-|--------|--------|----------|
-| 1d Hold − UI | **−1.83 pp** | −1.58 pp |
-| 7d Hold − UI | **−1.90 pp** | −1.89 pp |
-| 30d Hold − UI | **−1.28 pp** | −1.04 pp |
+| Metric | Value | Δ vs DefiLlama UI |
+|--------|------:|------------------:|
+| DefiLlama Official UI Net | **5.93%** | — |
+| Official-algo Net (live) | **5.92%** | **−0.012 pp** |
+| Hold 1d | 3.34% | −2.60 pp |
+| Hold 7d | 3.58% | −2.36 pp |
+| Hold 30d | 3.17% | −2.76 pp |
+
+#### Hold − UI gap by window (pp)
+
+| Window | Recent 30d mean | Recent 30d median | All-overlap mean | All-overlap median |
+|--------|----------------:|------------------:|-----------------:|-------------------:|
+| 1d Hold − UI | **−1.83** | −1.58 | −0.83 | −1.16 |
+| 7d Hold − UI | **−1.90** | −1.89 | −0.98 | −0.89 |
+| 30d Hold − UI | **−1.28** | −1.04 | −0.95 | −0.69 |
+
+Hold stays below UI across 1d/7d/30d (definition gap: trailing share-price vs forward rates). Official-algo stays within ~0.01 pp of UI on the latest day.
+
+Not yet joined in this history file: Hold 14d / 90d / 360d / inception vs UI.
 
 Files: `data/fluid-lite-eth/official_ui_apy_history.csv` · `results/fluid-lite-official-ui-history-compare.json`
 
