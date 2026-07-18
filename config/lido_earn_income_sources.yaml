@@ -1,0 +1,64 @@
+# Lido EarnETH — income / sample audit taxonomy
+# Branch: cursor/07180937-lidoearn-tx-roundtrip-plan-fc33
+# Method: Fluid Lite clean A vs B (tx round-trip vs share path)
+
+vault:
+  name: Lido EarnETH
+  vault: "0x6a37725ca7f4CE81c004c955f7280d5C704a249e"
+  share_token: "0xBBFC8683C8fE8cF73777feDE7ab9574935fea0A4"
+  share_symbol: earnETH
+  oracle: "0xAda1f4c24603aB2fe5aBd35BCD12370e98A20358"
+  fee_manager: "0xed4Fac879eE86F3aB0101993A3713e7cAA0488E1"
+  base_asset: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+  ui_url: "https://stake.lido.fi/earn/eth/deposit"
+  deployment_block: 24370480
+  deployment_date: "2026-02-02"
+  share_price_method: "eth_per_share = 1e36 / oracle.getReport(ETH).priceD18"
+  # Queues: filled in WP0 discovery (not ERC4626 sync Deposit/Withdraw)
+  deposit_queue: null
+  redeem_queue: null
+
+fees:
+  deposit_fee: 0.0          # depositFeeD6 = 0
+  redeem_fee: 0.0           # redeemFeeD6 = 0 → B = p1/p0 - 1
+  protocol_fee: 0.01        # minted as shares on reports → in p
+  performance_fee: 0.10     # minted as shares on reports → in p
+
+income_lines:
+  - id: strategy_nav
+    in_share_price: true
+    note: Subvault strategy PnL reflected via oracle reports
+  - id: protocol_performance_fees
+    in_share_price: true
+    note: Dilutive share mint on reports; net in eth_per_share
+  - id: mellow_points
+    in_share_price: false
+    note: Off-chain loyalty; exclude from A/B
+  - id: obol_ssv
+    in_share_price: false
+    note: Separate claimables; exclude from A/B
+
+metrics:
+  A: "assets_out / assets_in - 1  # claimed redeem assets / deposited assets"
+  B: "p1/p0 * (1 - redeem_fee) - 1  # currently redeem_fee=0"
+  APY: "(1+R)^(365.25/days) - 1"
+  primary_sample: clean_full
+
+work_packages:
+  - id: WP0
+    title: Discover DepositQueue/RedeemQueue events and pricing report linkage
+    status: pending
+  - id: WP-A
+    title: Clean tx round-trips vs oracle share-path (A vs B)
+    status: pending
+  - id: WP-B
+    title: Realized A-APY vs UI APY* contrast note
+    status: pending
+  - id: WP-C
+    title: Light off-chain exclusion confirm
+    status: pending
+
+reference:
+  fluid_lite_plan: docs/fluid-lite-income-audit-plan.md
+  fluid_lite_samples: results/fluid-lite-clean-samples-A-vs-B.md
+  existing_hold_audit: results/LIDO_EARN_AUDIT.md
