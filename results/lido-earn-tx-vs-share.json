@@ -1,0 +1,81 @@
+{
+  "summary": {
+    "n": 1,
+    "sample": "clean_full",
+    "sample_definition": "one deposit request+claim \u2192 one full redeem (same shares) \u2192 one redeem claim; ETH-equivalent via wstETH\u2192stETH",
+    "redeem_fee": 0.0,
+    "abs_gap_return_pp": {
+      "median": 0.09199012572678189,
+      "p90": 0.09199012572678189,
+      "max": 0.09199012572678189
+    },
+    "abs_gap_apy_pp": {
+      "median": 12.636486431889548,
+      "p90": 12.636486431889548,
+      "max": 12.636486431889548
+    },
+    "buckets": {
+      "lt_7d": {
+        "n": 1,
+        "median_abs_gap_return_pp": 0.09199012572678189,
+        "median_tx_apy_pct": 17.2680378266882
+      },
+      "d7_30": {
+        "n": 0,
+        "median_abs_gap_return_pp": null,
+        "median_tx_apy_pct": null
+      },
+      "d30_90": {
+        "n": 0,
+        "median_abs_gap_return_pp": null,
+        "median_tx_apy_pct": null
+      },
+      "ge_90d": {
+        "n": 0,
+        "median_abs_gap_return_pp": null,
+        "median_tx_apy_pct": null
+      }
+    },
+    "from_block": 25308840,
+    "to_block": 25558840,
+    "event_counts": {
+      "dep_req": 21,
+      "dep_claim": 19,
+      "red_req": 189,
+      "red_claim": 206
+    }
+  },
+  "rows": [
+    {
+      "owner": "0x9CB320E620800048AEFE1269261a96aa27dAF4bc",
+      "deposit_asset": "ETH",
+      "deposit_request_tx": "ae51f31ea2cfceec113af5c720d3ccfe0661161f46f2a459b89aea8ce3b9072c",
+      "deposit_claim_tx": "9486a2f28be3e99f1fca8683de73ad31d720f55099b36773db7d0df656d80b12",
+      "redeem_tx": "9486a2f28be3e99f1fca8683de73ad31d720f55099b36773db7d0df656d80b12",
+      "withdraw_claim_tx": "bf73233a51127bf1d361ad7204c01d517ff250725aa598cdca0835b23141ed6f",
+      "deposit_block": 25403394,
+      "withdraw_block": 25424512,
+      "deposit_ts": 1782496055,
+      "withdraw_ts": 1782750455,
+      "deposit_date": "2026-06-26",
+      "withdraw_date": "2026-06-29",
+      "days": 2.9444444444444446,
+      "shares": 0.9910500257002096,
+      "assets_in": 1.0,
+      "assets_out": 1.0012849496664704,
+      "assets_in_raw": 1.0,
+      "assets_out_raw": 0.8086527452312162,
+      "tx_return": 0.001284949666470414,
+      "tx_apy": 0.17268037826688198,
+      "p0": 1.0098961488016192,
+      "p1": 1.010264809784199,
+      "share_return_hold": 0.0003650484092025952,
+      "share_return_after_exit": 0.0003650484092025952,
+      "share_apy_hold": 0.0463155139479865,
+      "share_apy_after_exit": 0.0463155139479865,
+      "gap_return_pp": 0.09199012572678189,
+      "gap_apy_pp": 12.636486431889548,
+      "sample": "clean_full"
+    }
+  ]
+}

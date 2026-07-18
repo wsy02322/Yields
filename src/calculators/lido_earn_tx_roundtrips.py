@@ -119,11 +119,14 @@ def _get_logs_chunked(
     topic: str,
     from_block: int,
     to_block: int,
-    chunk: int = 2000,
+    chunk: int = 3500,
+    label: str = "",
 ) -> list:
     out: list = []
     a = from_block
     cur_chunk = chunk
+    total = max(1, to_block - from_block + 1)
+    last_pct = -1
     while a <= to_block:
         b = min(a + cur_chunk - 1, to_block)
 
@@ -141,16 +144,21 @@ def _get_logs_chunked(
             logs = retry_call(_run, retries=6, base_sleep=1.0)
             out.extend(logs)
             a = b + 1
-            time.sleep(0.05)
+            pct = int(100 * (a - from_block) / total)
+            if label and pct >= last_pct + 10:
+                print(f"  {label}: {pct}% ({len(out)} logs)", flush=True)
+                last_pct = pct
+            time.sleep(0.03)
         except Exception as e:  # noqa: BLE001
             msg = str(e)
-            if cur_chunk > 400 and (
+            if cur_chunk > 500 and (
                 "400" in msg or "Too Many" in msg or "429" in msg or "crashed" in msg
             ):
-                cur_chunk = max(400, cur_chunk // 2)
+                cur_chunk = max(500, cur_chunk // 2)
                 time.sleep(1.5)
                 continue
             # skip stubborn window
+            print(f"  skip {a}-{b}: {msg[:100]}", flush=True)
             a = b + 1
             time.sleep(0.5)
     return out
@@ -220,12 +228,15 @@ def fetch_queue_events(
     dep_reqs: list[QueueEvent] = []
     dep_claims: list[QueueEvent] = []
     for queue, asset in dep_queues:
+        qshort = queue[:10]
+        print(f"fetch dep_req {asset} {qshort}…", flush=True)
         for lg in _get_logs_chunked(
             w3,
             address=queue,
             topic=DEP_REQ_TOPIC,
             from_block=from_block,
             to_block=tip,
+            label=f"dep_req:{qshort}",
         ):
             # DepositRequested(account, referral, assets, timestamp)
             owner = _addr_from_topic(lg["topics"][1])
@@ -249,12 +260,14 @@ def fetch_queue_events(
                     referral=referral,
                 )
             )
+        print(f"fetch dep_claim {asset} {qshort}…", flush=True)
         for lg in _get_logs_chunked(
             w3,
             address=queue,
             topic=DEP_CLAIM_TOPIC,
             from_block=from_block,
             to_block=tip,
+            label=f"dep_claim:{qshort}",
         ):
             owner = _addr_from_topic(lg["topics"][1])
             shares, req_ts = decode(["uint256", "uint32"], bytes(lg["data"]))
@@ -277,8 +290,14 @@ def fetch_queue_events(
     red_reqs: list[QueueEvent] = []
     red_claims: list[QueueEvent] = []
     rq = REDEEM_QUEUE_WSTETH
+    print(f"fetch red_req {rq[:10]}…", flush=True)
     for lg in _get_logs_chunked(
-        w3, address=rq, topic=RED_REQ_TOPIC, from_block=from_block, to_block=tip
+        w3,
+        address=rq,
+        topic=RED_REQ_TOPIC,
+        from_block=from_block,
+        to_block=tip,
+        label="red_req",
     ):
         owner = _addr_from_topic(lg["topics"][1])
         shares, req_ts = decode(["uint256", "uint256"], bytes(lg["data"]))
@@ -297,8 +316,14 @@ def fetch_queue_events(
                 request_ts=int(req_ts),
             )
         )
+    print(f"fetch red_claim {rq[:10]}…", flush=True)
     for lg in _get_logs_chunked(
-        w3, address=rq, topic=RED_CLAIM_TOPIC, from_block=from_block, to_block=tip
+        w3,
+        address=rq,
+        topic=RED_CLAIM_TOPIC,
+        from_block=from_block,
+        to_block=tip,
+        label="red_claim",
     ):
         # RedeemRequestClaimed(account, receiver, assets, timestamp)
         owner = _addr_from_topic(lg["topics"][1])
@@ -372,8 +397,13 @@ def match_clean_full_round_trips(
     min_days: float = 0.01,
     share_tol: float = 1e-9,
 ) -> list[dict[str, Any]]:
-    """One deposit claim → one full redeem (same shares) → one redeem claim."""
+    """Clean full: deposit claim → later full redeem of same shares → redeem claim.
+
+    Allows multiple lifetime deposits per owner if a contiguous pair exists:
+    no other deposit-claim or redeem-request for that owner between the pair.
+    """
     paired = _pair_deposit_claims(dep_reqs, dep_claims)
+    paired.sort(key=lambda p: (p["dep_claim"].block, p["dep_claim"].log_index))
 
     by_owner_deps: dict[str, list[dict[str, Any]]] = {}
     for p in paired:
@@ -383,55 +413,72 @@ def match_clean_full_round_trips(
     for r in red_reqs:
         by_owner_red_req.setdefault(r.owner.lower(), []).append(r)
 
-    by_owner_red_claim: dict[str, list[QueueEvent]] = {}
+    claim_by_key: dict[tuple[str, int], list[QueueEvent]] = {}
     for c in red_claims:
-        by_owner_red_claim.setdefault(c.owner.lower(), []).append(c)
+        claim_by_key.setdefault((c.owner.lower(), c.request_ts), []).append(c)
 
     legs: list[dict[str, Any]] = []
+    used_red_req: set[tuple[str, str, int]] = set()
+
     for owner, deps in by_owner_deps.items():
-        if len(deps) != 1:
-            continue
-        dep = deps[0]
-        rreqs = by_owner_red_req.get(owner) or []
-        rclaims = by_owner_red_claim.get(owner) or []
-        if len(rreqs) != 1 or len(rclaims) != 1:
-            continue
-        rr, rc = rreqs[0], rclaims[0]
-        if abs(rr.amount - dep["shares"]) > share_tol:
-            continue
-        # redeem claim should match request timestamp
-        if rc.request_ts != rr.request_ts and abs(rc.request_ts - rr.request_ts) > 0:
-            # still allow if only one each
-            pass
-        if rr.block < dep["dep_claim"].block:
-            continue
-        if rc.block < rr.block:
-            continue
-        days = (rc.timestamp - dep["dep_claim"].timestamp) / 86400.0
-        if days < min_days:
-            continue
-        assets_out_raw = rc.amount  # wstETH
-        assets_in_raw = dep["assets_in_raw"]
-        legs.append(
-            {
-                "owner": dep["owner"],
-                "deposit_asset": dep["asset"],
-                "deposit_request_tx": dep["dep_req"].tx_hash,
-                "deposit_claim_tx": dep["dep_claim"].tx_hash,
-                "redeem_tx": rr.tx_hash,
-                "withdraw_claim_tx": rc.tx_hash,
-                "deposit_block": dep["dep_claim"].block,
-                "withdraw_block": rc.block,
-                "deposit_ts": dep["dep_claim"].timestamp,
-                "withdraw_ts": rc.timestamp,
-                "days": days,
-                "shares": dep["shares"],
-                "assets_in_raw": assets_in_raw,
-                "assets_out_raw": assets_out_raw,
-                "assets_out_asset": "wstETH",
-                "sample": "clean_full",
-            }
+        rreqs = sorted(
+            by_owner_red_req.get(owner) or [],
+            key=lambda e: (e.block, e.log_index),
         )
+        for dep in deps:
+            dc = dep["dep_claim"]
+            for rr in rreqs:
+                if rr.block <= dc.block:
+                    continue
+                if abs(rr.amount - dep["shares"]) > share_tol:
+                    continue
+                key = (owner, rr.tx_hash, rr.log_index)
+                if key in used_red_req:
+                    continue
+                intervening_dep = any(
+                    dc.block < p["dep_claim"].block < rr.block for p in deps
+                )
+                intervening_red = any(
+                    dc.block < r.block < rr.block for r in rreqs if r is not rr
+                )
+                if intervening_dep or intervening_red:
+                    continue
+                claims = claim_by_key.get((owner, rr.request_ts)) or []
+                if len(claims) != 1:
+                    continue
+                rc = claims[0]
+                if rc.block < rr.block:
+                    continue
+                days = (rc.timestamp - dc.timestamp) / 86400.0
+                if days < min_days:
+                    continue
+                used_red_req.add(key)
+                legs.append(
+                    {
+                        "owner": dep["owner"],
+                        "deposit_asset": dep["asset"],
+                        "deposit_request_tx": dep["dep_req"].tx_hash,
+                        "deposit_claim_tx": dc.tx_hash,
+                        "redeem_tx": rr.tx_hash,
+                        "withdraw_claim_tx": rc.tx_hash,
+                        "deposit_block": dc.block,
+                        "withdraw_block": rc.block,
+                        "deposit_ts": dc.timestamp,
+                        "withdraw_ts": rc.timestamp,
+                        "days": days,
+                        "shares": dep["shares"],
+                        "assets_in_raw": dep["assets_in_raw"],
+                        "assets_out_raw": rc.amount,
+                        "assets_out_asset": "wstETH",
+                        "sample": "clean_full",
+                        "implied_p0": (
+                            dep["assets_in_raw"] / dep["shares"]
+                            if dep["shares"] > 0
+                            else None
+                        ),
+                    }
+                )
+                break
     legs.sort(key=lambda x: -x["days"])
     return legs
 
@@ -459,9 +506,20 @@ def enrich_legs_with_share_path(
         )
         p0 = eth_per_share(w3, leg["deposit_block"], oracle=oracle)
         p1 = eth_per_share(w3, leg["withdraw_block"], oracle=oracle)
+        shares = float(leg["shares"])
+        # Mint-implied entry price (ETH per share from deposit amounts)
+        implied_p0 = eth_in / shares if shares > 0 else float("nan")
+        # Claim-implied exit price (ETH per share from redeem amounts)
+        implied_p1 = eth_out / shares if shares > 0 else float("nan")
         tx_ret = eth_out / eth_in - 1.0 if eth_in > 0 else float("nan")
         share_hold = p1 / p0 - 1.0 if p0 > 0 else float("nan")
         share_exit = p1 / p0 * (1.0 - redeem_fee) - 1.0 if p0 > 0 else float("nan")
+        # B using mint/claim implied prices (should ≈ A if conversions consistent)
+        implied_path = (
+            implied_p1 / implied_p0 * (1.0 - redeem_fee) - 1.0
+            if implied_p0 > 0
+            else float("nan")
+        )
         days = float(leg["days"])
         tx_apy = annualize_apy(tx_ret, days) if days > 0 else None
         share_apy_hold = annualize_apy(share_hold, days) if days > 0 else None
@@ -478,12 +536,16 @@ def enrich_legs_with_share_path(
             "tx_apy": tx_apy,
             "p0": p0,
             "p1": p1,
+            "implied_p0": implied_p0,
+            "implied_p1": implied_p1,
+            "implied_path_return": implied_path,
             "share_return_hold": share_hold,
             "share_return_after_exit": share_exit,
             "share_apy_hold": share_apy_hold,
             "share_apy_after_exit": share_apy_exit,
             "gap_return_pp": gap,
             "gap_apy_pp": gap_apy,
+            "mint_vs_oracle_p0_pp": (implied_p0 / p0 - 1.0) * 100 if p0 else None,
             "redeem_fee": redeem_fee,
         }
         out.append(row)

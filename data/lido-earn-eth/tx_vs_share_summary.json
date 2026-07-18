@@ -1,0 +1,46 @@
+{
+  "n": 1,
+  "sample": "clean_full",
+  "sample_definition": "one deposit request+claim \u2192 one full redeem (same shares) \u2192 one redeem claim; ETH-equivalent via wstETH\u2192stETH",
+  "redeem_fee": 0.0,
+  "abs_gap_return_pp": {
+    "median": 0.09199012572678189,
+    "p90": 0.09199012572678189,
+    "max": 0.09199012572678189
+  },
+  "abs_gap_apy_pp": {
+    "median": 12.636486431889548,
+    "p90": 12.636486431889548,
+    "max": 12.636486431889548
+  },
+  "buckets": {
+    "lt_7d": {
+      "n": 1,
+      "median_abs_gap_return_pp": 0.09199012572678189,
+      "median_tx_apy_pct": 17.2680378266882
+    },
+    "d7_30": {
+      "n": 0,
+      "median_abs_gap_return_pp": null,
+      "median_tx_apy_pct": null
+    },
+    "d30_90": {
+      "n": 0,
+      "median_abs_gap_return_pp": null,
+      "median_tx_apy_pct": null
+    },
+    "ge_90d": {
+      "n": 0,
+      "median_abs_gap_return_pp": null,
+      "median_tx_apy_pct": null
+    }
+  },
+  "from_block": 25308840,
+  "to_block": 25558840,
+  "event_counts": {
+    "dep_req": 21,
+    "dep_claim": 19,
+    "red_req": 189,
+    "red_claim": 206
+  }
+}
