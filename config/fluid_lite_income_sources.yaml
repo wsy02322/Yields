@@ -1,6 +1,6 @@
 # Fluid Lite ETH (iETHv2) — income source registry
 # Branch: cursor/07180455-fluid-lite-income-audit-fc33
-# See docs/fluid-lite-income-audit-plan.md
+# See docs/fluid-lite-income-audit-plan.md (reviewed 2026-07-18)
 
 vault:
   name: Fluid Lite ETH Vault
@@ -10,138 +10,116 @@ vault:
   accounting_asset_address: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
   share_price_method: convertToAssets(1e18)  # stETH per share
 
+# Priority: measure A via historical Hold; D on withdraw; B explain only; C timebox.
+
 income_sources:
-  # --- A: flows into convertToAssets / Hold APY ---
   - id: A1_lido_staking
     name: Lido staking (wstETH/weETH collateral appreciation)
     in_share_price: true
-    in_ui_forward_apy: true
+    priority: P0
     verify:
-      - wstETH.stEthPerToken() historical delta
-      - share_price_growth minus pure_staking_benchmark
+      - historical Hold vs wstETH.stEthPerToken() same window
 
   - id: A2_leverage_spread
     name: Supply yield minus borrow cost on looped book
     in_share_price: true
-    in_ui_forward_apy: true
+    priority: P1
     verify:
-      - protocolsInfo supply/borrow amounts and yields (API)
-      - realized rate from NAV delta where possible
+      - Hold minus pure staking = residual "strategy" bucket
 
   - id: A3_fluid_dex_fees
-    name: Fluid DEX trading yield on collateral notional
+    name: Fluid DEX trading yield
     in_share_price: true
-    in_ui_forward_apy: true
-    api_fields:
-      - protocolsInfo.fluidDex.dexYield
-    note: "~0.004 pp on Net at current snapshot; small but non-zero"
+    priority: P2
+    note: Small in forward model (~0.004 pp Net); folded into Hold residual
 
   - id: A4_idle_buffer_staking
-    name: Idle TVL (~35-40%) earning stETH.netStakingApr
+    name: Idle TVL earning staking APR
     in_share_price: true
-    in_ui_forward_apy: true
-    api_fields:
-      - vaultTVLInAsset
-      - protocolsInfo.*.netAssets
-      - stETH.netStakingApr
+    priority: P2
+    note: Folded into Hold; no separate historical series needed first
 
   - id: A5_eeth_restaking_realized
-    name: ether.fi weETH/eETH premium realized in token rate
+    name: ether.fi premium realized in token rate
     in_share_price: true
-    in_ui_forward_apy: partial
-    api_fields:
-      - protocolsInfo.*.eETHSupplyYield
-      - protocolsInfo.*.eETHSupply
-    note: Forward uses spot eETHSupplyYield; realized may lag
+    priority: P1
+    note: Realized path in Hold; forward spot may overstate
 
   - id: A6_rebalancer_pnl
-    name: Rebalancer swaps / refi between protocols
+    name: Rebalancer swaps / refi
     in_share_price: true
-    in_ui_forward_apy: false
-    verify:
-      - DSA transaction trace
-      - NAV residual after rate-model attribution
+    priority: P2
+    note: In Hold residual; full DSA forensic out of scope
 
-  # --- B: forward UI model only (may exceed Hold) ---
   - id: B3_eeth_spot_premium_forward
-    name: eETH spot yield premium over stETH in forward model
+    name: eETH spot premium in UI forward model only
     in_share_price: false
-    in_ui_forward_apy: true
+    priority: P2
     estimated_net_pp_contribution: 2.41
-    note: "Counterfactual: set eETHSupplyYield := stETHSupplyYield"
+    note: Explanatory; not depositor truth
 
-  # --- C: not in share price ---
   - id: C1_king_rewards
-    name: KING rewards (historical weETH; may be deprecated)
+    name: KING (historical; may be deprecated)
     in_share_price: unknown
-    in_ui_forward_apy: unknown
-    documented: "lite.guides.instadapp.io — weekly convert to ETH"
-    verify:
-      - rebalancer eth inflows
-      - ether.fi reward history
+    priority: P2
+    scan: timeboxed
+    note: If converted to ETH into vault, already in Hold
 
   - id: C2_fluid_merkle
-    name: FLUID / Merkle claimable rewards
+    name: FLUID Merkle claimables
     in_share_price: false
-    in_ui_forward_apy: false
-    verify:
-      - api.fluid.instadapp.io rewards[]
-      - merkle.api.fluid.instadapp.io
+    priority: P2
+    scan: timeboxed
 
-  - id: C3_merkl_third_party
-    name: Merkl or other third-party campaigns
+  - id: C3_points
+    name: ether.fi / Lite loyalty points
     in_share_price: false
-    in_ui_forward_apy: false
-
-  - id: C4_etherfi_points
-    name: ether.fi loyalty points (2.5x per governance)
-    in_share_price: false
-    in_ui_forward_apy: false
+    priority: exclude
     off_chain: true
 
 fees:
   - id: D1_performance
-    name: Performance fee
     rate: 0.20
     in_share_price: true
-    in_ui_net: true
-    on_chain: revenueFeePercentage
-
   - id: D2_exit
-    name: Exit / withdrawal fee
     rate: 0.0005
     in_share_price: false
-    in_ui_net: false
-    on_chain: withdrawalFeePercentage
+    note: Applied on truth-table withdraw column
 
 benchmarks:
   hold_apy:
-    description: Trailing compound APY from convertToAssets
-    formula: "(1 + R)^(365.25/days) - 1"
     primary: true
+    formula: "(1 + R)^(365.25/days) - 1"
+    description: Trailing compound from convertToAssets — depositor truth
   pure_staking:
-    description: wstETH.stEthPerToken() growth over same window
-    use: isolate leverage spread
-  ui_forward_net:
-    description: Instadapp apy.apyWithoutFee (spot rates x positions)
-    api: "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults"
+    description: wstETH.stEthPerToken() same window
+    use: isolate leverage / strategy spread
 
 work_packages:
   - id: WP0
-    status: in_progress
+    status: completed
     title: Income ledger schema and plan
-  - id: WP1
+  - id: WP-A
     status: pending
-    title: On-chain share-price attribution
-  - id: WP2
+    priority: P0
+    title: Historical depositor truth tables (centerpiece)
+  - id: WP-B
     status: pending
-    title: Forward model line-by-line reconciliation
-  - id: WP3
+    priority: P0
+    title: Share-price series QC / EOD block refine
+  - id: WP-C
     status: pending
-    title: Off-chain / claimable income hunt
+    priority: P1
+    title: NAV attribution (Hold vs pure staking)
+  - id: WP-D
+    status: pending
+    priority: P2
+    title: UI forward gap note (explanatory only)
+  - id: WP-E
+    status: pending
+    priority: P2
+    title: Off-chain scan (timeboxed)
   - id: WP4
-    status: pending
+    status: cancelled
     title: Third-party APY cross-check
-  - id: WP5
-    status: pending
-    title: Depositor truth table
+    reason: Does not discover real depositor income
