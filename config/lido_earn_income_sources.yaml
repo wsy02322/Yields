@@ -1,0 +1,81 @@
+# Lido EarnETH — income / sample audit taxonomy
+# Branch: cursor/07180937-lidoearn-tx-roundtrip-plan-fc33
+# Method: Fluid Lite clean A vs B (tx round-trip vs share path)
+
+vault:
+  name: Lido EarnETH
+  vault: "0x6a37725ca7f4CE81c004c955f7280d5C704a249e"
+  share_token: "0xBBFC8683C8fE8cF73777feDE7ab9574935fea0A4"
+  share_symbol: earnETH
+  oracle: "0xAda1f4c24603aB2fe5aBd35BCD12370e98A20358"
+  fee_manager: "0xed4Fac879eE86F3aB0101993A3713e7cAA0488E1"
+  base_asset: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+  ui_url: "https://stake.lido.fi/earn/eth/deposit"
+  deployment_block: 24370480
+  deployment_date: "2026-02-02"
+  share_price_method: "eth_per_share = 1e36 / oracle.getReport(ETH).priceD18"
+  # Queues: from QueueCreated(queue, asset, isDeposit) on vault (WP0)
+  eth_deposit_queues:
+    - "0x1db7094Ef0D994B0b62f6Cd67dB801ad194999A8"
+    - "0x4a1d5dd96d6AA2Ba82e748E941d4425cb117dE84"
+    - "0xb99394f8b95d426Cb2F013B857C74aCC924b20D5"
+  weth_deposit_queues:
+    - "0x3Fc48660d02e59fBedD0a5Cc18a5580D1f8dD6A4"
+    - "0x3B374Be4c02D7367a1fDDCcDbc2EAA708BB220a0"
+    - "0xCe6C2505fEF74d2dE10FCF1d534cB73eCc837976"
+  wsteth_deposit_queues:
+    - "0xe39EED9A454C4918F8d0682062777cB251cd513F"
+    - "0xD39ceac8EAfc9c8dBf52319B900CA6623730d4BA"
+    - "0xECD2Bfe725fa14f5Ed86e9bDcc0eA4b34A4ed522"
+  redeem_queue_wsteth: "0x095bFAca9f1c6F2B063Cd67C6d6bfcd0c3aaB7b4"
+  events:
+    deposit_requested: "DepositRequested(address,address,uint224,uint32)"
+    deposit_request_claimed: "DepositRequestClaimed(address,uint256,uint32)"
+    redeem_requested: "RedeemRequested(address,uint256,uint256)"
+    redeem_request_claimed: "RedeemRequestClaimed(address,address,uint256,uint32)"
+
+fees:
+  deposit_fee: 0.0          # depositFeeD6 = 0
+  redeem_fee: 0.0           # redeemFeeD6 = 0 → B = p1/p0 - 1
+  protocol_fee: 0.01        # minted as shares on reports → in p
+  performance_fee: 0.10     # minted as shares on reports → in p
+
+income_lines:
+  - id: strategy_nav
+    in_share_price: true
+    note: Subvault strategy PnL reflected via oracle reports
+  - id: protocol_performance_fees
+    in_share_price: true
+    note: Dilutive share mint on reports; net in eth_per_share
+  - id: mellow_points
+    in_share_price: false
+    note: Off-chain loyalty; exclude from A/B
+  - id: obol_ssv
+    in_share_price: false
+    note: Separate claimables; exclude from A/B
+
+metrics:
+  A: "assets_out / assets_in - 1  # claimed redeem assets / deposited assets"
+  B: "p1/p0 * (1 - redeem_fee) - 1  # currently redeem_fee=0"
+  APY: "(1+R)^(365.25/days) - 1"
+  primary_sample: clean_full
+
+work_packages:
+  - id: WP0
+    title: Discover DepositQueue/RedeemQueue events and pricing report linkage
+    status: done
+  - id: WP-A
+    title: Clean tx round-trips vs oracle share-path (A vs B)
+    status: done
+    result: "64 clean ETH→wstETH round-trips; median |A−B|=0.018pp; many exact matches"
+  - id: WP-B
+    title: Realized A-APY vs UI APY* contrast note
+    status: pending
+  - id: WP-C
+    title: Light off-chain exclusion confirm
+    status: pending
+
+reference:
+  fluid_lite_plan: docs/fluid-lite-income-audit-plan.md
+  fluid_lite_samples: results/fluid-lite-clean-samples-A-vs-B.md
+  existing_hold_audit: results/LIDO_EARN_AUDIT.md
