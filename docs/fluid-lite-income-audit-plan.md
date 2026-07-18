@@ -10,12 +10,12 @@
 
 | Feedback | Decision |
 |----------|----------|
-| **存款人真值表 + 历史段实收** | **主战场** — 唯一能回答「用户真实拿到什么」的数据 |
-| **第三方 APY 对照** (DefiLlama / vaults.fyi) | **砍掉** — 不增加真实收入发现；已有结论足够，不再投入 |
-| **链外 / claim 排查** | **轻量、限时做完** — 见 §3；大概率不是主收入，但必须证伪 |
-| 其他 | 见下方优先级 |
+| **真实存取交易收益 vs 同窗口份额价收益** | **P0 主战场** — 两边独立算、并排对比 |
+| **第三方 APY 对照** | **砍掉** |
+| **链外 / claim 排查** | **轻量限时** |
+| 其他 | 见优先级 |
 
-**原则：** 只追能进 `convertToAssets`（或可证明确实 claimable）的钱；解释 UI 数字是次要任务。
+**原则：** 用链上 **Deposit/Withdraw 真钱路径** 验证 **stETH/share** 是否讲全了收入故事。
 
 ---
 
@@ -27,14 +27,15 @@ Answer with **historical on-chain evidence**:
 
 | Priority | Question | Deliverable |
 |----------|----------|-------------|
-| **P0** | What did holders **actually** earn over past windows? | Historical truth tables (Hold + exit fee) |
-| **P0** | Is share-price series accurate enough for those tables? | Block-refined daily `convertToAssets` |
-| **P1** | What income lines are inside that NAV growth? | Attribution (staking vs leverage residual) |
-| **P2** | Why does UI Net (~6%) ≠ Hold (~3–4%)? | Short forward gap note (eETH spot) — not a product |
-| **P2** | Any material income **outside** share price? | Timeboxed off-chain scan → yes/no + evidence |
+| **P0** | What did **real deposit→withdraw txs** earn? | Tx round-trip returns (assets_out / assets_in) |
+| **P0** | Does **stETH/share** over the same `[t0,t1]` match those txs? | Side-by-side tx vs share-path compare |
+| **P0** | Is share-price readable accurately at those blocks? | `convertToAssets` at deposit/withdraw blocks |
+| **P1** | What income lines sit inside NAV growth? | Attribution (staking vs leverage residual) |
+| **P2** | Why does UI Net (~6%) ≠ Hold (~3–4%)? | Short forward gap note — not depositor truth |
+| **P2** | Any material income **outside** share price? | Timeboxed off-chain scan |
 
-**North-star:** historical **Hold APY** = \(\Delta\) `convertToAssets` (stETH/share).  
-UI / DefiLlama / vaults.fyi are **not** success criteria.
+**North-star:** **tx-realized return** vs **share-price path** on the same hold interval.  
+If they match → share price is the full income story. If not → missing income or fee/parse bug.
 
 ---
 
@@ -78,57 +79,66 @@ Baseline params (2026-07-17): share ≈ 1.21467; TVL ≈ 74,186 stETH; ~8× gros
 
 ---
 
-### WP-A — Historical depositor truth tables — **P0 / centerpiece**
+### WP-A — Tx-realized vs share-price path — **P0 / centerpiece**
 
-**This is the substantive audit.**
+**This is the substantive audit.** Two independent measurements of the **same** hold interval, then compare.
 
-For each calendar window (examples):
+#### Side ① — Actual user deposit → withdraw (transactions)
 
-| Window | Meaning |
-|--------|---------|
-| Last 7 / 14 / 30 / 90 / 180 / 360 days | Trailing Hold |
-| Calendar months (e.g. 2026-01, 2026-02, …) | Month-by-month realized |
-| Calendar quarters | Longer path |
-| Inception → tip | Full life |
+From on-chain vault events / txs (Deposit, Withdraw/Redeem, or ETH wrapper equivalents):
 
-**Per custom window — one share-price pair, two views (must match):**
+| Field | Source |
+|-------|--------|
+| `user`, `deposit_tx`, `withdraw_tx` | Event logs |
+| `t0`, `t1`, `days` | Block timestamps of those txs |
+| `assets_in` | ETH or stETH deposited (normalize to stETH-equiv) |
+| `shares` | iETHv2 minted |
+| `assets_out` | stETH (or ETH) received on redeem **after** protocol exit fee |
+| `tx_return` | `assets_out / assets_in - 1` |
+| `tx_apy` | annualize(`tx_return`, days) |
 
-Same inputs for every row: EOD `p0`, `p1`, `days`, `exit_fee = 0.0005`.
+This is **what wallets actually got** — includes 0.05% exit fee when charged on withdraw.
 
-| Column | Formula |
-|--------|---------|
-| `start_date`, `end_date`, `days` | Custom window (trailing / month / quarter / inception) |
-| `p0`, `p1` | `convertToAssets(1e18)` at window ends |
-| `hold_return` | \(R = p_1/p_0 - 1\) |
-| `hold_apy_pct` | \((1+R)^{365.25/\mathrm{days}} - 1\) |
-| `stETH_out_per_1` | \(p_1/p_0 \times (1 - 0.0005)\) — 1 unit in at \(T_0\), withdraw at \(T_1\) |
-| `realized_return` | \(\texttt{stETH\_out\_per\_1} - 1\) |
-| `realized_apy_pct` | \((1 + \texttt{realized\_return})^{365.25/\mathrm{days}} - 1\) |
-| Optional: `pure_staking_apy` | `wstETH.stEthPerToken()` **same** window |
-| Optional: `leverage_spread_pp` | Hold − pure staking |
+#### Side ② — Share-price path over the **same** `[t0, t1]`
 
-**Identity QC (fail the row if broken):**
+| Field | Source |
+|-------|--------|
+| `p0` | `convertToAssets(1e18)` at deposit block (or nearest) |
+| `p1` | `convertToAssets(1e18)` at withdraw block |
+| `share_return` | `p1/p0 - 1` (hold, no exit) |
+| `share_return_after_exit` | `p1/p0 * (1 - 0.0005) - 1` |
+| `share_apy` / `share_apy_after_exit` | annualize same days |
 
-```
-stETH_out_per_1  ==  (p1 / p0) * (1 - exit_fee)
-realized_return  ==  stETH_out_per_1 - 1
-realized_apy     ==  annualize(realized_return, days)
-hold_apy         ==  annualize(p1/p0 - 1, days)
-```
+#### Compare ① vs ②
 
-APY and 「1 → stETH out」 are **not two methods** — they are two presentations of the **same** custom-window path. If they disagree, the row is a bug.
+| Check | Expectation |
+|-------|-------------|
+| `tx_return` ≈ `share_return_after_exit` | Should match within dust / rounding / ETH↔stETH wrap |
+| Large gap | Bug in fee application, wrong event parsing, or income outside share price |
 
-Assumption for 「1 ETH → stETH」: deposit ≈ 1 stETH notional at \(T_0\) (ETH≈stETH); shares = \(1/p_0\); redeem assets = shares\(\times p_1\); exit fee once.
+**Sample selection (custom windows = each real hold):**
 
-**Why this is “真实实质性数据”:**  
-No spot-rate assumption. Same path a redeemer’s wallet would see.
+- Prefer **complete round-trips**: same address deposits then fully (or mostly) redeems
+- Filter dust / same-block in-out / partial multi-leg noise
+- Stratify by hold length: &lt;7d, 7–30d, 30–90d, 90d+
+- Enough samples per bucket to see distribution (median, p10/p90), not one cherry-pick
+
+**Also keep calendar trailing tables (secondary):** EOD `p0→p1` Hold for 7/30/90/360d — useful context, but **tx round-trips are the ground truth**.
+
+**Caveats to document:**
+
+- Partial withdraws / multiple deposits → pro-rate or require clean single-leg round-trips
+- ETH deposit via wrapper vs stETH direct → normalize both to stETH-equiv
+- Instant vs delayed withdraw paths if any
+- Gas ignored (APY is asset return, not net of gas)
 
 **Outputs:**
 
-- `data/fluid-lite-eth/historical_truth_tables.csv`
-- `results/fluid-lite-historical-realized.md` (human table)
+- `data/fluid-lite-eth/tx_roundtrips.csv` — side ①
+- `data/fluid-lite-eth/tx_vs_share_compare.csv` — ① vs ② per round-trip
+- `results/fluid-lite-tx-vs-share.md` — summary + gap stats
 
-**Success:** Any stakeholder can pick a custom past window and see Hold APY **and** exit-adjusted stETH-out that algebraically agree.
+**Success:** Median `|tx_return − share_return_after_exit|` small (e.g. &lt; a few bps of period return); outliers explained.
 
 ---
 
@@ -207,12 +217,12 @@ Prior notes stay in conversation/docs; **no new deliverables**.
 
 | # | Criterion | Must-have? |
 |---|-----------|------------|
-| 1 | Historical truth tables for ≥ trailing 7/30/90/360d + inception + ≥3 calendar months | **Yes** |
-| 2 | Each row: Hold return, Hold APY, exit-adjusted stETH-out per 1 ETH | **Yes** |
-| 3 | Share series QC: tip Hold within **±0.15 pp** of live same-window RPC | **Yes** |
-| 4 | Staking vs Hold spread column on main windows | Yes |
-| 5 | Off-chain scan: material / none_found with evidence | Nice |
-| 6 | One-paragraph UI vs Hold explanation | Nice |
+| 1 | Sample of clean deposit→withdraw round-trips across hold-length buckets | **Yes** |
+| 2 | Each row: tx return/APY **and** same-window share-path return/APY (with exit) | **Yes** |
+| 3 | Gap stats: median / p90 of \|tx − share_after_exit\|; outliers explained | **Yes** |
+| 4 | Optional trailing EOD Hold tables for context | Nice |
+| 5 | Staking vs Hold spread on main windows | Nice |
+| 6 | Off-chain scan: material / none_found | Nice |
 | 7 | Third-party APY matrix | **No — cancelled** |
 
 ---
