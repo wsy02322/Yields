@@ -66,7 +66,8 @@ work_packages:
     status: done
   - id: WP-A
     title: Clean tx round-trips vs oracle share-path (A vs B)
-    status: in_progress
+    status: done
+    result: "64 clean ETH→wstETH round-trips; median |A−B|=0.018pp; many exact matches"
   - id: WP-B
     title: Realized A-APY vs UI APY* contrast note
     status: pending

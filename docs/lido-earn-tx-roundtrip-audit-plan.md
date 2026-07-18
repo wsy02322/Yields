@@ -242,9 +242,9 @@ Plus verdict sentence: A≡B or not; UI APY\* vs realized.
 | WP | Status |
 |----|--------|
 | Plan (this doc) | **done** |
-| WP0 discovery | pending |
-| WP-A implementation + samples | pending |
+| WP0 discovery | **done** |
+| WP-A implementation + samples | **done** (64 clean ETH-deposit samples; median \|A−B\| ≈ 0.018 pp) |
 | WP-B UI note | pending |
 | WP-C off-chain | pending |
 
-**Next after plan approval:** WP0 event discovery, then WP-A only — no parallel scope creep.
+**WP-A note:** Unlike Fluid (sync ERC4626, gap≈0), EarnETH async pricing + wstETH redeem conversion leave a small residual on some lots; 7–30d bucket median gap ≈ 0 (machine epsilon). Realized A-APY (median ≥7d ≈ 2.8%) aligns with independent Hold, not a 6%-class forward overstatement.

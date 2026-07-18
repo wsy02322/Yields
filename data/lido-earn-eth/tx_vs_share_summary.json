@@ -1,46 +1,46 @@
 {
-  "n": 1,
+  "n": 64,
   "sample": "clean_full",
   "sample_definition": "one deposit request+claim \u2192 one full redeem (same shares) \u2192 one redeem claim; ETH-equivalent via wstETH\u2192stETH",
   "redeem_fee": 0.0,
   "abs_gap_return_pp": {
-    "median": 0.09199012572678189,
-    "p90": 0.09199012572678189,
-    "max": 0.09199012572678189
+    "median": 0.018367537396879463,
+    "p90": 0.3224732574760747,
+    "max": 0.6305692057100964
   },
   "abs_gap_apy_pp": {
-    "median": 12.636486431889548,
-    "p90": 12.636486431889548,
-    "max": 12.636486431889548
+    "median": 0.13630312653626353,
+    "p90": 5.207789369114613,
+    "max": 88.07660069877676
   },
   "buckets": {
     "lt_7d": {
-      "n": 1,
-      "median_abs_gap_return_pp": 0.09199012572678189,
-      "median_tx_apy_pct": 17.2680378266882
+      "n": 13,
+      "median_abs_gap_return_pp": 0.020938640304790646,
+      "median_tx_apy_pct": 6.136047469984107
     },
     "d7_30": {
-      "n": 0,
-      "median_abs_gap_return_pp": null,
-      "median_tx_apy_pct": null
+      "n": 17,
+      "median_abs_gap_return_pp": 3.914424340223377e-10,
+      "median_tx_apy_pct": 4.681215561669316
     },
     "d30_90": {
-      "n": 0,
-      "median_abs_gap_return_pp": null,
-      "median_tx_apy_pct": null
+      "n": 31,
+      "median_abs_gap_return_pp": 0.01935199062323978,
+      "median_tx_apy_pct": 2.469512763259285
     },
     "ge_90d": {
-      "n": 0,
-      "median_abs_gap_return_pp": null,
-      "median_tx_apy_pct": null
+      "n": 3,
+      "median_abs_gap_return_pp": 0.021862420377538605,
+      "median_tx_apy_pct": 2.8599023659274803
     }
   },
-  "from_block": 25308840,
-  "to_block": 25558840,
+  "from_block": 24370480,
+  "to_block": 25559023,
   "event_counts": {
-    "dep_req": 21,
-    "dep_claim": 19,
-    "red_req": 189,
-    "red_claim": 206
+    "dep_req": 339,
+    "dep_claim": 265,
+    "red_req": 1347,
+    "red_claim": 1256
   }
 }
