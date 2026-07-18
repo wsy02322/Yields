@@ -91,28 +91,44 @@ For each calendar window (examples):
 | Calendar quarters | Longer path |
 | Inception → tip | Full life |
 
-**Per row compute from on-chain share prices:**
+**Per custom window — one share-price pair, two views (must match):**
+
+Same inputs for every row: EOD `p0`, `p1`, `days`, `exit_fee = 0.0005`.
 
 | Column | Formula |
 |--------|---------|
-| `start_date`, `end_date`, `days` | EOD blocks |
-| `p0`, `p1` | `convertToAssets(1e18)` |
-| `hold_return_pct` | \(p_1/p_0 - 1\) |
-| `hold_apy_pct` | compound 365.25 |
-| `realized_apy_pct` | after 0.05% exit once |
-| `stETH_out_per_1_ETH_in` | \(1 \times (1 + R) \times (1 - 0.0005)\) if withdraw |
-| Optional: `pure_staking_apy` | `wstETH.stEthPerToken()` same window |
+| `start_date`, `end_date`, `days` | Custom window (trailing / month / quarter / inception) |
+| `p0`, `p1` | `convertToAssets(1e18)` at window ends |
+| `hold_return` | \(R = p_1/p_0 - 1\) |
+| `hold_apy_pct` | \((1+R)^{365.25/\mathrm{days}} - 1\) |
+| `stETH_out_per_1` | \(p_1/p_0 \times (1 - 0.0005)\) — 1 unit in at \(T_0\), withdraw at \(T_1\) |
+| `realized_return` | \(\texttt{stETH\_out\_per\_1} - 1\) |
+| `realized_apy_pct` | \((1 + \texttt{realized\_return})^{365.25/\mathrm{days}} - 1\) |
+| Optional: `pure_staking_apy` | `wstETH.stEthPerToken()` **same** window |
 | Optional: `leverage_spread_pp` | Hold − pure staking |
 
+**Identity QC (fail the row if broken):**
+
+```
+stETH_out_per_1  ==  (p1 / p0) * (1 - exit_fee)
+realized_return  ==  stETH_out_per_1 - 1
+realized_apy     ==  annualize(realized_return, days)
+hold_apy         ==  annualize(p1/p0 - 1, days)
+```
+
+APY and 「1 → stETH out」 are **not two methods** — they are two presentations of the **same** custom-window path. If they disagree, the row is a bug.
+
+Assumption for 「1 ETH → stETH」: deposit ≈ 1 stETH notional at \(T_0\) (ETH≈stETH); shares = \(1/p_0\); redeem assets = shares\(\times p_1\); exit fee once.
+
 **Why this is “真实实质性数据”:**  
-No spot-rate assumption. Same path a redeemer’s wallet would see: fewer or more stETH per share.
+No spot-rate assumption. Same path a redeemer’s wallet would see.
 
 **Outputs:**
 
 - `data/fluid-lite-eth/historical_truth_tables.csv`
 - `results/fluid-lite-historical-realized.md` (human table)
 
-**Success:** Any stakeholder can pick a past month and see exact Hold / stETH-out without trusting Fluid UI.
+**Success:** Any stakeholder can pick a custom past window and see Hold APY **and** exit-adjusted stETH-out that algebraically agree.
 
 ---
 
