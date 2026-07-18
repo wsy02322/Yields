@@ -1,0 +1,143 @@
+{
+  "vault": {
+    "name": "Fluid Lite ETH Vault",
+    "url": "https://fluid.io/lite/1/ETH",
+    "receipt_token": "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78",
+    "receipt_symbol": "iETHv2",
+    "underlying": "stETH (ETH-correlated)"
+  },
+  "metric": {
+    "name": "net_hold_apy",
+    "formula": "APY = (1 + R)^(365.25/days) - 1",
+    "R": "share_price_T / share_price_T0 - 1",
+    "share_price": "convertToAssets(1e18) \u2192 stETH per share",
+    "performance_fee": "20% already inside share price (Net)",
+    "exit_fee": "not applied (Hold = still deposited)",
+    "meaning": "Net Hold APY \u2248 annualized growth of underlying stETH claim per share (ETH-equivalent while stETH\u2248ETH). Example: 5% Net Hold APY means 1 stETH deposited \u2192 ~1.05 stETH after one year if that window's growth compounds; same reading for ETH deposited into the vault."
+  },
+  "as_of": {
+    "generated_at_utc": "2026-07-17T11:47:49.711042+00:00",
+    "source_csv": "data/fluid-lite-eth/daily_share_price.csv",
+    "refresh_policy": "reuses existing CSV; no archive re-pull",
+    "windows_days": [
+      1,
+      7,
+      14,
+      30,
+      90,
+      120,
+      180
+    ]
+  },
+  "points": 883,
+  "first_date": "2024-02-16",
+  "last_date": "2026-07-17",
+  "first_share_price_steth": 1.0715511221498628,
+  "last_share_price_steth": 1.214531561690703,
+  "fees": {
+    "performance_fee": 0.2,
+    "exit_fee": 0.0005,
+    "management_fee": 0.0
+  },
+  "windows_days": [
+    1,
+    7,
+    14,
+    30,
+    90,
+    120,
+    180
+  ],
+  "windows": [
+    {
+      "window": "1d",
+      "start_date": "2026-07-15",
+      "end_date": "2026-07-16",
+      "days": 1.0,
+      "start_share_price_steth": 1.2144224435045767,
+      "end_share_price_steth": 1.214531561690703,
+      "hold_return_pct": 0.008985,
+      "net_hold_apy_pct": 3.336135,
+      "steth_after_1y_per_1_steth": 1.03336135,
+      "eth_after_1y_per_1_eth": 1.03336135
+    },
+    {
+      "window": "7d",
+      "start_date": "2026-07-10",
+      "end_date": "2026-07-17",
+      "days": 7.0,
+      "start_share_price_steth": 1.2137138099507723,
+      "end_share_price_steth": 1.214531561690703,
+      "hold_return_pct": 0.067376,
+      "net_hold_apy_pct": 3.576884,
+      "steth_after_1y_per_1_steth": 1.03576884,
+      "eth_after_1y_per_1_eth": 1.03576884
+    },
+    {
+      "window": "14d",
+      "start_date": "2026-07-03",
+      "end_date": "2026-07-17",
+      "days": 14.0,
+      "start_share_price_steth": 1.2130896436011174,
+      "end_share_price_steth": 1.214531561690703,
+      "hold_return_pct": 0.118863,
+      "net_hold_apy_pct": 3.147742,
+      "steth_after_1y_per_1_steth": 1.03147742,
+      "eth_after_1y_per_1_eth": 1.03147742
+    },
+    {
+      "window": "30d",
+      "start_date": "2026-06-17",
+      "end_date": "2026-07-17",
+      "days": 30.0,
+      "start_share_price_steth": 1.2114186579655926,
+      "end_share_price_steth": 1.214531561690703,
+      "hold_return_pct": 0.256963,
+      "net_hold_apy_pct": 3.173843,
+      "steth_after_1y_per_1_steth": 1.03173843,
+      "eth_after_1y_per_1_eth": 1.03173843
+    },
+    {
+      "window": "90d",
+      "start_date": "2026-04-18",
+      "end_date": "2026-07-17",
+      "days": 90.0,
+      "start_share_price_steth": 1.2069256996518176,
+      "end_share_price_steth": 1.214531561690703,
+      "hold_return_pct": 0.630185,
+      "net_hold_apy_pct": 2.582252,
+      "steth_after_1y_per_1_steth": 1.02582252,
+      "eth_after_1y_per_1_eth": 1.02582252
+    },
+    {
+      "window": "120d",
+      "start_date": "2026-03-19",
+      "end_date": "2026-07-17",
+      "days": 120.0,
+      "start_share_price_steth": 1.2040048563777972,
+      "end_share_price_steth": 1.214531561690703,
+      "hold_return_pct": 0.874308,
+      "net_hold_apy_pct": 2.685022,
+      "steth_after_1y_per_1_steth": 1.02685022,
+      "eth_after_1y_per_1_eth": 1.02685022
+    },
+    {
+      "window": "180d",
+      "start_date": "2026-01-18",
+      "end_date": "2026-07-17",
+      "days": 180.0,
+      "start_share_price_steth": 1.1989226397689754,
+      "end_share_price_steth": 1.214531561690703,
+      "hold_return_pct": 1.301912,
+      "net_hold_apy_pct": 2.659498,
+      "steth_after_1y_per_1_steth": 1.02659498,
+      "eth_after_1y_per_1_eth": 1.02659498
+    }
+  ],
+  "notes": [
+    "Net Hold APY \u2248 annualized growth of underlying stETH claim per share (ETH-equivalent while stETH\u2248ETH). Example: 5% Net Hold APY means 1 stETH deposited \u2192 ~1.05 stETH after one year if that window's growth compounds; same reading for ETH deposited into the vault.",
+    "Independent Fluid-only calculation; no Lido / cross-vault compare.",
+    "Trailing (historical path), not the Fluid UI forward Net APY.",
+    "stETH\u2248ETH reading: vault NAV is stETH-denominated; ETH deposit enters the same share-price path, so Net Hold APY is the ETH growth rate under a stable stETH/ETH peg."
+  ]
+}
