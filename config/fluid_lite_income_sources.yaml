@@ -1,0 +1,128 @@
+# Fluid Lite ETH (iETHv2) — income source registry
+# Branch: cursor/07180455-fluid-lite-income-audit-fc33
+# See docs/fluid-lite-income-audit-plan.md (reviewed 2026-07-18)
+
+vault:
+  name: Fluid Lite ETH Vault
+  receipt_token: "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78"
+  symbol: iETHv2
+  accounting_asset: stETH
+  accounting_asset_address: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
+  share_price_method: convertToAssets(1e18)  # stETH per share
+
+# Priority: measure A via historical Hold; D on withdraw; B explain only; C timebox.
+
+income_sources:
+  - id: A1_lido_staking
+    name: Lido staking (wstETH/weETH collateral appreciation)
+    in_share_price: true
+    priority: P0
+    verify:
+      - historical Hold vs wstETH.stEthPerToken() same window
+
+  - id: A2_leverage_spread
+    name: Supply yield minus borrow cost on looped book
+    in_share_price: true
+    priority: P1
+    verify:
+      - Hold minus pure staking = residual "strategy" bucket
+
+  - id: A3_fluid_dex_fees
+    name: Fluid DEX trading yield
+    in_share_price: true
+    priority: P2
+    note: Small in forward model (~0.004 pp Net); folded into Hold residual
+
+  - id: A4_idle_buffer_staking
+    name: Idle TVL earning staking APR
+    in_share_price: true
+    priority: P2
+    note: Folded into Hold; no separate historical series needed first
+
+  - id: A5_eeth_restaking_realized
+    name: ether.fi premium realized in token rate
+    in_share_price: true
+    priority: P1
+    note: Realized path in Hold; forward spot may overstate
+
+  - id: A6_rebalancer_pnl
+    name: Rebalancer swaps / refi
+    in_share_price: true
+    priority: P2
+    note: In Hold residual; full DSA forensic out of scope
+
+  - id: B3_eeth_spot_premium_forward
+    name: eETH spot premium in UI forward model only
+    in_share_price: false
+    priority: P2
+    estimated_net_pp_contribution: 2.41
+    note: Explanatory; not depositor truth
+
+  - id: C1_king_rewards
+    name: KING (historical; may be deprecated)
+    in_share_price: unknown
+    priority: P2
+    scan: timeboxed
+    note: If converted to ETH into vault, already in Hold
+
+  - id: C2_fluid_merkle
+    name: FLUID Merkle claimables
+    in_share_price: false
+    priority: P2
+    scan: timeboxed
+
+  - id: C3_points
+    name: ether.fi / Lite loyalty points
+    in_share_price: false
+    priority: exclude
+    off_chain: true
+
+fees:
+  - id: D1_performance
+    rate: 0.20
+    in_share_price: true
+  - id: D2_exit
+    rate: 0.0005
+    in_share_price: false
+    note: Applied on truth-table withdraw column
+
+benchmarks:
+  hold_apy:
+    primary: true
+    formula: "(1 + R)^(365.25/days) - 1"
+    description: Trailing compound from convertToAssets — depositor truth
+  pure_staking:
+    description: wstETH.stEthPerToken() same window
+    use: isolate leverage / strategy spread
+
+work_packages:
+  - id: WP0
+    status: completed
+    title: Income ledger schema and plan
+  - id: WP-A
+    status: completed_first_pass
+    priority: P0
+    title: Tx deposit-withdraw realized vs same-window share-price path
+    note: >
+      500k-block scan: 196 FIFO round-trips; median/max abs gap return pp ≈ 0.
+      Share path fully explains tx returns. Expand lookback later for ≥90d samples.
+  - id: WP-B
+    status: paused
+    priority: P0
+    title: Share-price series QC / EOD block refine
+  - id: WP-C
+    status: paused
+    priority: P1
+    title: NAV attribution (Hold vs pure staking)
+  - id: WP-D
+    status: paused
+    priority: P2
+    title: UI forward gap note (explanatory only)
+  - id: WP-E
+    status: paused
+    priority: P2
+    title: Off-chain scan (timeboxed)
+  - id: WP4
+    status: cancelled
+    title: Third-party APY cross-check
+    reason: Does not discover real depositor income

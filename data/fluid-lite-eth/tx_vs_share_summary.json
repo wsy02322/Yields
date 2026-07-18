@@ -1,0 +1,53 @@
+{
+  "summary": {
+    "sample": "clean_full",
+    "sample_definition": "one deposit fully matched to one withdraw for that owner in window; deposit_tx and withdraw_tx appear once; owner has single round-trip",
+    "n": 46,
+    "exit_fee": 0.0005,
+    "abs_gap_return_pp": {
+      "n": 46,
+      "min": 0.0,
+      "median": 2.220446049250313e-14,
+      "p90": 4.440892098500626e-14,
+      "max": 1.887379141862766e-13,
+      "mean": 2.1721754829622627e-14
+    },
+    "abs_gap_apy_pp": {
+      "n": 46,
+      "min": 0.0,
+      "median": 7.438494264988549e-13,
+      "p90": 2.6423307986078726e-12,
+      "max": 5.725420137991932e-11,
+      "mean": 2.243374568237137e-12
+    },
+    "buckets": {
+      "<7d": {
+        "n": 15,
+        "median_abs_gap_return_pp": 1.1102230246251565e-14,
+        "median_tx_apy_pct": -2.663514756254326
+      },
+      "7-30d": {
+        "n": 23,
+        "median_abs_gap_return_pp": 2.220446049250313e-14,
+        "median_tx_apy_pct": 2.072763994353344
+      },
+      "30-90d": {
+        "n": 8,
+        "median_abs_gap_return_pp": 2.220446049250313e-14,
+        "median_tx_apy_pct": 3.416186532524901
+      },
+      ">=90d": {
+        "n": 0,
+        "median_abs_gap_return_pp": null,
+        "median_tx_apy_pct": null
+      }
+    },
+    "as_of": {
+      "generated_at_utc": "2026-07-18T08:08:46.380208+00:00",
+      "note": "clean subset filtered from prior 500k-block FIFO scan",
+      "fifo_n": 196,
+      "method": "clean_full preferred sample"
+    }
+  },
+  "fifo_n": 196
+}
