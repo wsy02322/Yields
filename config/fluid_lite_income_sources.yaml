@@ -1,0 +1,147 @@
+# Fluid Lite ETH (iETHv2) — income source registry
+# Branch: cursor/07180455-fluid-lite-income-audit-fc33
+# See docs/fluid-lite-income-audit-plan.md
+
+vault:
+  name: Fluid Lite ETH Vault
+  receipt_token: "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78"
+  symbol: iETHv2
+  accounting_asset: stETH
+  accounting_asset_address: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
+  share_price_method: convertToAssets(1e18)  # stETH per share
+
+income_sources:
+  # --- A: flows into convertToAssets / Hold APY ---
+  - id: A1_lido_staking
+    name: Lido staking (wstETH/weETH collateral appreciation)
+    in_share_price: true
+    in_ui_forward_apy: true
+    verify:
+      - wstETH.stEthPerToken() historical delta
+      - share_price_growth minus pure_staking_benchmark
+
+  - id: A2_leverage_spread
+    name: Supply yield minus borrow cost on looped book
+    in_share_price: true
+    in_ui_forward_apy: true
+    verify:
+      - protocolsInfo supply/borrow amounts and yields (API)
+      - realized rate from NAV delta where possible
+
+  - id: A3_fluid_dex_fees
+    name: Fluid DEX trading yield on collateral notional
+    in_share_price: true
+    in_ui_forward_apy: true
+    api_fields:
+      - protocolsInfo.fluidDex.dexYield
+    note: "~0.004 pp on Net at current snapshot; small but non-zero"
+
+  - id: A4_idle_buffer_staking
+    name: Idle TVL (~35-40%) earning stETH.netStakingApr
+    in_share_price: true
+    in_ui_forward_apy: true
+    api_fields:
+      - vaultTVLInAsset
+      - protocolsInfo.*.netAssets
+      - stETH.netStakingApr
+
+  - id: A5_eeth_restaking_realized
+    name: ether.fi weETH/eETH premium realized in token rate
+    in_share_price: true
+    in_ui_forward_apy: partial
+    api_fields:
+      - protocolsInfo.*.eETHSupplyYield
+      - protocolsInfo.*.eETHSupply
+    note: Forward uses spot eETHSupplyYield; realized may lag
+
+  - id: A6_rebalancer_pnl
+    name: Rebalancer swaps / refi between protocols
+    in_share_price: true
+    in_ui_forward_apy: false
+    verify:
+      - DSA transaction trace
+      - NAV residual after rate-model attribution
+
+  # --- B: forward UI model only (may exceed Hold) ---
+  - id: B3_eeth_spot_premium_forward
+    name: eETH spot yield premium over stETH in forward model
+    in_share_price: false
+    in_ui_forward_apy: true
+    estimated_net_pp_contribution: 2.41
+    note: "Counterfactual: set eETHSupplyYield := stETHSupplyYield"
+
+  # --- C: not in share price ---
+  - id: C1_king_rewards
+    name: KING rewards (historical weETH; may be deprecated)
+    in_share_price: unknown
+    in_ui_forward_apy: unknown
+    documented: "lite.guides.instadapp.io — weekly convert to ETH"
+    verify:
+      - rebalancer eth inflows
+      - ether.fi reward history
+
+  - id: C2_fluid_merkle
+    name: FLUID / Merkle claimable rewards
+    in_share_price: false
+    in_ui_forward_apy: false
+    verify:
+      - api.fluid.instadapp.io rewards[]
+      - merkle.api.fluid.instadapp.io
+
+  - id: C3_merkl_third_party
+    name: Merkl or other third-party campaigns
+    in_share_price: false
+    in_ui_forward_apy: false
+
+  - id: C4_etherfi_points
+    name: ether.fi loyalty points (2.5x per governance)
+    in_share_price: false
+    in_ui_forward_apy: false
+    off_chain: true
+
+fees:
+  - id: D1_performance
+    name: Performance fee
+    rate: 0.20
+    in_share_price: true
+    in_ui_net: true
+    on_chain: revenueFeePercentage
+
+  - id: D2_exit
+    name: Exit / withdrawal fee
+    rate: 0.0005
+    in_share_price: false
+    in_ui_net: false
+    on_chain: withdrawalFeePercentage
+
+benchmarks:
+  hold_apy:
+    description: Trailing compound APY from convertToAssets
+    formula: "(1 + R)^(365.25/days) - 1"
+    primary: true
+  pure_staking:
+    description: wstETH.stEthPerToken() growth over same window
+    use: isolate leverage spread
+  ui_forward_net:
+    description: Instadapp apy.apyWithoutFee (spot rates x positions)
+    api: "https://api.instadapp.io/v2/mainnet/lite/users/0x0000000000000000000000000000000000000000/vaults"
+
+work_packages:
+  - id: WP0
+    status: in_progress
+    title: Income ledger schema and plan
+  - id: WP1
+    status: pending
+    title: On-chain share-price attribution
+  - id: WP2
+    status: pending
+    title: Forward model line-by-line reconciliation
+  - id: WP3
+    status: pending
+    title: Off-chain / claimable income hunt
+  - id: WP4
+    status: pending
+    title: Third-party APY cross-check
+  - id: WP5
+    status: pending
+    title: Depositor truth table
