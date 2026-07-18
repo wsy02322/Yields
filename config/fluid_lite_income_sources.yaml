@@ -100,24 +100,26 @@ work_packages:
     status: completed
     title: Income ledger schema and plan
   - id: WP-A
-    status: pending
+    status: completed_first_pass
     priority: P0
     title: Tx deposit-withdraw realized vs same-window share-price path
-
+    note: >
+      500k-block scan: 196 FIFO round-trips; median/max abs gap return pp ≈ 0.
+      Share path fully explains tx returns. Expand lookback later for ≥90d samples.
   - id: WP-B
-    status: pending
+    status: paused
     priority: P0
     title: Share-price series QC / EOD block refine
   - id: WP-C
-    status: pending
+    status: paused
     priority: P1
     title: NAV attribution (Hold vs pure staking)
   - id: WP-D
-    status: pending
+    status: paused
     priority: P2
     title: UI forward gap note (explanatory only)
   - id: WP-E
-    status: pending
+    status: paused
     priority: P2
     title: Off-chain scan (timeboxed)
   - id: WP4

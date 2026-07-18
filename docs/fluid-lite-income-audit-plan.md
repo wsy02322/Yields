@@ -231,13 +231,12 @@ Prior notes stay in conversation/docs; **no new deliverables**.
 
 ```
 WP0 (done)
-  → WP-B share series QC / EOD refine
-  → WP-A historical truth tables   ← main value
-  → WP-C staking vs Hold columns
-  → WP-E off-chain timebox (parallel OK)
-  → WP-D UI gap note (optional polish)
+  → WP-A ONLY: tx deposit↔withdraw round-trips vs same-window share path
+  → (pause everything else until WP-A is done and reviewed)
+  → then WP-B / WP-C / WP-E / WP-D as needed
 ```
 
+**Current focus lock:** only WP-A. No third-party, no off-chain deep dive, no forward model work until WP-A ships.
 ---
 
 ## 8. Out of scope
