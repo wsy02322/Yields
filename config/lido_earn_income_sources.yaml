@@ -14,9 +14,25 @@ vault:
   deployment_block: 24370480
   deployment_date: "2026-02-02"
   share_price_method: "eth_per_share = 1e36 / oracle.getReport(ETH).priceD18"
-  # Queues: filled in WP0 discovery (not ERC4626 sync Deposit/Withdraw)
-  deposit_queue: null
-  redeem_queue: null
+  # Queues: from QueueCreated(queue, asset, isDeposit) on vault (WP0)
+  eth_deposit_queues:
+    - "0x1db7094Ef0D994B0b62f6Cd67dB801ad194999A8"
+    - "0x4a1d5dd96d6AA2Ba82e748E941d4425cb117dE84"
+    - "0xb99394f8b95d426Cb2F013B857C74aCC924b20D5"
+  weth_deposit_queues:
+    - "0x3Fc48660d02e59fBedD0a5Cc18a5580D1f8dD6A4"
+    - "0x3B374Be4c02D7367a1fDDCcDbc2EAA708BB220a0"
+    - "0xCe6C2505fEF74d2dE10FCF1d534cB73eCc837976"
+  wsteth_deposit_queues:
+    - "0xe39EED9A454C4918F8d0682062777cB251cd513F"
+    - "0xD39ceac8EAfc9c8dBf52319B900CA6623730d4BA"
+    - "0xECD2Bfe725fa14f5Ed86e9bDcc0eA4b34A4ed522"
+  redeem_queue_wsteth: "0x095bFAca9f1c6F2B063Cd67C6d6bfcd0c3aaB7b4"
+  events:
+    deposit_requested: "DepositRequested(address,address,uint224,uint32)"
+    deposit_request_claimed: "DepositRequestClaimed(address,uint256,uint32)"
+    redeem_requested: "RedeemRequested(address,uint256,uint256)"
+    redeem_request_claimed: "RedeemRequestClaimed(address,address,uint256,uint32)"
 
 fees:
   deposit_fee: 0.0          # depositFeeD6 = 0
@@ -47,10 +63,10 @@ metrics:
 work_packages:
   - id: WP0
     title: Discover DepositQueue/RedeemQueue events and pricing report linkage
-    status: pending
+    status: done
   - id: WP-A
     title: Clean tx round-trips vs oracle share-path (A vs B)
-    status: pending
+    status: in_progress
   - id: WP-B
     title: Realized A-APY vs UI APY* contrast note
     status: pending
