@@ -1,56 +1,53 @@
 {
   "summary": {
-    "n": 196,
+    "sample": "clean_full",
+    "sample_definition": "one deposit fully matched to one withdraw for that owner in window; deposit_tx and withdraw_tx appear once; owner has single round-trip",
+    "n": 46,
     "exit_fee": 0.0005,
     "abs_gap_return_pp": {
-      "n": 196,
+      "n": 46,
       "min": 0.0,
-      "p10": 0.0,
       "median": 2.220446049250313e-14,
       "p90": 4.440892098500626e-14,
-      "max": 1.9984014443252818e-13,
-      "mean": 1.8409310357304893e-14
+      "max": 1.887379141862766e-13,
+      "mean": 2.1721754829622627e-14
     },
     "abs_gap_apy_pp": {
-      "n": 190,
+      "n": 46,
       "min": 0.0,
-      "p10": 0.0,
-      "median": 3.552713678800501e-13,
+      "median": 7.438494264988549e-13,
       "p90": 2.6423307986078726e-12,
       "max": 5.725420137991932e-11,
-      "mean": 1.35698470004579e-12
+      "mean": 2.243374568237137e-12
     },
     "buckets": {
-      "lt_7d": {
-        "n": 60,
+      "<7d": {
+        "n": 15,
         "median_abs_gap_return_pp": 1.1102230246251565e-14,
-        "median_tx_apy_pct": -2.002387780855941
+        "median_tx_apy_pct": -2.663514756254326
       },
-      "d7_30": {
-        "n": 87,
+      "7-30d": {
+        "n": 23,
         "median_abs_gap_return_pp": 2.220446049250313e-14,
-        "median_tx_apy_pct": 2.407701834038445
+        "median_tx_apy_pct": 2.072763994353344
       },
-      "d30_90": {
-        "n": 49,
+      "30-90d": {
+        "n": 8,
         "median_abs_gap_return_pp": 2.220446049250313e-14,
-        "median_tx_apy_pct": 3.4457971154110423
+        "median_tx_apy_pct": 3.416186532524901
       },
-      "ge_90d": {
+      ">=90d": {
         "n": 0,
         "median_abs_gap_return_pp": null,
         "median_tx_apy_pct": null
       }
     },
     "as_of": {
-      "generated_at_utc": "2026-07-18T05:53:06.016436+00:00",
-      "tip_block": 25557595,
-      "from_block": 25057595,
-      "lookback_blocks": 500000,
-      "vault": "0xA0D3707c569ff8C87FA923d3823eC5D81c98Be78",
-      "method": "FIFO match Deposit(owner)\u2192Withdraw(owner); tx_return=assets_out/assets_in-1; share_after_exit=p1/p0*(1-0.0005)-1"
+      "generated_at_utc": "2026-07-18T08:08:46.380208+00:00",
+      "note": "clean subset filtered from prior 500k-block FIFO scan",
+      "fifo_n": 196,
+      "method": "clean_full preferred sample"
     }
   },
-  "n_deposits": 643,
-  "n_withdraws": 513
+  "fifo_n": 196
 }

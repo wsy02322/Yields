@@ -56,3 +56,39 @@ def test_fifo_partial_two_lots():
     assert abs(legs[0]["assets_in"] - 10.0) < 1e-12
     assert abs(legs[1]["shares"] - 5.0) < 1e-12
     assert abs(legs[1]["assets_in"] - 5.0) < 1e-12
+
+
+def test_clean_full_round_trip_accepted():
+    from src.calculators.fluid_lite_tx_roundtrips import match_clean_full_round_trips
+
+    owner = "0x3333333333333333333333333333333333333333"
+    deps = [_dep(owner, 100, assets=10.0, shares=8.0, ts=1_000_000)]
+    wds = [_wd(owner, 200, assets=10.1 * 0.9995, shares=8.0, ts=1_000_000 + 14 * 86400)]
+    legs = match_clean_full_round_trips(deps, wds, min_days=1.0)
+    assert len(legs) == 1
+    assert legs[0]["sample"] == "clean_full"
+    assert abs(legs[0]["assets_in"] - 10.0) < 1e-12
+    assert abs(legs[0]["assets_out"] - 10.1 * 0.9995) < 1e-12
+
+
+def test_clean_rejects_intervening_deposit():
+    from src.calculators.fluid_lite_tx_roundtrips import match_clean_full_round_trips
+
+    owner = "0x4444444444444444444444444444444444444444"
+    deps = [
+        _dep(owner, 100, assets=10.0, shares=8.0, ts=1_000_000),
+        _dep(owner, 150, assets=1.0, shares=0.8, ts=1_000_000 + 3 * 86400),
+    ]
+    wds = [_wd(owner, 200, assets=10.0, shares=8.0, ts=1_000_000 + 14 * 86400)]
+    legs = match_clean_full_round_trips(deps, wds, min_days=1.0)
+    assert legs == []
+
+
+def test_clean_rejects_partial_share_mismatch():
+    from src.calculators.fluid_lite_tx_roundtrips import match_clean_full_round_trips
+
+    owner = "0x5555555555555555555555555555555555555555"
+    deps = [_dep(owner, 100, assets=10.0, shares=8.0, ts=1_000_000)]
+    wds = [_wd(owner, 200, assets=5.0, shares=4.0, ts=1_000_000 + 14 * 86400)]
+    legs = match_clean_full_round_trips(deps, wds, min_days=1.0)
+    assert legs == []

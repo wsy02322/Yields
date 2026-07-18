@@ -23,6 +23,7 @@ from src.calculators.fluid_lite_tx_roundtrips import (  # noqa: E402
     IETH_V2,
     enrich_legs_with_share_path,
     fetch_vault_events,
+    match_clean_full_round_trips,
     match_round_trips_fifo,
     round_trip_to_row,
     summarize_round_trips,
@@ -65,6 +66,9 @@ def markdown_report(summary: dict, trips_preview: list[dict], *, lookback_blocks
         "",
         "Compares **actual Deposit→Withdraw** asset returns to **`convertToAssets`** "
         "over the same `[t0, t1]` (exit fee 0.05% on withdraw side).",
+        "",
+        f"Sample: **{summary.get('sample', 'clean')}** — "
+        f"{summary.get('sample_definition', 'clean full deposit→withdraw')}.",
         "",
         f"Lookback: last **{lookback_blocks}** blocks · vault `{IETH_V2}`.",
         "",
@@ -132,7 +136,7 @@ def markdown_report(summary: dict, trips_preview: list[dict], *, lookback_blocks
         "## Reproduce",
         "",
         "```bash",
-        "python scripts/audit_fluid_lite_tx_roundtrips.py --lookback-blocks 500000",
+        "python scripts/audit_fluid_lite_tx_roundtrips.py --lookback-blocks 500000 --sample clean",
         "```",
         "",
         "Files: `data/fluid-lite-eth/tx_vs_share_compare.csv` · "
@@ -157,6 +161,15 @@ def main() -> int:
         default=0.05,
         help="Drop round-trips shorter than this (dust / same-day noise).",
     )
+    parser.add_argument(
+        "--sample",
+        choices=("clean", "fifo", "both"),
+        default="clean",
+        help=(
+            "clean = one full deposit fully exited by one withdraw, no intervening "
+            "activity (best quality, default). fifo = all FIFO legs. both = write both."
+        ),
+    )
     args = parser.parse_args()
 
     cfg = yaml.safe_load((ROOT / "config" / "vaults.yaml").read_text())
@@ -174,13 +187,30 @@ def main() -> int:
     )
     print(f"deposits={len(deposits)} withdraws={len(withdraws)}")
 
-    legs = match_round_trips_fifo(deposits, withdraws, min_days=args.min_days)
-    print(f"FIFO-matched legs={len(legs)}")
+    samples_to_run: list[tuple[str, list]] = []
+    if args.sample in ("clean", "both"):
+        clean_legs = match_clean_full_round_trips(
+            deposits, withdraws, min_days=args.min_days
+        )
+        print(f"clean_full legs={len(clean_legs)}")
+        samples_to_run.append(("clean", clean_legs))
+    if args.sample in ("fifo", "both"):
+        fifo_legs = match_round_trips_fifo(deposits, withdraws, min_days=args.min_days)
+        print(f"FIFO-matched legs={len(fifo_legs)}")
+        samples_to_run.append(("fifo", fifo_legs))
 
-    print("=== enrich with convertToAssets at deposit/withdraw blocks ===")
-    trips = enrich_legs_with_share_path(w3, legs)
+    primary_name, primary_legs = samples_to_run[0]
+    print(f"=== enrich PRIMARY sample={primary_name} with convertToAssets ===")
+    trips = enrich_legs_with_share_path(w3, primary_legs)
     rows = [round_trip_to_row(t) for t in trips]
     summary = summarize_round_trips(trips)
+    summary["sample"] = primary_name
+    summary["sample_definition"] = (
+        "clean_full: one deposit fully exited by one withdraw, same shares, "
+        "no intervening owner activity"
+        if primary_name == "clean"
+        else "fifo: share lots matched FIFO (may include partials)"
+    )
     summary["as_of"] = {
         "generated_at_utc": datetime.now(tz=timezone.utc).isoformat(),
         "tip_block": tip,
@@ -188,16 +218,32 @@ def main() -> int:
         "lookback_blocks": args.lookback_blocks,
         "vault": IETH_V2,
         "method": (
-            "FIFO match Deposit(owner)→Withdraw(owner); "
+            f"sample={primary_name}; "
             "tx_return=assets_out/assets_in-1; "
             "share_after_exit=p1/p0*(1-0.0005)-1"
         ),
     }
 
+    # Optional secondary sample for comparison counts only
+    extra_summaries = {}
+    for name, legs in samples_to_run[1:]:
+        print(f"=== enrich SECONDARY sample={name} ===")
+        trips2 = enrich_legs_with_share_path(w3, legs)
+        extra_summaries[name] = summarize_round_trips(trips2)
+        write_csv(
+            ROOT / "data" / "fluid-lite-eth" / f"tx_vs_share_compare_{name}.csv",
+            [round_trip_to_row(t) for t in trips2],
+        )
+
     write_csv(ROOT / "data" / "fluid-lite-eth" / "tx_vs_share_compare.csv", rows)
     write_json(
         ROOT / "data" / "fluid-lite-eth" / "tx_vs_share_summary.json",
-        {"summary": summary, "n_deposits": len(deposits), "n_withdraws": len(withdraws)},
+        {
+            "summary": summary,
+            "extra_summaries": extra_summaries,
+            "n_deposits": len(deposits),
+            "n_withdraws": len(withdraws),
+        },
     )
     write_json(ROOT / "results" / "fluid-lite-tx-vs-share.json", {"summary": summary, "rows": rows})
     md = markdown_report(summary, rows, lookback_blocks=args.lookback_blocks)

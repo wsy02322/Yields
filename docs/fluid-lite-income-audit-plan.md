@@ -118,12 +118,15 @@ This is **what wallets actually got** — includes 0.05% exit fee when charged o
 
 **Sample selection (custom windows = each real hold):**
 
-- Prefer **complete round-trips**: same address deposits then fully (or mostly) redeems
-- Filter dust / same-block in-out / partial multi-leg noise
-- Stratify by hold length: &lt;7d, 7–30d, 30–90d, 90d+
-- Enough samples per bucket to see distribution (median, p10/p90), not one cherry-pick
+| Sample | Definition | Role |
+|--------|------------|------|
+| **`clean_full` (primary)** | One Deposit → later one Withdraw, **same shares**, **no intervening** activity for that owner | **Best data** — true once-in / once-out wallet path |
+| `fifo` (secondary) | FIFO lot matching; may split partials | Coverage only; noisier |
+| Random subset | — | **Not preferred** — clean full is better than random |
 
-**Also keep calendar trailing tables (secondary):** EOD `p0→p1` Hold for 7/30/90/360d — useful context, but **tx round-trips are the ground truth**.
+Default CLI: `--sample clean`. Use `--sample both` to also emit FIFO for comparison.
+
+**Also keep calendar trailing tables (secondary):** EOD Hold for context — only after WP-A clean sample is solid.
 
 **Caveats to document:**
 

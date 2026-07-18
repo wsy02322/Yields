@@ -65,6 +65,7 @@ class RoundTrip:
     share_apy_after_exit: float | None
     gap_return_pp: float  # (tx_return - share_return_after_exit) * 100
     gap_apy_pp: float | None
+    sample: str = "fifo"
 
 
 def _addr_from_topic(topic) -> str:
@@ -197,7 +198,8 @@ def match_round_trips_fifo(
 ) -> list[dict[str, Any]]:
     """FIFO-match withdraw shares against prior deposits per owner.
 
-    Returns unmatched structural legs (no share price yet).
+    Useful for coverage, but **partial** lots can mix legs. Prefer
+    ``match_clean_full_round_trips`` for highest-quality comparisons.
     """
     # Remaining deposit lots: owner -> list of {shares_left, assets_in_per_share, ...}
     lots: dict[str, list[dict[str, Any]]] = {}
@@ -243,6 +245,7 @@ def match_round_trips_fifo(
                         "shares": take,
                         "assets_in": assets_in,
                         "assets_out": assets_out,
+                        "sample": "fifo",
                     }
                 )
             lot["shares_left"] -= take
@@ -250,6 +253,92 @@ def match_round_trips_fifo(
             if lot["shares_left"] <= min_shares:
                 queue.pop(0)
         # leftover need = withdraw without matching deposit in window (ignored)
+    return legs
+
+
+def match_clean_full_round_trips(
+    deposits: list[VaultEvent],
+    withdraws: list[VaultEvent],
+    *,
+    min_shares: float = 1e-6,
+    min_days: float = 0.01,
+    share_tol: float = 1e-6,
+) -> list[dict[str, Any]]:
+    """Best-quality sample: one full deposit fully exited by one withdraw.
+
+    Criteria per pair (deposit D, withdraw W), same owner:
+      1. W.shares ≈ D.shares (relative tolerance ``share_tol``)
+      2. No other deposit/withdraw for that owner with block in (D.block, W.block)
+         (and not same-block later log that muddies the position)
+      3. Hold days >= min_days
+
+    This is the recommended primary sample: wallet put in once, took out once.
+    """
+    by_owner: dict[str, dict[str, list[VaultEvent]]] = {}
+    for d in deposits:
+        by_owner.setdefault(d.owner.lower(), {"deposits": [], "withdraws": []})[
+            "deposits"
+        ].append(d)
+    for w in withdraws:
+        by_owner.setdefault(w.owner.lower(), {"deposits": [], "withdraws": []})[
+            "withdraws"
+        ].append(w)
+
+    legs: list[dict[str, Any]] = []
+    for _owner_l, ev in by_owner.items():
+        deps = sorted(ev["deposits"], key=lambda e: (e.block, e.log_index))
+        wds = sorted(ev["withdraws"], key=lambda e: (e.block, e.log_index))
+        if not deps or not wds:
+            continue
+        # All activity timeline for intervening check
+        activity = sorted(
+            [("d", e) for e in deps] + [("w", e) for e in wds],
+            key=lambda x: (x[1].block, x[1].log_index),
+        )
+        for d in deps:
+            if d.shares <= min_shares:
+                continue
+            for w in wds:
+                if w.block < d.block or (
+                    w.block == d.block and w.log_index <= d.log_index
+                ):
+                    continue
+                if w.shares <= min_shares:
+                    continue
+                rel = abs(w.shares - d.shares) / d.shares
+                if rel > share_tol:
+                    continue
+                days = (w.timestamp - d.timestamp) / 86400.0
+                if days < min_days:
+                    continue
+                # No intervening activity for this owner between D and W
+                intervening = False
+                for kind, e in activity:
+                    if (e.block, e.log_index) <= (d.block, d.log_index):
+                        continue
+                    if (e.block, e.log_index) >= (w.block, w.log_index):
+                        break
+                    intervening = True
+                    break
+                if intervening:
+                    continue
+                legs.append(
+                    {
+                        "owner": d.owner,
+                        "deposit_tx": d.tx_hash,
+                        "withdraw_tx": w.tx_hash,
+                        "deposit_block": d.block,
+                        "withdraw_block": w.block,
+                        "deposit_ts": d.timestamp,
+                        "withdraw_ts": w.timestamp,
+                        "days": days,
+                        "shares": d.shares,
+                        "assets_in": d.assets,
+                        "assets_out": w.assets,
+                        "sample": "clean_full",
+                        "share_match_rel_err": rel,
+                    }
+                )
     return legs
 
 
@@ -305,6 +394,7 @@ def enrich_legs_with_share_path(
                 share_apy_after_exit=sx_apy,
                 gap_return_pp=(tx_ret - share_exit) * 100.0,
                 gap_apy_pp=gap_apy,
+                sample=str(leg.get("sample") or "fifo"),
             )
         )
         if (i + 1) % 25 == 0:
