@@ -134,19 +134,18 @@ def build_daily_path(series: list[dict], *, start_date: str, end_date: str) -> l
             daily = None
         else:
             daily = period_return(float(rows[i - 1]["share_price"]), float(row["share_price"]))
-        out.append(
-            {
-                "date": row["date"],
-                "share_price": row["share_price"],
-                "share_price_wei": row["share_price_wei"],
-                "oracle_price_d18": row["oracle_price_d18"],
-                "oracle_report_timestamp": row["oracle_report_timestamp"],
-                "oracle_suspicious": row["oracle_suspicious"],
-                "block": row["block"],
-                "daily_return_pct": None if daily is None else daily * 100,
-                "in_window_move": i > 0,
-            }
-        )
+        item = {
+            "date": row["date"],
+            "share_price": row["share_price"],
+            "share_price_wei": row["share_price_wei"],
+            "block": row["block"],
+            "daily_return_pct": None if daily is None else daily * 100,
+            "in_window_move": i > 0,
+        }
+        for key in ("oracle_price_d18", "oracle_report_timestamp", "oracle_suspicious"):
+            if key in row:
+                item[key] = row[key]
+        out.append(item)
     return out
 
 
