@@ -1,0 +1,867 @@
+{
+  "generated_at_utc": "2026-09-30T17:30:15.248086+00:00",
+  "tip_block": 26091797,
+  "tip_timestamp": 1790789387,
+  "end_date": "2026-09-29",
+  "rows_appended_this_run": 0,
+  "snapshots_after_2026_07_17": 74,
+  "series_first_date": "2026-02-02",
+  "series_last_date": "2026-09-29",
+  "vault": {
+    "name": "Lido EarnETH",
+    "vault": "0x6a37725ca7f4CE81c004c955f7280d5C704a249e",
+    "share_token": "0xBBFC8683C8fE8cF73777feDE7ab9574935fea0A4",
+    "oracle": "0xAda1f4c24603aB2fe5aBd35BCD12370e98A20358",
+    "fee_manager": "0xed4Fac879eE86F3aB0101993A3713e7cAA0488E1"
+  },
+  "method": {
+    "share_price": "Mellow oracle getReport(ETH); eth_per_share = 1e36 / priceD18",
+    "hold_return": "end_share_price / start_share_price - 1",
+    "hold_apy": "(1+R)^(365.25/days)-1",
+    "fees_in_price": "Fees minted on each oracle report are already in the net share price. fee_regimes is the live schedule across this window. The 1% protocol / 10% performance schedule belongs to the 2026-07-17 audit and was not the live schedule here.",
+    "redeem_fee": 0.0,
+    "excluded": [
+      "Mellow Points",
+      "Obol rewards",
+      "SSV rewards",
+      "published UI APY*"
+    ]
+  },
+  "on_chain_fees_at_tip": {
+    "depositFeeD6": 0,
+    "redeemFeeD6": 0,
+    "performanceFeeD6": 150000,
+    "protocolFeeD6": 2000
+  },
+  "fee_regimes": [
+    {
+      "block": 25657444,
+      "fees": {
+        "depositFeeD6": 0,
+        "redeemFeeD6": 0,
+        "performanceFeeD6": 0,
+        "protocolFeeD6": 0
+      },
+      "timestamp": 1785556283,
+      "timestamp_utc": "2026-08-01T03:51:23+00:00",
+      "rates": {
+        "deposit_fee": 0.0,
+        "redeem_fee": 0.0,
+        "performance_fee": 0.0,
+        "protocol_fee": 0.0
+      },
+      "kind": "in_force_at_window_open"
+    },
+    {
+      "block": 25895586,
+      "fees": {
+        "depositFeeD6": 0,
+        "redeemFeeD6": 0,
+        "performanceFeeD6": 150000,
+        "protocolFeeD6": 2000
+      },
+      "timestamp": 1788424127,
+      "timestamp_utc": "2026-09-03T08:28:47+00:00",
+      "rates": {
+        "deposit_fee": 0.0,
+        "redeem_fee": 0.0,
+        "performance_fee": 0.15,
+        "protocol_fee": 0.002
+      },
+      "kind": "changed"
+    }
+  ],
+  "fee_change_before_window": {
+    "block": 25578838,
+    "fees": {
+      "depositFeeD6": 0,
+      "redeemFeeD6": 0,
+      "performanceFeeD6": 0,
+      "protocolFeeD6": 0
+    },
+    "timestamp": 1784609687,
+    "timestamp_utc": "2026-07-21T04:54:47+00:00",
+    "rates": {
+      "deposit_fee": 0.0,
+      "redeem_fee": 0.0,
+      "performance_fee": 0.0,
+      "protocol_fee": 0.0
+    },
+    "kind": "changed_before_window_open",
+    "previous_rates": {
+      "deposit_fee": 0.0,
+      "redeem_fee": 0.0,
+      "performance_fee": 0.1,
+      "protocol_fee": 0.01
+    }
+  },
+  "windows": [
+    {
+      "window": "1d",
+      "start_date": "2026-09-28",
+      "end_date": "2026-09-29",
+      "days": 1.0,
+      "start_share_price": 1.018257075981742,
+      "end_share_price_hold": 1.0183231644267339,
+      "end_share_price_realized": 1.0183231644267339,
+      "hold_return_pct": 0.00649,
+      "realized_return_pct": 0.00649,
+      "hold_apy_pct": 2.398844,
+      "realized_apy_pct": 2.398844,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
+    },
+    {
+      "window": "7d",
+      "start_date": "2026-09-22",
+      "end_date": "2026-09-29",
+      "days": 7.0,
+      "start_share_price": 1.0177473188752608,
+      "end_share_price_hold": 1.0183231644267339,
+      "end_share_price_realized": 1.0183231644267339,
+      "hold_return_pct": 0.05658,
+      "realized_return_pct": 0.05658,
+      "hold_apy_pct": 2.995437,
+      "realized_apy_pct": 2.995437,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
+    },
+    {
+      "window": "14d",
+      "start_date": "2026-09-15",
+      "end_date": "2026-09-29",
+      "days": 14.0,
+      "start_share_price": 1.0171165875248314,
+      "end_share_price_hold": 1.0183231644267339,
+      "end_share_price_realized": 1.0183231644267339,
+      "hold_return_pct": 0.118627,
+      "realized_return_pct": 0.118627,
+      "hold_apy_pct": 3.141397,
+      "realized_apy_pct": 3.141397,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
+    },
+    {
+      "window": "30d",
+      "start_date": "2026-08-30",
+      "end_date": "2026-09-29",
+      "days": 30.0,
+      "start_share_price": 1.0157327826133469,
+      "end_share_price_hold": 1.0183231644267339,
+      "end_share_price_realized": 1.0183231644267339,
+      "hold_return_pct": 0.255026,
+      "realized_return_pct": 0.255026,
+      "hold_apy_pct": 3.14957,
+      "realized_apy_pct": 3.14957,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
+    },
+    {
+      "window": "60d",
+      "start_date": "2026-07-31",
+      "end_date": "2026-09-29",
+      "days": 60.0,
+      "start_share_price": 1.0131787265565524,
+      "end_share_price_hold": 1.0183231644267339,
+      "end_share_price_realized": 1.0183231644267339,
+      "hold_return_pct": 0.507752,
+      "realized_return_pct": 0.507752,
+      "hold_apy_pct": 3.131142,
+      "realized_apy_pct": 3.131142,
+      "preferred_metric": "hold_or_realized",
+      "realized_apy_caution": false
+    }
+  ],
+  "daily_path_compounds_to_60d_hold_return": true,
+  "published_apy_untrusted_reference": {
+    "trust": "untrusted_reference_only",
+    "label": "APY* (14d avg.)",
+    "apy_pct": 3.11187,
+    "days": 14,
+    "source_url": "https://api.mellow.finance/v1/chain/1/core-vaults/0x6a37725ca7f4CE81c004c955f7280d5C704a249e/timeweighted-apy",
+    "fetched_at_utc": "2026-09-30T17:30:15.247677+00:00",
+    "apy_last_update_utc": "2026-09-30T06:52:47+00:00",
+    "independent_hold_apy_pct_same_window": 3.141397,
+    "note": "Shown only for contrast. The result is the oracle Hold APY."
+  },
+  "daily_path": [
+    {
+      "date": "2026-07-31",
+      "share_price": 1.0131787265565524,
+      "share_price_wei": 1013178726556552341,
+      "oracle_price_d18": 986992693183223140,
+      "oracle_report_timestamp": 1785486059,
+      "oracle_suspicious": false,
+      "block": 25657444,
+      "daily_return_pct": null,
+      "in_window_move": false
+    },
+    {
+      "date": "2026-08-01",
+      "share_price": 1.01324578178609,
+      "share_price_wei": 1013245781786090023,
+      "oracle_price_d18": 986927375347429388,
+      "oracle_report_timestamp": 1785584663,
+      "oracle_suspicious": false,
+      "block": 25664596,
+      "daily_return_pct": 0.006618302159333567,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-02",
+      "share_price": 1.0132965382840147,
+      "share_price_wei": 1013296538284014572,
+      "oracle_price_d18": 986877939693219680,
+      "oracle_report_timestamp": 1785662447,
+      "oracle_suspicious": false,
+      "block": 25671749,
+      "daily_return_pct": 0.005009297727864848,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-03",
+      "share_price": 1.0135131225036624,
+      "share_price_wei": 1013513122503662469,
+      "oracle_price_d18": 986667047319248066,
+      "oracle_report_timestamp": 1785736751,
+      "oracle_suspicious": false,
+      "block": 25678901,
+      "daily_return_pct": 0.02137421884560453,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-04",
+      "share_price": 1.0135633349062851,
+      "share_price_wei": 1013563334906285114,
+      "oracle_price_d18": 986618167371317559,
+      "oracle_report_timestamp": 1785825563,
+      "oracle_suspicious": false,
+      "block": 25686053,
+      "daily_return_pct": 0.00495429230344957,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-05",
+      "share_price": 1.013633761787804,
+      "share_price_wei": 1013633761787803858,
+      "oracle_price_d18": 986549617522844530,
+      "oracle_report_timestamp": 1785911831,
+      "oracle_suspicious": false,
+      "block": 25693206,
+      "daily_return_pct": 0.0069484440777811685,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-06",
+      "share_price": 1.013685434881767,
+      "share_price_wei": 1013685434881766930,
+      "oracle_price_d18": 986499327689991761,
+      "oracle_report_timestamp": 1785996431,
+      "oracle_suspicious": false,
+      "block": 25700358,
+      "daily_return_pct": 0.005097807108556118,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-07",
+      "share_price": 1.0138717265652204,
+      "share_price_wei": 1013871726565220319,
+      "oracle_price_d18": 986318065489196794,
+      "oracle_report_timestamp": 1786086251,
+      "oracle_suspicious": false,
+      "block": 25707510,
+      "daily_return_pct": 0.01837766204810798,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-08",
+      "share_price": 1.013925500404436,
+      "share_price_wei": 1013925500404436029,
+      "oracle_price_d18": 986265755818468510,
+      "oracle_report_timestamp": 1786178003,
+      "oracle_suspicious": false,
+      "block": 25714663,
+      "daily_return_pct": 0.005303810906909234,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-09",
+      "share_price": 1.0139734262938158,
+      "share_price_wei": 1013973426293815845,
+      "oracle_price_d18": 986219139544030999,
+      "oracle_report_timestamp": 1786262855,
+      "oracle_suspicious": false,
+      "block": 25721815,
+      "daily_return_pct": 0.004726766351237366,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-10",
+      "share_price": 1.014110501389841,
+      "share_price_wei": 1014110501389841080,
+      "oracle_price_d18": 986085834462316876,
+      "oracle_report_timestamp": 1786343663,
+      "oracle_suspicious": false,
+      "block": 25728967,
+      "daily_return_pct": 0.013518608325502335,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-11",
+      "share_price": 1.0141460698699396,
+      "share_price_wei": 1014146069869939640,
+      "oracle_price_d18": 986051250120454719,
+      "oracle_report_timestamp": 1786429883,
+      "oracle_suspicious": false,
+      "block": 25736120,
+      "daily_return_pct": 0.0035073574378596817,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-12",
+      "share_price": 1.0141999595879294,
+      "share_price_wei": 1014199959587929470,
+      "oracle_price_d18": 985998856089780432,
+      "oracle_report_timestamp": 1786515179,
+      "oracle_suspicious": false,
+      "block": 25743272,
+      "daily_return_pct": 0.005313802379247612,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-13",
+      "share_price": 1.0142624839763266,
+      "share_price_wei": 1014262483976326716,
+      "oracle_price_d18": 985938074017672521,
+      "oracle_report_timestamp": 1786603943,
+      "oracle_suspicious": false,
+      "block": 25750424,
+      "daily_return_pct": 0.006164897543725623,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-14",
+      "share_price": 1.014446673745336,
+      "share_price_wei": 1014446673745335933,
+      "oracle_price_d18": 985759060461996656,
+      "oracle_report_timestamp": 1786685591,
+      "oracle_suspicious": false,
+      "block": 25757577,
+      "daily_return_pct": 0.01815997061107577,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-15",
+      "share_price": 1.014496135943475,
+      "share_price_wei": 1014496135943475038,
+      "oracle_price_d18": 985710999352408846,
+      "oracle_report_timestamp": 1786783511,
+      "oracle_suspicious": false,
+      "block": 25764729,
+      "daily_return_pct": 0.004875780996593804,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-16",
+      "share_price": 1.0145412355967982,
+      "share_price_wei": 1014541235596798258,
+      "oracle_price_d18": 985667181296732156,
+      "oracle_report_timestamp": 1786863791,
+      "oracle_suspicious": false,
+      "block": 25771881,
+      "daily_return_pct": 0.004445522434770588,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-17",
+      "share_price": 1.0146157595037735,
+      "share_price_wei": 1014615759503773582,
+      "oracle_price_d18": 985594783673652150,
+      "oracle_report_timestamp": 1786948367,
+      "oracle_suspicious": false,
+      "block": 25779033,
+      "daily_return_pct": 0.007345576932760167,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-18",
+      "share_price": 1.014680365016088,
+      "share_price_wei": 1014680365016088099,
+      "oracle_price_d18": 985532030063619751,
+      "oracle_report_timestamp": 1787034383,
+      "oracle_suspicious": false,
+      "block": 25786186,
+      "daily_return_pct": 0.006367485593372635,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-19",
+      "share_price": 1.014733682082249,
+      "share_price_wei": 1014733682082248951,
+      "oracle_price_d18": 985480247337394762,
+      "oracle_report_timestamp": 1787119247,
+      "oracle_suspicious": false,
+      "block": 25793338,
+      "daily_return_pct": 0.005254567645063268,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-20",
+      "share_price": 1.0147630781296908,
+      "share_price_wei": 1014763078129690885,
+      "oracle_price_d18": 985451699566266537,
+      "oracle_report_timestamp": 1787205347,
+      "oracle_suspicious": false,
+      "block": 25800490,
+      "daily_return_pct": 0.002896922410378089,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-21",
+      "share_price": 1.0150108530997237,
+      "share_price_wei": 1015010853099723836,
+      "oracle_price_d18": 985211140300734267,
+      "oracle_report_timestamp": 1787291687,
+      "oracle_suspicious": false,
+      "block": 25807643,
+      "daily_return_pct": 0.0244170265328858,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-22",
+      "share_price": 1.015058641374185,
+      "share_price_wei": 1015058641374184949,
+      "oracle_price_d18": 985164757226441044,
+      "oracle_report_timestamp": 1787373239,
+      "oracle_suspicious": false,
+      "block": 25814795,
+      "daily_return_pct": 0.004708154037480483,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-23",
+      "share_price": 1.0151372770917,
+      "share_price_wei": 1015137277091700127,
+      "oracle_price_d18": 985088443274325019,
+      "oracle_report_timestamp": 1787466671,
+      "oracle_suspicious": false,
+      "block": 25821947,
+      "daily_return_pct": 0.007746913755513063,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-24",
+      "share_price": 1.0151978212800652,
+      "share_price_wei": 1015197821280065291,
+      "oracle_price_d18": 985029694743727559,
+      "oracle_report_timestamp": 1787549267,
+      "oracle_suspicious": false,
+      "block": 25829100,
+      "daily_return_pct": 0.0059641380266040045,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-25",
+      "share_price": 1.0152733084709156,
+      "share_price_wei": 1015273308470915599,
+      "oracle_price_d18": 984956456213826356,
+      "oracle_report_timestamp": 1787638283,
+      "oracle_suspicious": false,
+      "block": 25836252,
+      "daily_return_pct": 0.007435712456049792,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-26",
+      "share_price": 1.0153249709388872,
+      "share_price_wei": 1015324970938887186,
+      "oracle_price_d18": 984906338977641866,
+      "oracle_report_timestamp": 1787724179,
+      "oracle_suspicious": false,
+      "block": 25843404,
+      "daily_return_pct": 0.0050885281372536895,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-27",
+      "share_price": 1.015574599665919,
+      "share_price_wei": 1015574599665918871,
+      "oracle_price_d18": 984664248523897450,
+      "oracle_report_timestamp": 1787808647,
+      "oracle_suspicious": false,
+      "block": 25850557,
+      "daily_return_pct": 0.02458609156443803,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-28",
+      "share_price": 1.015629585661746,
+      "share_price_wei": 1015629585661746023,
+      "oracle_price_d18": 984610938985631879,
+      "oracle_report_timestamp": 1787896151,
+      "oracle_suspicious": false,
+      "block": 25857709,
+      "daily_return_pct": 0.005414274426063237,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-29",
+      "share_price": 1.0156718386228043,
+      "share_price_wei": 1015671838622804162,
+      "oracle_price_d18": 984569978188964731,
+      "oracle_report_timestamp": 1787984579,
+      "oracle_suspicious": false,
+      "block": 25864861,
+      "daily_return_pct": 0.004160272766240425,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-30",
+      "share_price": 1.0157327826133469,
+      "share_price_wei": 1015732782613346822,
+      "oracle_price_d18": 984510903967411151,
+      "oracle_report_timestamp": 1788071147,
+      "oracle_suspicious": false,
+      "block": 25872014,
+      "daily_return_pct": 0.006000362343927534,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-08-31",
+      "share_price": 1.0158031139764692,
+      "share_price_wei": 1015803113976469190,
+      "oracle_price_d18": 984442739189284209,
+      "oracle_report_timestamp": 1788156731,
+      "oracle_suspicious": false,
+      "block": 25879166,
+      "daily_return_pct": 0.006924199388480545,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-01",
+      "share_price": 1.0158704080287895,
+      "share_price_wei": 1015870408028789361,
+      "oracle_price_d18": 984377526992262186,
+      "oracle_report_timestamp": 1788242123,
+      "oracle_suspicious": false,
+      "block": 25886318,
+      "daily_return_pct": 0.006624714119740638,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-02",
+      "share_price": 1.0159308323427954,
+      "share_price_wei": 1015930832342795298,
+      "oracle_price_d18": 984318979367859250,
+      "oracle_report_timestamp": 1788329807,
+      "oracle_suspicious": false,
+      "block": 25893471,
+      "daily_return_pct": 0.005948033679126219,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-03",
+      "share_price": 1.0161904422218027,
+      "share_price_wei": 1016190442221802647,
+      "oracle_price_d18": 984067511807723951,
+      "oracle_report_timestamp": 1788417227,
+      "oracle_suspicious": false,
+      "block": 25900623,
+      "daily_return_pct": 0.02555389311382772,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-04",
+      "share_price": 1.0162426504341855,
+      "share_price_wei": 1016242650434185601,
+      "oracle_price_d18": 984016956553392052,
+      "oracle_report_timestamp": 1788504155,
+      "oracle_suspicious": false,
+      "block": 25907775,
+      "daily_return_pct": 0.005137640565555657,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-05",
+      "share_price": 1.0162901174953474,
+      "share_price_wei": 1016290117495347337,
+      "oracle_price_d18": 983970996849310684,
+      "oracle_report_timestamp": 1788585071,
+      "oracle_suspicious": false,
+      "block": 25914928,
+      "daily_return_pct": 0.004670839306109009,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-06",
+      "share_price": 1.0163377241372258,
+      "share_price_wei": 1016337724137225766,
+      "oracle_price_d18": 983924906308978206,
+      "oracle_report_timestamp": 1788674951,
+      "oracle_suspicious": false,
+      "block": 25922080,
+      "daily_return_pct": 0.0046843554865727555,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-07",
+      "share_price": 1.0164962500646593,
+      "share_price_wei": 1016496250064659361,
+      "oracle_price_d18": 983771459989537557,
+      "oracle_report_timestamp": 1788762419,
+      "oracle_suspicious": false,
+      "block": 25929232,
+      "daily_return_pct": 0.01559776082975528,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-08",
+      "share_price": 1.0165673406357612,
+      "share_price_wei": 1016567340635761119,
+      "oracle_price_d18": 983702662899439691,
+      "oracle_report_timestamp": 1788847067,
+      "oracle_suspicious": false,
+      "block": 25936384,
+      "daily_return_pct": 0.006993687492440337,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-09",
+      "share_price": 1.0166116749815746,
+      "share_price_wei": 1016611674981574487,
+      "oracle_price_d18": 983659763712751415,
+      "oracle_report_timestamp": 1788941339,
+      "oracle_suspicious": false,
+      "block": 25943537,
+      "daily_return_pct": 0.004361181403456094,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-10",
+      "share_price": 1.0167388232404495,
+      "share_price_wei": 1016738823240449492,
+      "oracle_price_d18": 983536752155188518,
+      "oracle_report_timestamp": 1789026143,
+      "oracle_suspicious": false,
+      "block": 25950689,
+      "daily_return_pct": 0.012507062628142052,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-11",
+      "share_price": 1.0167823444177129,
+      "share_price_wei": 1016782344417712873,
+      "oracle_price_d18": 983494653983863455,
+      "oracle_report_timestamp": 1789110683,
+      "oracle_suspicious": false,
+      "block": 25957841,
+      "daily_return_pct": 0.00428046773355284,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-12",
+      "share_price": 1.0168323015200815,
+      "share_price_wei": 1016832301520081559,
+      "oracle_price_d18": 983446334764426112,
+      "oracle_report_timestamp": 1789195475,
+      "oracle_suspicious": false,
+      "block": 25964994,
+      "daily_return_pct": 0.00491325431080103,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-13",
+      "share_price": 1.0168911697096739,
+      "share_price_wei": 1016891169709673891,
+      "oracle_price_d18": 983389402708161600,
+      "oracle_report_timestamp": 1789282859,
+      "oracle_suspicious": false,
+      "block": 25972146,
+      "daily_return_pct": 0.00578937052888584,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-14",
+      "share_price": 1.0170623271169745,
+      "share_price_wei": 1017062327116974587,
+      "oracle_price_d18": 983223911984489215,
+      "oracle_report_timestamp": 1789371383,
+      "oracle_suspicious": false,
+      "block": 25979298,
+      "daily_return_pct": 0.016831438053444003,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-15",
+      "share_price": 1.0171165875248314,
+      "share_price_wei": 1017116587524831308,
+      "oracle_price_d18": 983171459658833424,
+      "oracle_report_timestamp": 1789459547,
+      "oracle_suspicious": false,
+      "block": 25986451,
+      "daily_return_pct": 0.005335013047891302,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-16",
+      "share_price": 1.0171879959004295,
+      "share_price_wei": 1017187995900429424,
+      "oracle_price_d18": 983102439303548442,
+      "oracle_report_timestamp": 1789543847,
+      "oracle_suspicious": false,
+      "block": 25993603,
+      "daily_return_pct": 0.007020667686874482,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-17",
+      "share_price": 1.0173152528764657,
+      "share_price_wei": 1017315252876465718,
+      "oracle_price_d18": 982979462042364228,
+      "oracle_report_timestamp": 1789633859,
+      "oracle_suspicious": false,
+      "block": 26000755,
+      "daily_return_pct": 0.012510664355969148,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-18",
+      "share_price": 1.0173813458549665,
+      "share_price_wei": 1017381345854966546,
+      "oracle_price_d18": 982915603941646916,
+      "oracle_report_timestamp": 1789719215,
+      "oracle_suspicious": false,
+      "block": 26007908,
+      "daily_return_pct": 0.006496804045141857,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-19",
+      "share_price": 1.017430386683483,
+      "share_price_wei": 1017430386683483132,
+      "oracle_price_d18": 982868226748858025,
+      "oracle_report_timestamp": 1789805627,
+      "oracle_suspicious": false,
+      "block": 26015060,
+      "daily_return_pct": 0.0048202995579060826,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-20",
+      "share_price": 1.017494019645169,
+      "share_price_wei": 1017494019645168959,
+      "oracle_price_d18": 982806759246339693,
+      "oracle_report_timestamp": 1789892147,
+      "oracle_suspicious": false,
+      "block": 26022212,
+      "daily_return_pct": 0.006254281621487223,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-21",
+      "share_price": 1.0176899214233706,
+      "share_price_wei": 1017689921423370535,
+      "oracle_price_d18": 982617572355802738,
+      "oracle_report_timestamp": 1789973807,
+      "oracle_suspicious": false,
+      "block": 26029365,
+      "daily_return_pct": 0.01925335917649651,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-22",
+      "share_price": 1.0177473188752608,
+      "share_price_wei": 1017747318875260877,
+      "oracle_price_d18": 982562156100913238,
+      "oracle_report_timestamp": 1790057507,
+      "oracle_suspicious": false,
+      "block": 26036517,
+      "daily_return_pct": 0.00563997448357334,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-23",
+      "share_price": 1.017793980746057,
+      "share_price_wei": 1017793980746057140,
+      "oracle_price_d18": 982517109471394294,
+      "oracle_report_timestamp": 1790146223,
+      "oracle_suspicious": false,
+      "block": 26043669,
+      "daily_return_pct": 0.00458481883771622,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-24",
+      "share_price": 1.0178649801864565,
+      "share_price_wei": 1017864980186456556,
+      "oracle_price_d18": 982448575661593173,
+      "oracle_report_timestamp": 1790229923,
+      "oracle_suspicious": false,
+      "block": 26050822,
+      "daily_return_pct": 0.006975816495535803,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-25",
+      "share_price": 1.017913306154507,
+      "share_price_wei": 1017913306154507009,
+      "oracle_price_d18": 982401933400222214,
+      "oracle_report_timestamp": 1790317607,
+      "oracle_suspicious": false,
+      "block": 26057974,
+      "daily_return_pct": 0.004747777847846635,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-26",
+      "share_price": 1.0179783457829068,
+      "share_price_wei": 1017978345782906927,
+      "oracle_price_d18": 982339166783474025,
+      "oracle_report_timestamp": 1790408183,
+      "oracle_suspicious": false,
+      "block": 26065126,
+      "daily_return_pct": 0.0063895056687579554,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-27",
+      "share_price": 1.0180207290205807,
+      "share_price_wei": 1018020729020580735,
+      "oracle_price_d18": 982298269075603056,
+      "oracle_report_timestamp": 1790492435,
+      "oracle_suspicious": false,
+      "block": 26072279,
+      "daily_return_pct": 0.004163471438212163,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-28",
+      "share_price": 1.018257075981742,
+      "share_price_wei": 1018257075981742098,
+      "oracle_price_d18": 982070268488790293,
+      "oracle_report_timestamp": 1790575799,
+      "oracle_suspicious": false,
+      "block": 26079431,
+      "daily_return_pct": 0.023216321084995606,
+      "in_window_move": true
+    },
+    {
+      "date": "2026-09-29",
+      "share_price": 1.0183231644267339,
+      "share_price_wei": 1018323164426733851,
+      "oracle_price_d18": 982006532830814178,
+      "oracle_report_timestamp": 1790665403,
+      "oracle_suspicious": false,
+      "block": 26086583,
+      "daily_return_pct": 0.00649034969171236,
+      "in_window_move": true
+    }
+  ],
+  "unchanged_prior_audit": [
+    "data/lido-earn-eth/summary.json",
+    "data/lido-earn-eth/independent_audit.json",
+    "results/lido-earn-eth.json",
+    "results/lido-earn-eth-independent-audit.json",
+    "results/LIDO_EARN_AUDIT.md"
+  ]
+}
